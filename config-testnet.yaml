@@ -1,0 +1,106 @@
+networks:
+  
+  - id: 'terraclassic'
+    chainId: 'rebel-2'
+    hrp: 'terra'
+    signer: deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+    endpoint:
+       rpc: 'https://rpc.luncblaze.com'
+       rest: 'https://lcd.luncblaze.com'
+       grpc: 'https://grpc.terra-classic.hexxagon.dev'
+    gas:
+      price: '28.325'
+      denom: 'uluna'
+    domain: 1325   # terra-classic -> ascii / decimal -> sum
+
+
+# Networks that already have hyperlane deployments
+# but might require new warp route connections
+evm_networks:
+ 
+  # - name: 'bsc_local'
+  #   signer: deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+  #   chain_id: 56
+  #   rpc_endpoint: 'http://localhost:8545'
+  #   network: 'bscTestnet'
+  #   nativeCurrency:
+  #     name: 'Binance Coin'
+  #     symbol: 'BNB'
+  #     decimals: 18
+  #   gas_price: 1000000000  # = 1 gwei
+
+deploy:
+  ism:
+   
+
+    # # hpl_ism_routing
+    type: "routing"
+    owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze
+    isms:
+      97:
+          type: multisig
+          owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze
+          validators:
+            97:
+              addrs:
+                - '242d8a855a8c932dec51f7999ae7d1e48b10c95e'
+                - 'f620f5e3d25a3ae848fec74bccae5de3edcd8796'
+                - '1f030345963c54ff8229720dd3a711c15c554aeb'
+               
+               
+              threshold: 2
+      
+      1399811150:
+          type: multisig
+          owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze
+          validators:
+            1399811150:
+              addrs:
+                - 'd4ce8fa138d4e083fc0e480cca0dbfa4f5f30bd5'
+               
+              threshold: 1
+      
+    
+  hooks:
+    default:
+      type: aggregate
+      owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze 
+      hooks:
+        - type: merkle
+
+        - type: igp
+          owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze 
+          configs:
+            97:
+              exchange_rate: 1805936462255558    
+              gas_price: 50_000_000   # 0.05 Gwei                          
+            
+            1399811150:
+              exchange_rate: 57675000000000000     
+              gas_price: 1   
+
+          default_gas_usage: 100000
+         
+
+    required:
+      type: aggregate
+      owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze 
+      hooks:
+        
+        - type: pausable
+          owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze 
+          paused: false
+
+        - type: fee
+          owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze 
+          fee:
+            # if you didn't set the denom, it will be set as gas denom of network config
+            denom: uluna
+            amount: 283215
+            
+
+    #   # custom_hooks: # optional
+    #   #   5:
+    #   #     recipient: osmo1g3q542hpttdrj9aaczsq0tkl0uyfk7nkydklz6
+    #   #     hook: osmo1g3q542hpttdrj9aaczsq0tkl0uyfk7nkydklz6
+    #   # fallback_hook: osmo1g3q542hpttdrj9aaczsq0tkl0uyfk7nkydklz6 # optional
