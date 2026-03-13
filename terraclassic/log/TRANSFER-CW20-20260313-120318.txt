@@ -1,0 +1,29 @@
+CW20 TRANSFER — TERRA CLASSIC
+==============================
+Date/Time  : 2026-03-13 12:03:18
+Chain      : rebel-2
+RPC        : https://rpc.terra-classic.hexxagon.dev
+
+PARAMETERS
+----------
+Token      : JURIS
+Contract   : terra19ujvy60tjeyehjrwlrdpqlp0gxmtt4qv452nwjqc6w6m38pm8xmq22lux3
+Sender     : terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze
+Recipient  : terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k
+Amount     : 10000000
+
+RESULT
+------
+TX Hash    : 0C7AB9D8353EEFEC0698B7775E6EFF0F5EE2E43DF8C1EFA8DB120E4FD3B7BF06
+Block      : 29813328
+Gas Used   : 193121 / 234247
+Fee        : 6635047uluna
+
+BALANCES
+--------
+Sender before   : 999999900010000000 JURIS
+Sender after    : 999999900000001000 JURIS
+Recipient before: 99980000000 JURIS
+Recipient after : 99989999000 JURIS
+
+Explorer: https://finder.terra-classic.hexxagon.dev/testnet/tx/0C7AB9D8353EEFEC0698B7775E6EFF0F5EE2E43DF8C1EFA8DB120E4FD3B7BF06

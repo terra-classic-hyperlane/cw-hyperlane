@@ -853,7 +853,7 @@ async function main() {
     const [account] = await wallet.getAccounts();
     const client = await SigningCosmWasmClient.connectWithSigner(
         rpc, wallet,
-        { gasPrice: GasPrice.fromString('0.015uluna') }
+        { gasPrice: GasPrice.fromString('28.325uluna') }
     );
 
     // Verificar se a rota já existe E aponta para o Program ID correto

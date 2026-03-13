@@ -362,7 +362,7 @@ async function main() {
 
     const client = await SigningCosmWasmClient.connectWithSigner(
         RPC, wallet,
-        { gasPrice: GasPrice.fromString('0.015uluna') }
+        { gasPrice: GasPrice.fromString('28.325uluna') }
     );
 
     let txHash;
@@ -370,6 +370,31 @@ async function main() {
     if (TC_TYPE === 'cw20') {
         // ── CW20: increase_allowance + transfer_remote ──────────────────────
         console.log('CW20 mode: increase_allowance + transfer_remote');
+
+        // Check balance before transfer
+        let balance = '0';
+        let allowance = '0';
+        try {
+            const balanceRes = await client.queryContractSmart(TC_COLL, {
+                balance: { address: account.address }
+            });
+            balance = balanceRes.balance || '0';
+            
+            const allowanceRes = await client.queryContractSmart(TC_COLL, {
+                allowance: { owner: account.address, spender: TC_WARP }
+            });
+            allowance = allowanceRes.allowance || '0';
+            
+            console.log('Balance: ' + balance);
+            console.log('Allowance: ' + allowance);
+            
+            if (BigInt(balance) < BigInt(AMOUNT)) {
+                throw new Error('Insufficient balance: have ' + balance + ', need ' + AMOUNT);
+            }
+        } catch(e) {
+            console.error('Balance check failed: ' + e.message);
+            // Continue anyway - might be a query issue
+        }
 
         const msgs = [
             {

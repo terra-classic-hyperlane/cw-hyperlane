@@ -1,0 +1,12 @@
+TRANSFER REMOTE — Terra Classic → SEPOLIA
+Date          : Fri Mar 13 12:11:09 -03 2026
+Token         : XPTO  (cw20)
+Destination   : SEPOLIA  (domain 11155111)
+Recipient     : 0x867f9ce9f0d7218b016351cb6122406e6d247a5e
+Recipient b32 : 000000000000000000000000867f9ce9f0d7218b016351cb6122406e6d247a5e
+Amount        : 1000000
+Fee IGP       : 1780832150 uluna
+Warp TC       : terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm
+Collateral    : terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch
+TX Hash       : 2A15D2BA2475757C576725D494343304423C90133013803AA6E8B049F14B42E1
+Explorer      : https://finder.hexxagon.io/rebel-2/tx/2A15D2BA2475757C576725D494343304423C90133013803AA6E8B049F14B42E1

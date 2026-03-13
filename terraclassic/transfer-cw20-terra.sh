@@ -13,7 +13,7 @@ CYAN='\033[0;36m'; BOLD='\033[1m'; RESET='\033[0m'
 CW20_CONTRACT="${CW20_CONTRACT:-terra19ujvy60tjeyehjrwlrdpqlp0gxmtt4qv452nwjqc6w6m38pm8xmq22lux3}"
 SENDER="${SENDER:-terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze}"
 RECIPIENT="${RECIPIENT:-terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k}"
-AMOUNT="${AMOUNT:-100000000000}"
+AMOUNT="${AMOUNT:-100000000}"
 TOKEN_SYMBOL="${TOKEN_SYMBOL:-XPTO}"
 
 # RPC / LCD for Terra Classic (reads from warp-evm-config.json if it exists)
@@ -159,17 +159,34 @@ async function main() {
         const res = await client.queryContractSmart(contract, {
             balance: { address: account.address }
         });
-        balanceBefore = res.balance;
+        balanceBefore = res.balance || "0";
         const resR = await client.queryContractSmart(contract, {
             balance: { address: recipient }
         });
-        balanceRecipientBefore = resR.balance;
+        balanceRecipientBefore = resR.balance || "0";
     } catch(e) {
         // query may fail on testnets
+        process.stderr.write("⚠️  Warning: Failed to query balance: " + e.message + "\n");
     }
 
     console.log("BALANCE_SENDER_BEFORE=" + balanceBefore);
     console.log("BALANCE_RECIPIENT_BEFORE=" + balanceRecipientBefore);
+
+    // Check if sender has sufficient balance
+    try {
+        // Use BigInt for large numbers (available in Node.js 10.4+)
+        const balanceBig = BigInt(balanceBefore);
+        const amountBig = BigInt(amount);
+        if (balanceBig < amountBig) {
+            throw new Error("Insufficient balance: have " + balanceBefore + ", need " + amount);
+        }
+    } catch(e) {
+        // Fallback: compare string lengths and values for older Node.js
+        if (balanceBefore.length < amount.length || 
+            (balanceBefore.length === amount.length && balanceBefore < amount)) {
+            throw new Error("Insufficient balance: have " + balanceBefore + ", need " + amount);
+        }
+    }
 
     // CW20 transfer message
     const transferMsg = {

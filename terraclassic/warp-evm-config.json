@@ -189,10 +189,10 @@
           "owner": ""
         },
         "juris": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "owner": ""
+          "deployed": true,
+          "address": "0xc2Da334D32724B97D5990229a9752a0d31087bC9",
+          "igp_custom": "0xBc699827EA28494C64CD52586B366ef806429730",
+          "owner": "0x8BD456605473ad4727ACfDCA0040a0dBD4be2DEA"
         },
         "xpto": {
           "deployed": true,
