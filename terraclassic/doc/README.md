@@ -1,370 +1,370 @@
-# 📚 Guia de Documentação — Hyperlane Warp Routes Terra Classic
+# 📚 Documentation Guide — Hyperlane Warp Routes Terra Classic
 
-> **Documento índice** — Guia rápido para navegar pela documentação completa de criação e uso de Warp Routes entre Terra Classic ↔ EVM e Terra Classic ↔ Sealevel (Solana).
+> **Index Document** — Quick guide to navigate the complete documentation for creating and using Warp Routes between Terra Classic ↔ EVM and Terra Classic ↔ Sealevel (Solana).
 
 ---
 
-## 🚀 Início Rápido
+## 🚀 Quick Start
 
-### 1. Instalação e Setup
+### 1. Installation and Setup
 
 ```bash
-# 1. Clone o repositório
+# 1. Clone the repository
 git clone <repository-url>
-cd cw-hyperlane-tc
+cd cw-hyperlane
 
-# 2. Instale as dependências Node.js
+# 2. Install Node.js dependencies
 yarn install
 
-# 3. Configure as chaves privadas (opcional, pode ser feito durante execução)
-export TERRA_PRIVATE_KEY="sua_chave_hex_terra"
-export ETH_PRIVATE_KEY="0x_sua_chave_hex_evm"
+# 3. Configure private keys (optional, can be done during execution)
+export TERRA_PRIVATE_KEY="your_hex_terra_key"
+export ETH_PRIVATE_KEY="0x_your_hex_evm_key"
 ```
 
-**Dependências necessárias:**
+**Required dependencies:**
 - `node` (≥ 16) — `node --version`
-- `yarn` ou `npm` — `yarn --version`
+- `yarn` or `npm` — `yarn --version`
 - `jq` — `sudo apt install jq`
-- `curl` — geralmente já instalado
-- `python3` — geralmente já instalado
+- `curl` — usually already installed
+- `python3` — usually already installed
 
-### 2. Primeiros Passos Recomendados
+### 2. Recommended First Steps
 
-**Se você está começando do zero:**
+**If you're starting from scratch:**
 
-1. **Leia este documento** (README.md) para entender a estrutura
-2. **Escolha seu primeiro caso de uso:**
+1. **Read this document** (README.md) to understand the structure
+2. **Choose your first use case:**
    - Terra Classic ↔ EVM (Sepolia/BSC)? → [`create-warp-evm-guide.md`](./create-warp-evm-guide.md)
    - Terra Classic ↔ Solana? → [`create-warp-sealevel-guide.md`](./create-warp-sealevel-guide.md)
-3. **Siga o guia escolhido passo a passo**
-4. **Teste com transferências** usando os guias de transferência
+3. **Follow the chosen guide step by step**
+4. **Test with transfers** using the transfer guides
 
-**Se você já tem Warp Routes criados:**
+**If you already have Warp Routes created:**
 
-1. Use [`transfer-remote-guide.md`](./transfer-remote-guide.md) para enviar tokens
-2. Use [`transfer-remote-to-terra-guide.md`](./transfer-remote-to-terra-guide.md) para receber tokens
-3. Se encontrar erro "route not found", use [`enroll-terra-router-guide.md`](./enroll-terra-router-guide.md)
+1. Use [`transfer-remote-guide.md`](./transfer-remote-guide.md) to send tokens
+2. Use [`transfer-remote-to-terra-guide.md`](./transfer-remote-to-terra-guide.md) to receive tokens
+3. If you encounter "route not found" error, use [`enroll-terra-router-guide.md`](./enroll-terra-router-guide.md)
 
 ---
 
-## 📖 Documentos Disponíveis
+## 📖 Available Documents
 
-### 🎯 **Documentos Principais (Fluxo Completo)**
+### 🎯 **Main Documents (Complete Flow)**
 
 #### 1. [`create-warp-evm-guide.md`](./create-warp-evm-guide.md)
-**O que faz:** Guia completo para criar Warp Routes em redes **EVM** (Sepolia, BSC Testnet, etc.) conectadas à Terra Classic.
+**What it does:** Complete guide to create Warp Routes on **EVM** networks (Sepolia, BSC Testnet, etc.) connected to Terra Classic.
 
-**Quando usar:**
-- Primeira vez criando um Warp Route EVM
-- Adicionando um novo token em uma rede EVM
-- Adicionando uma nova rede EVM ao projeto
+**When to use:**
+- First time creating an EVM Warp Route
+- Adding a new token to an EVM network
+- Adding a new EVM network to the project
 
-**O que você vai fazer:**
-1. Configurar `warp-evm-config.json` e `config.yaml`
-2. Executar `./create-warp-evm.sh`
-3. Deploy automático de contratos (Mailbox, ISM, IGP, Warp Route)
-4. Configuração automática de hooks e rotas bidirecionais
+**What you'll do:**
+1. Configure `warp-evm-config.json` and `config.yaml`
+2. Run `./create-warp-evm.sh`
+3. Automatic deployment of contracts (Mailbox, ISM, IGP, Warp Route)
+4. Automatic configuration of hooks and bidirectional routes
 
-**Tempo estimado:** 15-30 minutos por token/rede
+**Estimated time:** 15-30 minutes per token/network
 
 ---
 
 #### 2. [`create-warp-sealevel-guide.md`](./create-warp-sealevel-guide.md)
-**O que faz:** Guia completo para criar Warp Routes em **Solana (Sealevel)** conectadas à Terra Classic.
+**What it does:** Complete guide to create Warp Routes on **Solana (Sealevel)** connected to Terra Classic.
 
-**Quando usar:**
-- Primeira vez criando um Warp Route Solana
-- Adicionando um novo token em Solana
-- Migrando para Solana Mainnet
+**When to use:**
+- First time creating a Solana Warp Route
+- Adding a new token on Solana
+- Migrating to Solana Mainnet
 
-**O que você vai fazer:**
-1. Configurar `warp-sealevel-config.json`
-2. Preparar metadados do token (JSON)
-3. Executar `./create-warp-sealevel.sh`
-4. Deploy automático de programas Solana (Warp, ISM, IGP)
-5. Configuração de rotas bidirecionais
+**What you'll do:**
+1. Configure `warp-sealevel-config.json`
+2. Prepare token metadata (JSON)
+3. Run `./create-warp-sealevel.sh`
+4. Automatic deployment of Solana programs (Warp, ISM, IGP)
+5. Configuration of bidirectional routes
 
-**Tempo estimado:** 20-40 minutos por token
+**Estimated time:** 20-40 minutes per token
 
 ---
 
 #### 3. [`transfer-remote-guide.md`](./transfer-remote-guide.md)
-**O que faz:** Guia completo para enviar tokens de **Terra Classic → EVM/Sealevel**.
+**What it does:** Complete guide to send tokens from **Terra Classic → EVM/Sealevel**.
 
-**Quando usar:**
-- Enviar tokens de Terra Classic para Sepolia, BSC Testnet ou Solana
-- Testar transferências após criar Warp Routes
-- Verificar se tudo está configurado corretamente
+**When to use:**
+- Send tokens from Terra Classic to Sepolia, BSC Testnet, or Solana
+- Test transfers after creating Warp Routes
+- Verify everything is configured correctly
 
-**O que você vai fazer:**
-1. Configurar `TERRA_PRIVATE_KEY`
-2. Executar `./transfer-remote-terra.sh`
-3. Escolher token e rede destino (interativo ou via variáveis)
-4. Inserir endereço do destinatário e valor
-5. Confirmar e enviar
+**What you'll do:**
+1. Configure `TERRA_PRIVATE_KEY`
+2. Run `./transfer-remote-terra.sh`
+3. Choose token and destination network (interactive or via variables)
+4. Enter recipient address and amount
+5. Confirm and send
 
-**Tempo estimado:** 2-5 minutos por transferência
+**Estimated time:** 2-5 minutes per transfer
 
 ---
 
 #### 4. [`transfer-remote-to-terra-guide.md`](./transfer-remote-to-terra-guide.md)
-**O que faz:** Guia completo para enviar tokens de **EVM/Sealevel → Terra Classic**.
+**What it does:** Complete guide to send tokens from **EVM/Sealevel → Terra Classic**.
 
-**Quando usar:**
-- Enviar tokens de Sepolia/BSC/Solana de volta para Terra Classic
-- Testar o fluxo reverso após criar Warp Routes
-- Verificar recebimento de tokens em Terra Classic
+**When to use:**
+- Send tokens from Sepolia/BSC/Solana back to Terra Classic
+- Test reverse flow after creating Warp Routes
+- Verify token receipt on Terra Classic
 
-**O que você vai fazer:**
-1. Configurar `ETH_PRIVATE_KEY` (EVM) ou keypair Solana
-2. Executar `./transfer-remote-to-terra.sh`
-3. Escolher token e rede origem
-4. Inserir endereço Terra Classic do destinatário
-5. Confirmar e enviar
+**What you'll do:**
+1. Configure `ETH_PRIVATE_KEY` (EVM) or Solana keypair
+2. Run `./transfer-remote-to-terra.sh`
+3. Choose token and source network
+4. Enter Terra Classic recipient address
+5. Confirm and send
 
-**Tempo estimado:** 2-5 minutos por transferência
+**Estimated time:** 2-5 minutes per transfer
 
 ---
 
 #### 5. [`enroll-terra-router-guide.md`](./enroll-terra-router-guide.md)
-**O que faz:** Guia para registrar rotas EVM no contrato Warp da Terra Classic (resolve erro "route not found").
+**What it does:** Guide to register EVM routes in the Terra Classic Warp contract (resolves "route not found" error).
 
-**Quando usar:**
-- Erro `route not found` ao executar `transfer_remote`
-- Deploy foi feito sem `TERRA_PRIVATE_KEY` configurado
-- Adicionando uma nova rede EVM a um token existente
-- Verificação preventiva antes de transferir
+**When to use:**
+- `route not found` error when executing `transfer_remote`
+- Deployment was done without `TERRA_PRIVATE_KEY` configured
+- Adding a new EVM network to an existing token
+- Preventive check before transferring
 
-**O que você vai fazer:**
-1. Executar `./enroll-terra-router.sh`
-2. Escolher token e rede EVM
-3. Confirmar e executar `set_route` no contrato Terra Classic
+**What you'll do:**
+1. Run `./enroll-terra-router.sh`
+2. Choose token and EVM network
+3. Confirm and execute `set_route` on Terra Classic contract
 
-**Tempo estimado:** 1-2 minutos
+**Estimated time:** 1-2 minutes
 
 ---
 
-### 🔧 **Documentos de Suporte**
+### 🔧 **Support Documents**
 
 #### 6. [`HYPERLANE_DEPLOYMENT-TESTNET.md`](./HYPERLANE_DEPLOYMENT-TESTNET.md)
-**O que faz:** Documentação técnica sobre deploy de contratos Hyperlane em testnets.
+**What it does:** Technical documentation about Hyperlane contract deployment on testnets.
 
-**Quando usar:**
-- Entender a arquitetura dos contratos Hyperlane
-- Deploy manual de contratos (sem scripts)
-- Troubleshooting avançado
+**When to use:**
+- Understand Hyperlane contract architecture
+- Manual contract deployment (without scripts)
+- Advanced troubleshooting
 
 ---
 
 #### 7. [`submit-proposal-guide.md`](./submit-proposal-guide.md)
-**O que faz:** Guia para criar e submeter propostas de governança na Terra Classic.
+**What it does:** Guide to create and submit governance proposals on Terra Classic.
 
-**Quando usar:**
-- Atualizar configurações via governança
-- Modificar parâmetros de contratos deployados
-- Operações administrativas avançadas
+**When to use:**
+- Update configurations via governance
+- Modify parameters of deployed contracts
+- Advanced administrative operations
 
 ---
 
 #### 8. [`UPDATE-IGP-ORACLE-GOVERNANCE.md`](./UPDATE-IGP-ORACLE-GOVERNANCE.md)
-**O que faz:** Guia específico para atualizar o Oracle do IGP via governança.
+**What it does:** Specific guide to update the IGP Oracle via governance.
 
-**Quando usar:**
-- Atualizar taxas de gas do IGP
-- Modificar exchange rates
-- Manutenção do sistema de gas paymaster
+**When to use:**
+- Update IGP gas rates
+- Modify exchange rates
+- Gas paymaster system maintenance
 
 ---
 
-### 🛡️ **Documentos de Segurança**
+### 🛡️ **Security Documents**
 
 #### 9. [`SAFE-SCRIPTS-GUIDE.md`](./SAFE-SCRIPTS-GUIDE.md)
-**O que faz:** Guia para usar scripts com Safe (multisig) para operações seguras.
+**What it does:** Guide to use scripts with Safe (multisig) for secure operations.
 
-**Quando usar:**
-- Operações em produção
-- Requerendo múltiplas assinaturas
-- Operações críticas de infraestrutura
+**When to use:**
+- Production operations
+- Requiring multiple signatures
+- Critical infrastructure operations
 
 ---
 
 #### 10. [`QUICK-START-SAFE.md`](./QUICK-START-SAFE.md)
-**O que faz:** Início rápido para configurar Safe multisig.
+**What it does:** Quick start to configure Safe multisig.
 
-**Quando usar:**
-- Primeira configuração de Safe
-- Setup rápido de multisig para testes
+**When to use:**
+- First Safe configuration
+- Quick multisig setup for testing
 
 ---
 
 #### 11. [`README-SAFE-EXECUTE.md`](./README-SAFE-EXECUTE.md)
-**O que faz:** Documentação sobre execução de transações via Safe.
+**What it does:** Documentation about executing transactions via Safe.
 
-**Quando usar:**
-- Executar transações multisig
-- Entender o fluxo de aprovação Safe
+**When to use:**
+- Execute multisig transactions
+- Understand Safe approval flow
 
 ---
 
-## 🔄 Fluxo de Trabalho Completo
+## 🔄 Complete Workflow
 
-### Cenário 1: Criar Warp Route EVM (Terra Classic ↔ Sepolia)
+### Scenario 1: Create EVM Warp Route (Terra Classic ↔ Sepolia)
 
 ```
-1. Instalação
+1. Installation
    └─ yarn install
 
-2. Configuração
-   ├─ Editar warp-evm-config.json (adicionar token/rede)
-   └─ Editar config.yaml (gas prices, owner, etc.)
+2. Configuration
+   ├─ Edit warp-evm-config.json (add token/network)
+   └─ Edit config.yaml (gas prices, owner, etc.)
 
-3. Deploy
+3. Deployment
    └─ ./create-warp-evm.sh
-      ├─ Deploy Warp Route EVM
-      ├─ Deploy IGP Custom
-      ├─ Configurar AggregationHook
-      └─ Registrar rota no Terra Classic (set_route)
+      ├─ Deploy EVM Warp Route
+      ├─ Deploy Custom IGP
+      ├─ Configure AggregationHook
+      └─ Register route on Terra Classic (set_route)
 
-4. Teste
+4. Testing
    ├─ Terra → EVM: ./transfer-remote-terra.sh
    └─ EVM → Terra: ./transfer-remote-to-terra.sh
 ```
 
-**Documentos necessários:**
-- [`create-warp-evm-guide.md`](./create-warp-evm-guide.md) — Passos 1-3
-- [`transfer-remote-guide.md`](./transfer-remote-guide.md) — Passo 4 (Terra → EVM)
-- [`transfer-remote-to-terra-guide.md`](./transfer-remote-to-terra-guide.md) — Passo 4 (EVM → Terra)
+**Required documents:**
+- [`create-warp-evm-guide.md`](./create-warp-evm-guide.md) — Steps 1-3
+- [`transfer-remote-guide.md`](./transfer-remote-guide.md) — Step 4 (Terra → EVM)
+- [`transfer-remote-to-terra-guide.md`](./transfer-remote-to-terra-guide.md) — Step 4 (EVM → Terra)
 
 ---
 
-### Cenário 2: Criar Warp Route Sealevel (Terra Classic ↔ Solana)
+### Scenario 2: Create Sealevel Warp Route (Terra Classic ↔ Solana)
 
 ```
-1. Instalação
+1. Installation
    └─ yarn install
 
-2. Configuração
-   ├─ Editar warp-sealevel-config.json
-   ├─ Criar metadata JSON do token
-   └─ Configurar keypair Solana
+2. Configuration
+   ├─ Edit warp-sealevel-config.json
+   ├─ Create token metadata JSON
+   └─ Configure Solana keypair
 
-3. Deploy
+3. Deployment
    └─ ./create-warp-sealevel.sh
-      ├─ Deploy Warp Program Solana
-      ├─ Deploy ISM e IGP
-      └─ Registrar rotas bidirecionais
+      ├─ Deploy Solana Warp Program
+      ├─ Deploy ISM and IGP
+      └─ Register bidirectional routes
 
-4. Teste
+4. Testing
    ├─ Terra → Solana: ./transfer-remote-terra.sh
    └─ Solana → Terra: ./transfer-remote-to-terra.sh
 ```
 
-**Documentos necessários:**
-- [`create-warp-sealevel-guide.md`](./create-warp-sealevel-guide.md) — Passos 1-3
-- [`transfer-remote-guide.md`](./transfer-remote-guide.md) — Passo 4 (Terra → Solana)
-- [`transfer-remote-to-terra-guide.md`](./transfer-remote-to-terra-guide.md) — Passo 4 (Solana → Terra)
+**Required documents:**
+- [`create-warp-sealevel-guide.md`](./create-warp-sealevel-guide.md) — Steps 1-3
+- [`transfer-remote-guide.md`](./transfer-remote-guide.md) — Step 4 (Terra → Solana)
+- [`transfer-remote-to-terra-guide.md`](./transfer-remote-to-terra-guide.md) — Step 4 (Solana → Terra)
 
 ---
 
-### Cenário 3: Resolver Erro "route not found"
+### Scenario 3: Resolve "route not found" Error
 
 ```
-1. Identificar problema
-   └─ transfer_remote falha com "route not found"
+1. Identify problem
+   └─ transfer_remote fails with "route not found"
 
-2. Verificar configuração
-   └─ Checar se rota existe no Terra Classic
+2. Verify configuration
+   └─ Check if route exists on Terra Classic
 
-3. Registrar rota
+3. Register route
    └─ ./enroll-terra-router.sh
-      └─ Executa set_route no contrato Terra Classic
+      └─ Executes set_route on Terra Classic contract
 
-4. Testar novamente
+4. Test again
    └─ ./transfer-remote-terra.sh
 ```
 
-**Documentos necessários:**
+**Required documents:**
 - [`enroll-terra-router-guide.md`](./enroll-terra-router-guide.md)
 
 ---
 
-## 📁 Estrutura de Arquivos Importantes
+## 📁 Important File Structure
 
 ```
 terraclassic/
-├── doc/                          ← Você está aqui
-│   ├── README.md                 ← Este documento (índice)
+├── doc/                          ← You are here
+│   ├── README.md                 ← This document (index)
 │   ├── create-warp-evm-guide.md
 │   ├── create-warp-sealevel-guide.md
 │   ├── transfer-remote-guide.md
 │   ├── transfer-remote-to-terra-guide.md
 │   └── enroll-terra-router-guide.md
 │
-├── create-warp-evm.sh            ← Script principal EVM
-├── create-warp-sealevel.sh       ← Script principal Solana
-├── transfer-remote-terra.sh      ← Enviar Terra → Outros
-├── transfer-remote-to-terra.sh   ← Enviar Outros → Terra
-├── enroll-terra-router.sh        ← Registrar rotas
+├── create-warp-evm.sh            ← Main EVM script
+├── create-warp-sealevel.sh       ← Main Solana script
+├── transfer-remote-terra.sh      ← Send Terra → Others
+├── transfer-remote-to-terra.sh   ← Send Others → Terra
+├── enroll-terra-router.sh        ← Register routes
 │
-├── warp-evm-config.json          ← Config EVM + tokens Terra
-├── warp-sealevel-config.json     ← Config Solana
-└── config.yaml                   ← Config Terra Classic (gas, owner, etc.)
+├── warp-evm-config.json          ← EVM config + Terra tokens
+├── warp-sealevel-config.json     ← Solana config
+└── config.yaml                   ← Terra Classic config (gas, owner, etc.)
 ```
 
 ---
 
-## 🎯 Decisão Rápida: Qual Documento Usar?
+## 🎯 Quick Decision: Which Document to Use?
 
-| Situação | Documento |
-|----------|-----------|
-| Primeira vez criando Warp Route EVM | [`create-warp-evm-guide.md`](./create-warp-evm-guide.md) |
-| Primeira vez criando Warp Route Solana | [`create-warp-sealevel-guide.md`](./create-warp-sealevel-guide.md) |
-| Enviar tokens Terra → EVM/Solana | [`transfer-remote-guide.md`](./transfer-remote-guide.md) |
-| Enviar tokens EVM/Solana → Terra | [`transfer-remote-to-terra-guide.md`](./transfer-remote-to-terra-guide.md) |
-| Erro "route not found" | [`enroll-terra-router-guide.md`](./enroll-terra-router-guide.md) |
-| Entender arquitetura Hyperlane | [`HYPERLANE_DEPLOYMENT-TESTNET.md`](./HYPERLANE_DEPLOYMENT-TESTNET.md) |
-| Operações via governança | [`submit-proposal-guide.md`](./submit-proposal-guide.md) |
-| Usar Safe multisig | [`SAFE-SCRIPTS-GUIDE.md`](./SAFE-SCRIPTS-GUIDE.md) |
+| Situation | Document |
+|----------|----------|
+| First time creating EVM Warp Route | [`create-warp-evm-guide.md`](./create-warp-evm-guide.md) |
+| First time creating Solana Warp Route | [`create-warp-sealevel-guide.md`](./create-warp-sealevel-guide.md) |
+| Send tokens Terra → EVM/Solana | [`transfer-remote-guide.md`](./transfer-remote-guide.md) |
+| Send tokens EVM/Solana → Terra | [`transfer-remote-to-terra-guide.md`](./transfer-remote-to-terra-guide.md) |
+| "route not found" error | [`enroll-terra-router-guide.md`](./enroll-terra-router-guide.md) |
+| Understand Hyperlane architecture | [`HYPERLANE_DEPLOYMENT-TESTNET.md`](./HYPERLANE_DEPLOYMENT-TESTNET.md) |
+| Operations via governance | [`submit-proposal-guide.md`](./submit-proposal-guide.md) |
+| Use Safe multisig | [`SAFE-SCRIPTS-GUIDE.md`](./SAFE-SCRIPTS-GUIDE.md) |
 
 ---
 
-## ⚠️ Troubleshooting Rápido
+## ⚠️ Quick Troubleshooting
 
-### Erro: "route not found"
+### Error: "route not found"
 → Use [`enroll-terra-router-guide.md`](./enroll-terra-router-guide.md)
 
-### Erro: "insufficient fees"
-→ Verifique `gasPrice` em `config.yaml` (deve ser `28.325uluna`)
+### Error: "insufficient fees"
+→ Check `gasPrice` in `config.yaml` (should be `28.325uluna`)
 
-### Erro: "insufficient balance"
-→ Verifique se você tem tokens na carteira antes de transferir
+### Error: "insufficient balance"
+→ Verify you have tokens in your wallet before transferring
 
-### Erro: "node_modules not found"
-→ Execute `yarn install` na raiz do projeto
+### Error: "node_modules not found"
+→ Run `yarn install` at the project root
 
-### Script não encontra configuração
-→ Verifique se `warp-evm-config.json` ou `warp-sealevel-config.json` existem e estão corretos
-
----
-
-## 📞 Próximos Passos
-
-1. **Se é sua primeira vez:** Comece com [`create-warp-evm-guide.md`](./create-warp-evm-guide.md) ou [`create-warp-sealevel-guide.md`](./create-warp-sealevel-guide.md)
-
-2. **Se já tem Warp Routes criados:** Use [`transfer-remote-guide.md`](./transfer-remote-guide.md) para testar transferências
-
-3. **Se está com problemas:** Consulte a seção de Troubleshooting de cada guia específico
+### Script can't find configuration
+→ Verify that `warp-evm-config.json` or `warp-sealevel-config.json` exist and are correct
 
 ---
 
-## 📝 Notas Importantes
+## 📞 Next Steps
 
-- **Todos os scripts são interativos** — você pode executar sem parâmetros e escolher opções
-- **Modo não-interativo disponível** — use variáveis de ambiente para automação
-- **Logs salvos automaticamente** — em `terraclassic/log/`
-- **Configurações centralizadas** — tudo em arquivos JSON/YAML fáceis de editar
+1. **If it's your first time:** Start with [`create-warp-evm-guide.md`](./create-warp-evm-guide.md) or [`create-warp-sealevel-guide.md`](./create-warp-sealevel-guide.md)
+
+2. **If you already have Warp Routes created:** Use [`transfer-remote-guide.md`](./transfer-remote-guide.md) to test transfers
+
+3. **If you're having issues:** Check the Troubleshooting section of each specific guide
 
 ---
 
-**Última atualização:** 2026-03-13  
-**Versão:** 1.0
+## 📝 Important Notes
+
+- **All scripts are interactive** — you can run without parameters and choose options
+- **Non-interactive mode available** — use environment variables for automation
+- **Logs saved automatically** — in `terraclassic/log/`
+- **Centralized configurations** — everything in easy-to-edit JSON/YAML files
+
+---
+
+**Last updated:** 2026-03-13  
+**Version:** 1.0
