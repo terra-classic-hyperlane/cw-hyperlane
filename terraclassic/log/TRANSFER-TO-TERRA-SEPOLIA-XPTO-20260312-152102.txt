@@ -1,0 +1,11 @@
+TRANSFER REMOTE — SEPOLIA → Terra Classic
+Data           : Thu Mar 12 15:21:02 -03 2026
+Token          : XPTO / XPTO
+Origem         : SEPOLIA  (evm, domain 11155111)
+Destino        : Terra Classic  (domain 1325)
+Recipient TC   : terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k
+Recipient b32  : 0000000000000000000000003fc7ee49a59c1041d4a58bc21ef657eb443c8bbb
+Amount         : 1000000
+Warp origem    : 0xbF43aA4878f5Ad0fcAC12Cd3A835DD3506981048
+Gas fee (wei)  : 109030327234501
+TX Hash        : 0x03673fcb521c808bf9d58a6c4d8520391c4b9f3093ded990316d18b8c9c7cf2e

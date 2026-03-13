@@ -1,0 +1,33 @@
+═══════════════════════════════════════════════════════════
+  WARP: XPV em BSC TESTNET
+  Gerado: 2026-03-11 12:14:50
+═══════════════════════════════════════════════════════════
+
+TOKEN:
+  Nome:     XPV Token
+  Símbolo:  XPV
+  Decimais: 6
+  Tipo:     cw20 / collateral
+
+REDE EVM: BSC Testnet
+  Chain ID:  97
+  Domain:    97
+
+CONTRATOS EVM:
+  Mailbox:   0xF9F6F5646F478d5ab4e20B0F910C92F1CCC9Cc6D
+  Warp:      0x11D6aa52d60611a513ab783842Dc397C86E7fff0
+  IGP:       0x7d17d237c74Fa1bA3B5B56d94E414a4eAa41cE1e
+  GasOracle: 0x124EBCBC018A5D4Efe639f02ED86f95cdC3f6498
+  ISM:       messageIdMultisigIsm | validators: 0x8bd456605473ad4727acfdca0040a0dbd4be2dea
+
+TERRA CLASSIC:
+  Domain:    1325
+  Tipo:      cw20 / collateral
+  Owner:     terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze
+  CW20/Denom: terra1f2jw36hc7fzeu7dz2fhk250ezec7e80c2s6uxt3ry5ujjjslf9nqwvpu88
+  Warp:      terra1dnflusc7slapvals97em3fj4vrfyx90npr3znq6y45qjy7hhd6jqchqsgx
+
+IGP CONFIG (EVM → Terra):
+  Exchange Rate: 24389000
+  Gas Price:     10000000000 wei
+═══════════════════════════════════════════════════════════

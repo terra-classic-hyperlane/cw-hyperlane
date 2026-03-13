@@ -1,0 +1,11 @@
+{
+  "type": "native",
+  "mode": "collateral",
+  "id": "uluna",
+  "owner": "<signer>",
+  "config": {
+    "collateral": {
+      "denom": "uluna"
+    }
+  }
+}

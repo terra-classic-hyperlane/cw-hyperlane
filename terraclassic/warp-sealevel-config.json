@@ -1,0 +1,118 @@
+{
+  "_comment": "Configuração centralizada para Warp Routes Sealevel (Solana) ↔ Terra Classic",
+  "_version": "1.0.0",
+  "_updated": "2026-03-11",
+  "networks": {
+    "solanatestnet": {
+      "_comment": "Solana Testnet — habilitado",
+      "enabled": true,
+      "display_name": "Solana Testnet",
+      "environment": "testnet",
+      "domain": 1399811150,
+      "rpc": "https://api.testnet.solana.com",
+      "explorer": "https://explorer.solana.com/?cluster=testnet",
+      "keypair": "/home/lunc/keys/solana-keypair-BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j.json",
+      "monorepo_dir": "/home/lunc/hyperlane-monorepo/rust/sealevel",
+      "ism": {
+        "_comment": "MultisigISM program — valida mensagens da Terra Classic recebidas no Solana",
+        "program_id": "5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh",
+        "threshold": 1
+      },
+      "igp": {
+        "_comment": "IGP program + overhead account — paga gas na Terra Classic. destination_gas_terra = unidades de gas no destino",
+        "program_id": "5p7Hii6CJL4xGBYYTGEQmH9LnUSZteFJUu9AVLDExZX2",
+        "account": "E9i32KsKGQZMYTguZ81VHUueNvpTGh7nb9J5bRif4xT1",
+        "destination_gas_terra": 3000000
+      },
+      "warp_tokens": {
+        "wlunc": {
+          "_comment": "LUNC nativo → token sintético no Solana",
+          "deployed": true,
+          "type": "synthetic",
+          "program_id": "5BuTS1oZhUKJgpgwXJyz5VRdTq99SMvHm7hrPMctJk6x",
+          "program_hex": "0x3e39de1edbc0495cee651b3e046f63d01ff9436932bb520e8c0cb4ba5c5c7f1d",
+          "mint_address": "",
+          "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata.json",
+          "decimals": 6,
+          "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
+        },
+        "juris": {
+          "_comment": "JURIS CW20 → token sintético no Solana (já deployado)",
+          "deployed": true,
+          "type": "synthetic",
+          "program_id": "G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y",
+          "program_hex": "0xdf8c90c47b713b222855f782b0f13e2d0a65ba45ba08a6f46c7ec93ee67327a6",
+          "mint_address": "ExzEij8z7xc71kvjuMHmejRkmM4ACgKjDWuEaXdDubRa",
+          "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-juris.json",
+          "decimals": 6,
+          "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
+        },
+        "xpto": {
+          "_comment": "XPTO CW20 → token sintético no Solana",
+          "deployed": true,
+          "type": "synthetic",
+          "program_id": "jNkiNLXQetj9L2tDX6xTgx9QP1tgtNgYXamouNbbwx9",
+          "program_hex": "0x0adafdae59c217a1b7409f65ca81505f9991c257be80af8902ebed96d8801ba6",
+          "mint_address": "Db8VbMerYxksYwSSdetpy6Jhp2BrE4hk9Sh9dYJT5dQ2",
+          "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-xpto.json",
+          "decimals": 6,
+          "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
+        },
+        "xptv": {
+          "_comment": "XPTV CW20 → token sintético no Solana",
+          "deployed": false,
+          "type": "synthetic",
+          "program_id": "",
+          "program_hex": "",
+          "mint_address": "",
+          "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-xptv.json",
+          "decimals": 6,
+          "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
+        },
+        "xpv": {
+          "_comment": "XPV CW20 → token sintético no Solana",
+          "deployed": false,
+          "type": "synthetic",
+          "program_id": "",
+          "program_hex": "",
+          "mint_address": "",
+          "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-xpv.json",
+          "decimals": 6,
+          "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
+        },
+        "ustc": {
+          "_comment": "USTC nativo → token sintético no Solana",
+          "deployed": false,
+          "type": "synthetic",
+          "program_id": "",
+          "program_hex": "",
+          "mint_address": "",
+          "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-ustc.json",
+          "decimals": 6,
+          "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
+        }
+      }
+    },
+    "solana": {
+      "_comment": "Solana Mainnet — desabilitado até deploy em produção",
+      "enabled": false,
+      "display_name": "Solana Mainnet",
+      "environment": "mainnet",
+      "domain": 1399811149,
+      "rpc": "https://api.mainnet-beta.solana.com",
+      "explorer": "https://explorer.solana.com",
+      "keypair": "",
+      "monorepo_dir": "",
+      "ism": {
+        "program_id": "",
+        "threshold": 1
+      },
+      "igp": {
+        "program_id": "",
+        "account": "",
+        "destination_gas_terra": 3000000
+      },
+      "warp_tokens": {}
+    }
+  }
+}

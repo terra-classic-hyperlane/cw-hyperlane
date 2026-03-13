@@ -1,0 +1,41 @@
+═══════════════════════════════════════════════════════════
+  WARP SOLANA: JURIS em Solana Testnet
+  Gerado: 2026-03-11 15:46:36
+═══════════════════════════════════════════════════════════
+
+[WARP SOLANA]
+Network:            Solana Testnet (domain: 1399811150)
+Token Key:          juris
+Token Name:         Juris Token (JURIS)
+Token Type:         synthetic
+Program ID (Base58):G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y
+Program ID (Hex32): 0xdf8c90c47b713b222855f782b0f13e2d0a65ba45ba08a6f46c7ec93ee67327a6
+Mint Address:       ExzEij8z7xc71kvjuMHmejRkmM4ACgKjDWuEaXdDubRa
+ISM Program:        5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh
+IGP Program:        5p7Hii6CJL4xGBYYTGEQmH9LnUSZteFJUu9AVLDExZX2
+IGP Account:        E9i32KsKGQZMYTguZ81VHUueNvpTGh7nb9J5bRif4xT1
+Dest Gas (Terra):   3000000
+Owner:              EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd
+RPC:                https://api.testnet.solana.com
+Explorer:           https://explorer.solana.com/?cluster=testnet
+
+[WARP TERRA CLASSIC]
+Address (Bech32):   terra1stu3cl7mhtsc2mf9cputawfd6v6e4a2nkmhhphh47lsrr3j6ktdqlcfe2l
+Address (Hex):      0x82f91c7fdbbae1856d25c078beb92dd3359af553b6ef70def5f7e031c65ab2da
+Domain:             1325
+Chain ID:           rebel-2
+
+[LINKS CONFIGURADOS]
+Solana → Terra Classic:  enroll-remote-router (domain 1325)
+Terra Classic → Solana:  set_route (domain 1399811150)
+
+[COMANDOS MANUAIS DE VERIFICAÇÃO]
+# Verificar Warp Solana:
+cd /home/lunc/hyperlane-monorepo/rust/sealevel/client
+cargo run --release -- -k /home/lunc/keys/solana-keypair-EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd.json -u https://api.testnet.solana.com token query --program-id G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y synthetic
+
+# Verificar rota Terra Classic:
+terrad query wasm contract-state smart terra1stu3cl7mhtsc2mf9cputawfd6v6e4a2nkmhhphh47lsrr3j6ktdqlcfe2l '{"router":{"get_route":{"domain":1399811150}}}' --node https://rpc.terra-classic.hexxagon.dev
+
+# Verificar ISM:
+cargo run --release -- -k /home/lunc/keys/solana-keypair-EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd.json -u https://api.testnet.solana.com multisig-ism-message-id query --program-id 5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh --domains 1325

@@ -1,0 +1,11 @@
+{
+  "type": "cw20",
+  "mode": "collateral",
+  "id": "xpto",
+  "owner": "terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze",
+  "config": {
+    "collateral": {
+      "address": "terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch"
+    }
+  }
+}

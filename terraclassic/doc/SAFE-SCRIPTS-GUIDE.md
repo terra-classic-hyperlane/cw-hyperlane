@@ -650,7 +650,7 @@ CALLDATA=$(cast calldata "unpause()")
 ```bash
 # Replace with your actual values
 python3 script/safe-propose-direct.py \
-  0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef \
+  0x819b680e3578eac4f79b8fde643046e... \
   0x2b31a08d397b7e508cbE0F5830E8a9182C88b6cA \
   $CALLDATA
 ```
@@ -719,7 +719,7 @@ python3 script/safe-confirm.py <PRIVATE_KEY> <SAFE_TX_HASH>
 ```bash
 # Owner 1 confirms (can be the same one who created the proposal)
 python3 script/safe-confirm.py \
-  0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef \
+  0x819b680e3578eac4f79b8fde643046e... \
   0xabc123def4567890123456789012345678901234567890123456789012345678
 
 # Owner 2 confirms (if threshold is 2 or more)
@@ -950,7 +950,7 @@ Safe TX Hash: 0xe27c3468f397c7ee4019f7ee3a839ba1c35f406542481ad8e8d971405374128a
 # Aprovar o hash da transação no contrato Safe
 cast send 0xa047DCd69249fd082B4797c29e5D80781Cb7f5ee \
   "approveHash(bytes32)" 0xe27c3468f397c7ee4019f7ee3a839ba1c35f406542481ad8e8d971405374128a \
-  --private-key 0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef \
+  --private-key 0x819b680e3578eac4f79b8fde643046e88f3f9bb10a3ce1424e3642798ef39b42 \
   --rpc-url https://data-seed-prebsc-1-s1.binance.org:8545 \
   --legacy \
   --gas-price 100000000
@@ -982,7 +982,7 @@ cast send 0xa047DCd69249fd082B4797c29e5D80781Cb7f5ee \
   0x0000000000000000000000000000000000000000 \
   0x0000000000000000000000000000000000000000 \
   0x0000000000000000000000008BD456605473ad4727ACfDCA0040a0dBD4be2DEA000000000000000000000000000000000000000000000000000000000000000001 \
-  --private-key 0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef \
+  --private-key 0x819b680e3578eac4f79b8fde643046e88f3f9bb10a3ce1424e3642798ef39b42 \
   --rpc-url https://data-seed-prebsc-1-s1.binance.org:8545 \
   --legacy \
   --gas-price 100000000

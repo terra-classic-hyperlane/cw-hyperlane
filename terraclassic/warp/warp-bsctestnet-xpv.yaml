@@ -1,0 +1,18 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Warp Route: BSC Testnet ↔ Terra Classic
+# Token:      XPV Token (XPV)
+# Gerado:     2026-03-11 12:14:07
+# ─────────────────────────────────────────────────────────────────────────────
+bsctestnet:
+  isNft: false
+  type: synthetic
+  name: "XPV Token"
+  symbol: "XPV"
+  decimals: 6
+  owner: "0x8BD456605473ad4727ACfDCA0040a0dBD4be2DEA"
+  mailbox: "0xF9F6F5646F478d5ab4e20B0F910C92F1CCC9Cc6D"
+  interchainSecurityModule:
+    type: messageIdMultisigIsm
+    validators:
+    - "0x8bd456605473ad4727acfdca0040a0dbd4be2dea"
+    threshold: 1

@@ -1,0 +1,127 @@
+{
+  "artifacts": {
+    "hpl_mailbox": 2008,
+    "hpl_validator_announce": 2009,
+    "hpl_ism_aggregate": 2010,
+    "hpl_ism_multisig": 2011,
+    "hpl_ism_pausable": 2012,
+    "hpl_ism_routing": 2013,
+    "hpl_igp": 2014,
+    "hpl_hook_aggregate": 2015,
+    "hpl_hook_fee": 2016,
+    "hpl_hook_merkle": 2017,
+    "hpl_hook_pausable": 2018,
+    "hpl_hook_routing": 2019,
+    "hpl_hook_routing_custom": 2020,
+    "hpl_hook_routing_fallback": 2021,
+    "hpl_test_mock_hook": 2022,
+    "hpl_test_mock_ism": 2023,
+    "hpl_test_mock_msg_receiver": 2024,
+    "hpl_igp_oracle": 2025,
+    "hpl_warp_cw20": 2026,
+    "hpl_warp_native": 2027
+  },
+  "deployments": {
+    "core": {
+      "mailbox": {
+        "type": "hpl_mailbox",
+        "address": "terra1s4jwfe0tcaztpfsct5wzj02esxyjy7e7lhkcwn5dp04yvly82rwsvzyqmm",
+        "hexed": "0x8564e4e5ebc744b0a6185d1c293d598189227b3efded874e8d0bea467c8750dd"
+      },
+      "validator_announce": {
+        "type": "hpl_validator_announce",
+        "address": "terra1uczvpl9cmh84avk2yz788ak9l57hamdw9nsz0rw5r76cemzed8lqntfxf5",
+        "hexed": "0xe604c0fcb8ddcf5eb2ca20bc73f6c5fd3d7eedae2ce0278dd41fb58cec5969fe"
+      }
+    },
+    "isms": {
+      "type": "hpl_ism_routing",
+      "address": "terra1na6ljyf4m5x2u7llfvvxxe2nyq0t8628qyk0vnwu4ttpq86tt0cse47t68",
+      "hexed": "0x9f75f91135dd0cae7bff4b18636553201eb3e947012cf64ddcaad6101f4b5bf1",
+      "isms": {
+        "1399811150": {
+          "type": "hpl_ism_multisig",
+          "address": "terra18gh7nl0tk047ykrvy0a8z2lhv0rvl65wu95texyawrj879qenysq02p98f",
+          "hexed": "0x3a2fe9fdebb3ebe2586c23fa712bf763c6cfea8ee168bc989d70e47f14199920"
+        },
+        "domain": 97,
+        "route": {
+          "type": "hpl_ism_multisig",
+          "address": "terra1ksq6cekt0as2f9vv5txld90s854y4pkr2k0jn5p83vqpa5zzzfysuavxr0",
+          "hexed": "0xb401ac66cb7f60a4958ca2cdf695f03d2a4a86c3559f29d0278b001ed0421249"
+        }
+      }
+    },
+    "hooks": {
+      "default": {
+        "type": "hpl_hook_aggregate",
+        "address": "terra18shx4zhfehscggs9upspl489qd7yg29vdasvrerytppt3am92mnsj5365s",
+        "hexed": "0x3c2e6a8ae9cde1842205e0601fd4e5037c4428ac6f60c1e4645842b8f76556e7",
+        "hooks": [
+          {
+            "type": "hpl_hook_merkle",
+            "address": "terra18c23w20qfaret3mpad3hrenfcgg3dkfqtj5k8uc80a8mx6tl79nqn4wgkg",
+            "hexed": "0x3e151729e04f4795c761eb6371e669c21116d9205ca963f3077f4fb3697ff166"
+          },
+          {
+            "type": "hpl_igp",
+            "address": "terra1mcaqgr7kqs9xr3q6w0e9f2ekrj6sehwcep9shtss6u8pdz2rsw5qzrew7r",
+            "hexed": "0xde3a040fd6040a61c41a73f254ab361cb50cddd8c84b0bae10d70e16894383a8",
+            "oracle": {
+              "type": "hpl_igp_oracle",
+              "address": "terra1yew4y2ekzhkwuuz07yt7qufqxxejxhmnr7apehkqk7e8jdw8ffqqs8zhds",
+              "hexed": "0x265d522b3615ecee704ff117e0712031b3235f731fba1cdec0b7b27935c74a40"
+            }
+          }
+        ]
+      },
+      "required": {
+        "type": "hpl_hook_aggregate",
+        "address": "terra16veqgkz2yzvgmhyw8rn5k8fue4wysey077zmexevv7hm6ud4my0q8g3krq",
+        "hexed": "0xd33204584a20988ddc8e38e74b1d3ccd5c48648ff785bc9b2c67afbd71b5d91e",
+        "hooks": [
+          {
+            "type": "hpl_hook_pausable",
+            "address": "terra12qw82wwutq6hpswfgqfkcjdr0z4fqg4wus9np0uhxdngfwy6lf7s2xsq7d",
+            "hexed": "0x501c7539dc583570c1c940136c49a378aa9022aee40b30bf97336684b89afa7d"
+          },
+          {
+            "type": "hpl_hook_fee",
+            "address": "terra1g8yzt275smsneyp8qrejc2v99dutt6yhfa8x4yylprh4x9vep7gsxuq2q8",
+            "hexed": "0x41c825abd486e13c902700f32c29852b78b5e8974f4e6a909f08ef5315990f91"
+          }
+        ]
+      }
+    },
+    "warp": {
+      "native": [
+        {
+          "id": "wwwwlunc",
+          "type": "hpl_warp_native",
+          "address": "terra1zlm0h2xu6rhnjchn29hxnpvr74uxxqetar9y75zcehyx2mqezg9slj09ml",
+          "hexed": "0x17f6fba8dcd0ef3962f3516e698583f57863032be8ca4f5058cdc8656c19120b"
+        },
+        {
+          "id": "wwwustc",
+          "type": "hpl_warp_native",
+          "address": "terra1rnpvpwvqcf94keldtm2udt4tqhwthpw5cu94m443rz5ue7rvvkjq9nklml",
+          "hexed": "0x1cc2c0b980c24b5b67ed5ed5c6aeab05dcbb85d4c70b5dd6b118a9ccf86c65a4"
+        }
+      ],
+      "cw20": [
+        {
+          "id": "juris",
+          "type": "hpl_warp_cw20",
+          "address": "terra1stu3cl7mhtsc2mf9cputawfd6v6e4a2nkmhhphh47lsrr3j6ktdqlcfe2l",
+          "hexed": "0x82f91c7fdbbae1856d25c078beb92dd3359af553b6ef70def5f7e031c65ab2da"
+        },
+        {
+          "id": "xpto",
+          "type": "hpl_warp_cw20",
+          "address": "terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm",
+          "hexed": "0xd03fafd53ce350f49ba3c6ebcb1bee7cbbf453f261ec8d5ce9f36c55ab3e26a1"
+        }
+      ]
+    }
+  }
+}

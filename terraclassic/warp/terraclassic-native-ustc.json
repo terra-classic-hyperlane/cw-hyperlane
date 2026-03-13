@@ -1,0 +1,12 @@
+{
+  "type": "native",
+  "mode": "collateral",
+
+  "id": "wwwustc",
+  "owner": "terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze",
+  "config": {
+    "collateral": {
+      "denom": "uusd"
+    }
+  }
+}

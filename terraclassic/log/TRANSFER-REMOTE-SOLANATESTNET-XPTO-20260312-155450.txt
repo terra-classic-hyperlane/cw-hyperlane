@@ -1,0 +1,12 @@
+TRANSFER REMOTE — Terra Classic → SOLANATESTNET
+Data          : Thu Mar 12 15:54:50 -03 2026
+Token         : XPTO  (cw20)
+Destino       : SOLANATESTNET  (domain 1399811150)
+Recipient     : EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd
+Recipient b32 : c6525508893d49539a9ae57421ec470517a5c815780b21b93a78e79569c0d01c
+Amount        : 2000000
+Fee IGP       : 300000 uluna
+Warp TC       : terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm
+Collateral    : terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch
+TX Hash       : BAAD4B484BB91570D5184708DCFB05F98123D3E08F1436D9EE525C0740CD0084
+Explorer      : https://finder.hexxagon.io/rebel-2/tx/BAAD4B484BB91570D5184708DCFB05F98123D3E08F1436D9EE525C0740CD0084

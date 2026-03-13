@@ -1,0 +1,635 @@
+{
+  "_comment": "Centralized configuration for EVM ↔ Terra Classic Warp Routes",
+  "_version": "3.0.0",
+  "_updated": "2026-03-10",
+  "terra_classic": {
+    "_comment": "Terra Classic configuration. Each token has its type (native/cw20), mode (collateral/locked) and deployed warp address (for enrollRemoteRouter on the EVM side).",
+    "chain_id": "rebel-2",
+    "domain": 1325,
+    "rpc": "https://rpc.terra-classic.hexxagon.dev",
+    "lcd": "https://lcd.terra-classic.hexxagon.dev",
+    "tokens": {
+      "wlunc": {
+        "_comment": "Native LUNC — hpl_warp_native already deployed",
+        "id": "wwwwlunc",
+        "name": "Wrapped Terra Classic LUNC",
+        "symbol": "LUNC",
+        "decimals": 6,
+        "description": "Wrapped Terra Classic LUNC via Hyperlane Warp Route",
+        "image": "https://raw.githubusercontent.com/classic-terra/assets/refs/heads/master/icon/svg/LUNC.svg",
+        "terra_warp": {
+          "type": "native",
+          "mode": "collateral",
+          "owner": "terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze",
+          "denom": "uluna",
+          "collateral_address": "",
+          "warp_address": "terra1zlm0h2xu6rhnjchn29hxnpvr74uxxqetar9y75zcehyx2mqezg9slj09ml",
+          "warp_hexed": "0x17f6fba8dcd0ef3962f3516e698583f57863032be8ca4f5058cdc8656c19120b",
+          "deployed": true
+        }
+      },
+      "ustc": {
+        "_comment": "Native USTC — hpl_warp_native already deployed",
+        "id": "wwwustc",
+        "name": "Wrapped TerraClassic USD",
+        "symbol": "USTC",
+        "decimals": 6,
+        "description": "Wrapped Terra Classic USTC via Hyperlane Warp Route",
+        "image": "https://raw.githubusercontent.com/classic-terra/assets/refs/heads/master/icon/svg/USTC.svg",
+        "terra_warp": {
+          "type": "native",
+          "mode": "collateral",
+          "owner": "terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze",
+          "denom": "uusd",
+          "collateral_address": "",
+          "warp_address": "terra1rnpvpwvqcf94keldtm2udt4tqhwthpw5cu94m443rz5ue7rvvkjq9nklml",
+          "warp_hexed": "0x1cc2c0b980c24b5b67ed5ed5c6aeab05dcbb85d4c70b5dd6b118a9ccf86c65a4",
+          "deployed": true
+        }
+      },
+      "juris": {
+        "_comment": "JURIS CW20 collateral — hpl_warp_cw20 already deployed",
+        "id": "juris",
+        "name": "Juris Token",
+        "symbol": "JURIS",
+        "decimals": 6,
+        "description": "Juris governance token via Hyperlane Warp Route",
+        "image": "",
+        "terra_warp": {
+          "type": "cw20",
+          "mode": "collateral",
+          "owner": "terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze",
+          "denom": "",
+          "collateral_address": "terra1w7d0jqehn0ja3hkzsm0psk6z2hjz06lsq0nxnwkzkkq4fqwgq6tqa5te8e",
+          "warp_address": "terra1stu3cl7mhtsc2mf9cputawfd6v6e4a2nkmhhphh47lsrr3j6ktdqlcfe2l",
+          "warp_hexed": "0x82f91c7fdbbae1856d25c078beb92dd3359af553b6ef70def5f7e031c65ab2da",
+          "deployed": true
+        }
+      },
+      "xpto": {
+        "_comment": "XPTO CW20 collateral — new token, warp NOT yet deployed on Terra Classic",
+        "id": "xpto",
+        "name": "XPTO Token",
+        "symbol": "XPTO",
+        "decimals": 6,
+        "description": "XPTO Token via Hyperlane Warp Route",
+        "image": "",
+        "terra_warp": {
+          "type": "cw20",
+          "mode": "collateral",
+          "owner": "terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze",
+          "denom": "",
+          "collateral_address": "terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch",
+          "warp_address": "terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm",
+          "warp_hexed": "0xd03fafd53ce350f49ba3c6ebcb1bee7cbbf453f261ec8d5ce9f36c55ab3e26a1",
+          "deployed": true
+        }
+      },
+      "xptv": {
+        "_comment": "XPTV CW20 collateral — new token, warp NOT yet deployed on Terra Classic",
+        "id": "xptv",
+        "name": "XPTV Token",
+        "symbol": "XPTV",
+        "decimals": 6,
+        "description": "XPTV Token via Hyperlane Warp Route",
+        "image": "",
+        "terra_warp": {
+          "type": "cw20",
+          "mode": "collateral",
+          "owner": "terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze",
+          "denom": "",
+          "collateral_address": "terra19ujvy60tjeyehjrwlrdpqlp0gxmtt4qv452nwjqc6w6m38pm8xmq22lux3",
+          "warp_address": "terra1n8y4sj9lrqq66pf7je0nm7s6nhln5z4s3accw9g2aassdh8dzqts9y0928",
+          "warp_hexed": "0x99c95848bf1801ad053e965f3dfa1a9dff3a0ab08f7187150aef6106dced1017",
+          "deployed": true
+        }
+      },
+      "xpv": {
+        "_comment": "XPV CW20 collateral — new token, warp NOT yet deployed on Terra Classic",
+        "id": "xpv",
+        "name": "XPV Token",
+        "symbol": "XPV",
+        "decimals": 6,
+        "description": "XPV Token via Hyperlane Warp Route",
+        "image": "",
+        "terra_warp": {
+          "type": "cw20",
+          "mode": "collateral",
+          "owner": "terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze",
+          "denom": "",
+          "collateral_address": "terra1f2jw36hc7fzeu7dz2fhk250ezec7e80c2s6uxt3ry5ujjjslf9nqwvpu88",
+          "warp_address": "terra1dnflusc7slapvals97em3fj4vrfyx90npr3znq6y45qjy7hhd6jqchqsgx",
+          "warp_hexed": "0x6cd3fe431e87fa1677f02fb3b8a65560d24315f308e2298344ad01227af76ea4",
+          "deployed": true
+        }
+      }
+    }
+  },
+  "networks": {
+    "sepolia": {
+      "_comment": "Ethereum Sepolia Testnet",
+      "enabled": true,
+      "display_name": "Ethereum Sepolia Testnet",
+      "chain_id": 11155111,
+      "domain": 11155111,
+      "is_testnet": true,
+      "native_token": {
+        "symbol": "ETH",
+        "name": "Ether",
+        "decimals": 18
+      },
+      "rpc_urls": [
+        "https://ethereum-sepolia-rpc.publicnode.com",
+        "https://rpc.sepolia.org",
+        "https://1rpc.io/sepolia"
+      ],
+      "explorer": "https://sepolia.etherscan.io",
+      "mailbox": {
+        "_comment": "Hyperlane central messaging hub — required for cross-chain send/receive",
+        "address": "0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766"
+      },
+      "ism": {
+        "_comment": "ISM: validates authenticity of messages received from Terra Classic. Factory creates the ISM contract on-chain",
+        "type": "messageIdMultisigIsm",
+        "factory": "0xFEb9585b2f948c1eD74034205a7439261a9d27DD",
+        "deployed_address": "",
+        "validators": [
+          "0x8804770d6a346210c0fd011258fdf3ab0a5bb0d0"
+        ],
+        "threshold": 1
+      },
+      "hook": {
+        "_comment": "Official Sepolia MerkleTree Hook. IMPORTANT: Warp must use AggregationHook=[merkle_tree+igp_custom] so messages enter the merkle tree and are signed by the validator",
+        "merkle_tree": "0x4917a9746A7B6E0A57159cCb7F5a6744247f2d0d",
+        "agg_hook_factory": "0x160C28C92cA453570aD7C031972b58d5Dd128F72"
+      },
+      "igp": {
+        "_comment": "IGP: Gas Paymaster — allows paying Terra Classic gas using ETH. gas_oracle is the Hyperlane contract that provides prices",
+        "official_address": "0x6f2756380FD49228ae25Aa7F2817993cB74Ecc1",
+        "gas_oracle": "0x7113Df4d1D8B230e6339011d10277a6E5AC4eC9c",
+        "overhead_default": 200000,
+        "terra_classic_config": {
+          "_comment": "exchange_rate: (ETH_USD / LUNC_USD) * 1e-2. gas_price_wei: average network gas price in wei",
+          "exchange_rate": 142244393,
+          "gas_price_wei": 38325000000
+        }
+      },
+      "warp_tokens": {
+        "_comment": "Warp Route state per token on this network. Fill in after deploy",
+        "wlunc": {
+          "deployed": true,
+          "address": "0x224a4419D7FA69D3bEbAbce574c7c84B48D829b4",
+          "igp_custom": "0xe0f137448c96b5f17759bce44c020db6bdc8e261",
+          "owner": "0x133fD7F7094DBd17b576907d052a5aCBd48dB526"
+        },
+        "ustc": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "juris": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "xpto": {
+          "deployed": true,
+          "address": "0xbF43aA4878f5Ad0fcAC12Cd3A835DD3506981048",
+          "igp_custom": "0xf285D5769db5AE6E79Bb3179d03082f6bc47055f",
+          "hook_aggregation": "0x1a13d7A50b76d4527a611e507B3f73058eCa5eAC",
+          "_hook_note": "AggregationHook=[MerkleTreeHook+igp_custom]. Set via setHook() on Warp. Required for messages to enter the validator's merkle tree.",
+          "owner": "0x133fD7F7094DBd17b576907d052a5aCBd48dB526"
+        },
+        "xptv": {
+          "deployed": true,
+          "address": "0x7d92c2E01933F1C651845152DBd4222d475Bd9f0",
+          "igp_custom": "0xf285D5769db5AE6E79Bb3179d03082f6bc47055f",
+          "hook_aggregation": "0x1a13d7A50b76d4527a611e507B3f73058eCa5eAC",
+          "_hook_note": "AggregationHook=[MerkleTreeHook+igp_custom]. Same AggHook as XPTO.",
+          "owner": "0x133fD7F7094DBd17b576907d052a5aCBd48dB526"
+        }
+      }
+    },
+    "bsctestnet": {
+      "_comment": "BNB Smart Chain Testnet",
+      "enabled": true,
+      "display_name": "BSC Testnet",
+      "chain_id": 97,
+      "domain": 97,
+      "is_testnet": true,
+      "native_token": {
+        "symbol": "BNB",
+        "name": "BNB",
+        "decimals": 18
+      },
+      "rpc_urls": [
+        "https://bsc-testnet.publicnode.com",
+        "https://bsc-testnet.drpc.org",
+        "https://data-seed-prebsc-1-s1.binance.org:8545"
+      ],
+      "explorer": "https://testnet.bscscan.com",
+      "mailbox": {
+        "_comment": "Hyperlane central hub on BSC Testnet",
+        "address": "0xF9F6F5646F478d5ab4e20B0F910C92F1CCC9Cc6D"
+      },
+      "ism": {
+        "_comment": "ISM BSC Testnet — validates messages from Terra Classic",
+        "type": "messageIdMultisigIsm",
+        "factory": "0x0D96aF0c01c4bbbadaaF989Eb489c8783F35B763",
+        "deployed_address": "0x2b31a08d397b7e508cbE0F5830E8a9182C88b6cA",
+        "validators": [
+          "0x8bd456605473ad4727acfdca0040a0dbd4be2dea"
+        ],
+        "threshold": 1
+      },
+      "hook": {
+        "_comment": "Merkle Tree Hook BSC Testnet. Use AggregationHook=[merkle_tree+igp_custom]",
+        "merkle_tree": "0xc6cbF39A747f5E28d1bDc8D9dfDAb2960Abd5A8f",
+        "agg_hook_factory": "0xa1145B39F1c7Ef9aA593BC1DB1634b00CC020942"
+      },
+      "igp": {
+        "_comment": "IGP BSC Testnet — gas oracle provides BNB/gas prices",
+        "official_address": "0x0dD20e410bdB95404f71c5a4e7Fa67B892A5f949",
+        "gas_oracle": "0x124EBCBC018A5D4Efe639f02ED86f95cdC3f6498",
+        "overhead_default": 200000,
+        "terra_classic_config": {
+          "_comment": "exchange_rate: (BNB_USD / LUNC_USD) * 1e-2",
+          "exchange_rate": 24389000,
+          "gas_price_wei": 10000000000
+        }
+      },
+      "warp_tokens": {
+        "wlunc": {
+          "deployed": true,
+          "address": "0x2144Be4477202ba2d50c9A8be3181241878cf7D8",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": "0x133fD7F7094DBd17b576907d052a5aCBd48dB526"
+        },
+        "ustc": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
+        },
+        "juris": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
+        },
+        "xpto": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
+        },
+        "xpv": {
+          "deployed": true,
+          "address": "0x11D6aa52d60611a513ab783842Dc397C86E7fff0",
+          "igp_custom": "0x7d17d237c74Fa1bA3B5B56d94E414a4eAa41cE1e",
+          "hook_aggregation": "0x3F11a590B50F959E52a660567865f1B65C913C5D",
+          "_hook_note": "AggregationHook=[MerkleTreeHook+igp_custom]. Set via setHook() on Warp. Required for messages to enter the validator's merkle tree.",
+          "owner": "0x8BD456605473ad4727ACfDCA0040a0dBD4be2DEA"
+        }
+      }
+    },
+    "ethereum": {
+      "_comment": "Ethereum Mainnet — disabled until production deploy",
+      "enabled": false,
+      "display_name": "Ethereum Mainnet",
+      "chain_id": 1,
+      "domain": 1,
+      "is_testnet": false,
+      "native_token": {
+        "symbol": "ETH",
+        "name": "Ether",
+        "decimals": 18
+      },
+      "rpc_urls": [
+        "https://eth.llamarpc.com",
+        "https://1rpc.io/eth"
+      ],
+      "explorer": "https://etherscan.io",
+      "mailbox": {
+        "address": "0xc005dc82818d67AF737725bD4bf75435d065D239"
+      },
+      "ism": {
+        "type": "messageIdMultisigIsm",
+        "factory": "0xEb9FcFDC9EfDC17c1EC5E1dc085B98485da213D6",
+        "deployed_address": "",
+        "validators": [],
+        "threshold": 1
+      },
+      "hook": {
+        "_comment": "Use AggregationHook=[merkle_tree+igp_custom]",
+        "merkle_tree": "0x19DC3De9E2E8b69975F775b18dF7a2c2B2C0b8e2",
+        "agg_hook_factory": "0x160C28C92cA453570aD7C031972b58d5Dd128F72"
+      },
+      "igp": {
+        "official_address": "0x9e6B1022bE9BBF5aFd152483DAD9b88911bC8611",
+        "gas_oracle": "0x",
+        "overhead_default": 300000,
+        "terra_classic_config": {
+          "exchange_rate": 0,
+          "gas_price_wei": 0
+        }
+      },
+      "warp_tokens": {
+        "wlunc": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "ustc": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "juris": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "xpto": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        }
+      }
+    },
+    "bsc": {
+      "_comment": "BSC Mainnet — disabled until production deploy",
+      "enabled": false,
+      "display_name": "BSC Mainnet",
+      "chain_id": 56,
+      "domain": 56,
+      "is_testnet": false,
+      "native_token": {
+        "symbol": "BNB",
+        "name": "BNB",
+        "decimals": 18
+      },
+      "rpc_urls": [
+        "https://bsc.publicnode.com",
+        "https://1rpc.io/bnb"
+      ],
+      "explorer": "https://bscscan.com",
+      "mailbox": {
+        "address": "0x2971b9Aec44bE4eb673DF1B88cDB57b96eefe8a4"
+      },
+      "ism": {
+        "type": "messageIdMultisigIsm",
+        "factory": "0xEb9FcFDC9EfDC17c1EC5E1dc085B98485da213D6",
+        "deployed_address": "",
+        "validators": [],
+        "threshold": 1
+      },
+      "hook": {
+        "merkle_tree": ""
+      },
+      "igp": {
+        "official_address": "",
+        "gas_oracle": "0x",
+        "overhead_default": 200000,
+        "terra_classic_config": {
+          "exchange_rate": 0,
+          "gas_price_wei": 0
+        }
+      },
+      "warp_tokens": {
+        "wlunc": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "ustc": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "juris": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "xpto": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        }
+      }
+    },
+    "polygon": {
+      "_comment": "Polygon Mainnet — disabled",
+      "enabled": false,
+      "display_name": "Polygon Mainnet",
+      "chain_id": 137,
+      "domain": 137,
+      "is_testnet": false,
+      "native_token": {
+        "symbol": "MATIC",
+        "name": "Matic",
+        "decimals": 18
+      },
+      "rpc_urls": [
+        "https://polygon.llamarpc.com",
+        "https://1rpc.io/matic"
+      ],
+      "explorer": "https://polygonscan.com",
+      "mailbox": {
+        "address": "0x5d934f4e2f797775e53561bB72aca21ba36B96BB"
+      },
+      "ism": {
+        "type": "messageIdMultisigIsm",
+        "factory": "0xEb9FcFDC9EfDC17c1EC5E1dc085B98485da213D6",
+        "deployed_address": "",
+        "validators": [],
+        "threshold": 1
+      },
+      "hook": {
+        "merkle_tree": ""
+      },
+      "igp": {
+        "official_address": "",
+        "gas_oracle": "0x",
+        "overhead_default": 200000,
+        "terra_classic_config": {
+          "exchange_rate": 0,
+          "gas_price_wei": 0
+        }
+      },
+      "warp_tokens": {
+        "wlunc": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "ustc": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "juris": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "xpto": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        }
+      }
+    },
+    "arbitrum": {
+      "_comment": "Arbitrum One — disabled",
+      "enabled": false,
+      "display_name": "Arbitrum One",
+      "chain_id": 42161,
+      "domain": 42161,
+      "is_testnet": false,
+      "native_token": {
+        "symbol": "ETH",
+        "name": "Ether",
+        "decimals": 18
+      },
+      "rpc_urls": [
+        "https://arb1.arbitrum.io/rpc",
+        "https://1rpc.io/arb"
+      ],
+      "explorer": "https://arbiscan.io",
+      "mailbox": {
+        "address": "0x979Ca5202784112f4738403dBec5D0F3B9daabB9"
+      },
+      "ism": {
+        "type": "messageIdMultisigIsm",
+        "factory": "0xEb9FcFDC9EfDC17c1EC5E1dc085B98485da213D6",
+        "deployed_address": "",
+        "validators": [],
+        "threshold": 1
+      },
+      "hook": {
+        "merkle_tree": ""
+      },
+      "igp": {
+        "official_address": "",
+        "gas_oracle": "0x",
+        "overhead_default": 150000,
+        "terra_classic_config": {
+          "exchange_rate": 0,
+          "gas_price_wei": 0
+        }
+      },
+      "warp_tokens": {
+        "wlunc": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "ustc": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "juris": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "xpto": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        }
+      }
+    },
+    "optimism": {
+      "_comment": "Optimism — disabled",
+      "enabled": false,
+      "display_name": "Optimism",
+      "chain_id": 10,
+      "domain": 10,
+      "is_testnet": false,
+      "native_token": {
+        "symbol": "ETH",
+        "name": "Ether",
+        "decimals": 18
+      },
+      "rpc_urls": [
+        "https://mainnet.optimism.io",
+        "https://1rpc.io/op"
+      ],
+      "explorer": "https://optimistic.etherscan.io",
+      "mailbox": {
+        "address": "0xd4C1905BB1D26BC93DAC913e13CaCC278CdCC80D"
+      },
+      "ism": {
+        "type": "messageIdMultisigIsm",
+        "factory": "0xEb9FcFDC9EfDC17c1EC5E1dc085B98485da213D6",
+        "deployed_address": "",
+        "validators": [],
+        "threshold": 1
+      },
+      "hook": {
+        "merkle_tree": ""
+      },
+      "igp": {
+        "official_address": "",
+        "gas_oracle": "0x",
+        "overhead_default": 150000,
+        "terra_classic_config": {
+          "exchange_rate": 0,
+          "gas_price_wei": 0
+        }
+      },
+      "warp_tokens": {
+        "wlunc": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "ustc": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "juris": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        },
+        "xpto": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "owner": ""
+        }
+      }
+    }
+  }
+}

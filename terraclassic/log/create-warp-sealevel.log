@@ -1,0 +1,408 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║    🚀  CRIAR WARP ROUTE SOLANA ↔ TERRA CLASSIC — HYPERLANE SEALEVEL 🚀 ║
+║                                                                          ║
+║    Configs: warp-sealevel-config.json + warp-evm-config.json            ║
+║    Data: 2026-03-11 15:46:04                                        ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+[0;32m✅[0m Configurações válidas: warp-evm-config.json + warp-sealevel-config.json
+[0;32m✅[0m Terra Classic: domain=1325, rpc=https://rpc.terra-classic.hexxagon.dev
+[1;33m⚠️ [0m Estado anterior: token=xpto, net=solanatestnet, program=jNkiNLXQetj9L2tDX6xTgx9QP1tgtNgYXamouNbbwx9
+   Para recomeçar: [1;33mrm -f /home/lunc/cw-hyperlane/script-certo/.warp-sealevel-state.json[0m
+
+[0;36m[1mPASSO 1/2 — SELECIONAR TOKEN (Terra Classic)[0m
+────────────────────────────────────────────────────────────────
+  Tokens configurados em [0;36mwarp-evm-config.json[0m:
+
+   [1m[1][0m  [0;36mjuris[0m — Juris Token (JURIS) [0;36m[terra: cw20][0m [0;32m[warp TC ok][0m [0;32m[solana: deployado][0m
+        Warp TC:    [0;32mterra1stu3cl7mhtsc2mf9cputawfd6v6e4a2nkmhhphh47lsrr3j6ktdqlcfe2l[0m
+        Program ID: [0;32mG3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y[0m
+
+   [1m[2][0m  [0;36mustc[0m — Wrapped TerraClassic USD (USTC) [0;36m[terra: native][0m [0;32m[warp TC ok][0m [0;34m[solana: novo deploy][0m
+        Warp TC:    [0;32mterra1rnpvpwvqcf94keldtm2udt4tqhwthpw5cu94m443rz5ue7rvvkjq9nklml[0m
+
+   [1m[3][0m  [0;36mwlunc[0m — Wrapped Terra Classic LUNC (LUNC) [0;36m[terra: native][0m [0;32m[warp TC ok][0m [0;32m[solana: deployado][0m
+        Warp TC:    [0;32mterra1zlm0h2xu6rhnjchn29hxnpvr74uxxqetar9y75zcehyx2mqezg9slj09ml[0m
+        Program ID: [0;32m5BuTS1oZhUKJgpgwXJyz5VRdTq99SMvHm7hrPMctJk6x[0m
+
+   [1m[4][0m  [0;36mxpto[0m — XPTO Token (XPTO) [0;36m[terra: cw20][0m [0;32m[warp TC ok][0m [0;32m[solana: deployado][0m
+        Warp TC:    [0;32mterra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm[0m
+        Program ID: [0;32mjNkiNLXQetj9L2tDX6xTgx9QP1tgtNgYXamouNbbwx9[0m
+
+   [1m[5][0m  [0;36mxptv[0m — XPTV Token (XPTV) [0;36m[terra: cw20][0m [0;32m[warp TC ok][0m [0;34m[solana: novo deploy][0m
+        Warp TC:    [0;32mterra1n8y4sj9lrqq66pf7je0nm7s6nhln5z4s3accw9g2aassdh8dzqts9y0928[0m
+
+   [1m[6][0m  [0;36mxpv[0m — XPV Token (XPV) [0;36m[terra: cw20][0m [0;32m[warp TC ok][0m [0;34m[solana: novo deploy][0m
+        Warp TC:    [0;32mterra1dnflusc7slapvals97em3fj4vrfyx90npr3znq6y45qjy7hhd6jqchqsgx[0m
+
+[0;32m✅[0m Token selecionado: [0;36mjuris[0m — Juris Token (JURIS)
+
+[0;36m[1mPASSO 2/2 — SELECIONAR REDE SOLANA[0m
+────────────────────────────────────────────────────────────────
+  Redes disponíveis em [0;36mwarp-sealevel-config.json[0m:
+
+   [0;31m[-][0m  solana — Solana Mainnet [0;31m[desabilitado][0m
+   [1m[1][0m  [0;36msolanatestnet[0m — Solana Testnet (domain: 1399811150) [0;32m[warp já deployado][0m
+        Program ID: [0;32mG3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y[0m
+        ISM:        5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh
+        IGP:        E9i32KsKGQZMYTguZ81VHUueNvpTGh7nb9J5bRif4xT1
+
+[0;32m✅[0m Rede selecionada: [0;36msolanatestnet[0m — Solana Testnet (domain: 1399811150)
+[0;34mℹ️ [0m Estado anterior era para xpto/solanatestnet — ignorado para juris/solanatestnet.
+
+╔══════════════════════════════════════════════════════════════════════════╗
+║   📋  RESUMO: Token [0;36mjuris[0m → Rede [0;36mSolana Testnet[0m
+╚══════════════════════════════════════════════════════════════════════════╝
+
+  [1m🪙 TOKEN[0m
+     Juris Token (JURIS) | type=cw20 | decimals=6
+
+  [1m🌐 REDE SOLANA[0m
+     Solana Testnet  |  Domain: 1399811150
+     RPC: https://api.testnet.solana.com
+     Keypair: /home/lunc/keys/solana-keypair-EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd.json
+
+  [1m🔐 ISM[0m  —  MultisigISM valida msgs da Terra Classic
+     Program ID: 5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh
+
+  [1m⛽ IGP[0m  —  paga gas na Terra Classic
+     Program ID: 5p7Hii6CJL4xGBYYTGEQmH9LnUSZteFJUu9AVLDExZX2
+     Account:    E9i32KsKGQZMYTguZ81VHUueNvpTGh7nb9J5bRif4xT1
+     Dest Gas:   3000000 (Terra Classic domain 1325)
+
+  [1m🌍 TERRA CLASSIC[0m
+     Domain: 1325  |  Chain: rebel-2
+     RPC: https://rpc.terra-classic.hexxagon.dev
+     Warp: [0;32mterra1stu3cl7mhtsc2mf9cputawfd6v6e4a2nkmhhphh47lsrr3j6ktdqlcfe2l[0m
+
+[0;34mℹ️ [0m Program ID carregado: G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y — deploy será pulado.
+
+[0;36m[1mETAPA 1 — DEPLOY WARP SOLANA (warp-route deploy)[0m
+────────────────────────────────────────────────────────────────
+[1;33m⚠️ [0m WARP_PROGRAM_ID já definido (G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y) — pulando deploy.
+[0;32m✅[0m Program ID: [0;32mG3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y[0m
+[0;34mℹ️ [0m Program ID (hex32): 0xdf8c90c47b713b222855f782b0f13e2d0a65ba45ba08a6f46c7ec93ee67327a6
+[0;32m✅[0m [0;36mwarp-sealevel-config.json[0m atualizado com Program ID
+
+[0;36m[1mETAPA 2 — CONFIGURAR ISM (MultisigISM)[0m
+────────────────────────────────────────────────────────────────
+[0;34mℹ️ [0m ISM Program ID: 5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh
+[0;34mℹ️ [0m Warp Program ID: G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+    Finished release [optimized] target(s) in 3.80s
+     Running `/home/lunc/hyperlane-monorepo/rust/sealevel/target/release/hyperlane-sealevel-client -k /home/lunc/keys/solana-keypair-EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd.json -u 'https://api.testnet.solana.com' token set-interchain-security-module --program-id G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y --ism 5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh`
+	==== Instructions: ====
+	Instruction 0: Set compute unit limit to 1400000
+	Instruction 1: Set ISM to Some(5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh)
+	==== Transaction in base58: ====
+	Y9wjmzR1qSrszemVyVVjdUMBRgNXwsGrpP7G8gVMRvPcqN4ZW5mRkBFJrF8EHAtBf9AC4Y37H2846EdVb2koTwaiHGGWE6q3tRkrDav5LdfPgnn1tmsRM8NopX2DiAFRsDCTEqFwBddGFvPM8uwUKgi48iSWPUDGqZgL5WAqYtyT7nTfA9xFbwgwQqbGiuhYk4mvbgojS8BawnYB7kJzXNjsTXJ7kYr7LWcF47M4Rn8tB25QVjsA6zCPgTa78zgZafRYCGzB3FTmsX9JBGsYYEm43zUnDhJ95VNCthdpHVc5pXox45GxNTrYbUyPj84fGxQ4NUQdnq5fKu1ytaCvdFg6h8JfoEcR89z9Eph9BzJg531enPWY42iUADYuT5uLXTaX
+	==== Message in base58: ====
+	2NzHviGh8ULNG3FcXUj37FAi7wGS1rSqseskkUvaJQWrLF55NF12JJJgbzMWdzBW5vveCp9wiDZaWE4uuobKFhaaUNpqeJcPWC3HwGjw5ZXK418wwejA9xinY4PyPXQwJg1Ui26G7WthuhaF8oQFteirpxVAyougqxFHaqhfyynMziKQhnn4VUvWyPuenPgqPDWNr2ZSAwtwJn7ASGaMDJtoZuxft2F5uF1rywy3HcpvVnFoVZGhQJLHZSHgjsrq14gFaBd83vp8oTaTwrZtRN7WgjD8sNqTkpCxHBHsAnQF
+[0;32m✅[0m ISM configurado no Warp Solana!
+
+[0;36m[1mETAPA 3 — CONFIGURAR IGP (Interchain Gas Paymaster)[0m
+────────────────────────────────────────────────────────────────
+[0;34mℹ️ [0m IGP Program ID: 5p7Hii6CJL4xGBYYTGEQmH9LnUSZteFJUu9AVLDExZX2
+[0;34mℹ️ [0m IGP Account:    E9i32KsKGQZMYTguZ81VHUueNvpTGh7nb9J5bRif4xT1
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+    Finished release [optimized] target(s) in 0.51s
+     Running `/home/lunc/hyperlane-monorepo/rust/sealevel/target/release/hyperlane-sealevel-client -k /home/lunc/keys/solana-keypair-EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd.json -u 'https://api.testnet.solana.com' token igp --program-id G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y set 5p7Hii6CJL4xGBYYTGEQmH9LnUSZteFJUu9AVLDExZX2 igp E9i32KsKGQZMYTguZ81VHUueNvpTGh7nb9J5bRif4xT1`
+	==== Instructions: ====
+	Instruction 0: Set compute unit limit to 1400000
+	Instruction 1: Set IGP of G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y to program 5p7Hii6CJL4xGBYYTGEQmH9LnUSZteFJUu9AVLDExZX2, type Igp(E9i32KsKGQZMYTguZ81VHUueNvpTGh7nb9J5bRif4xT1)
+	==== Transaction in base58: ====
+	hrDFVwj95YkAxavrq87upE3qWnEyovePUTo9wuUJ5rRwyfhHD53khMdvG7b8CSJjKp2QcjSJFau7w37pB773VKCTVuA7yoMkJgH2Qf6sFqDGCt8UHg2DJMUmi32nVtKPxJCCFsjhWpQxPcYRpMdMVRY48gmbrUFjr2xqox8kKngBZomHoqUzmfx9g6r9hZFr3VpPpg9QFsn2WHrhs4DYZPd3XqcRJc5YNsxYzWpffe4Ec1jgzFQHgYH2M3XAvitXAZyMd68rrS13BXT9mFoqsCdAQyhsTr7uoYUm3nXB4xgpqyX5heemzWnQ6kShtvFz8xU5N8mcC9RnypookgyLTxXFG9B87BjTuZ3FBFo8T6yAqCdRmgmGuAYNgaxNDS6nM6fx3X53443fvRTwwJrSrFFwfjDkxXyi9TXG69nFa2rYDBTEF
+	==== Message in base58: ====
+	2osuL9Sdmuf8xfsWaNohmNshC1mbxDCwTiqrsdxN8HmMGw2Kss2aN3CHNNcA9LiDG2E4B9Vy9NScEgsi9TtQvgUYGkWKEgVTPhq3buorcrZRP7Gx7Znvj1JnsKdCKP9CRmF9qRoySHf6ZJ9zfkvaNqDNW1XqhHRaL6dDprxdDsopRYVxoczG77X8XhQ8xwLXWNyP1w1xvpYqtxxBvLU9yDcyyxSpQcXknJ3wukm1aAs6WBjvnqd1PSWGfUn8H2tAXHvHs7GhBXKR9eHxf4sTQddUNrn9KKApkvLH38EGq6qAXFAwymPYoMhvofr9hPVX879qDR859N988kVoZ26hTdcrK
+[0;32m✅[0m IGP associado ao Warp Solana!
+
+[0;36m[1mETAPA 4 — CONFIGURAR DESTINATION GAS (Terra Classic domain 1325)[0m
+────────────────────────────────────────────────────────────────
+[0;34mℹ️ [0m Destination gas: 3000000 para domínio 1325
+[1;33m⚠️ [0m Sem destination gas → transferências falharão com 'InvalidArgument'
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+    Finished release [optimized] target(s) in 0.53s
+     Running `/home/lunc/hyperlane-monorepo/rust/sealevel/target/release/hyperlane-sealevel-client -k /home/lunc/keys/solana-keypair-EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd.json -u 'https://api.testnet.solana.com' token set-destination-gas --program-id G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y 1325 3000000`
+	==== Instructions: ====
+	Instruction 0: Set compute unit limit to 1400000
+	Instruction 1: No description provided
+	==== Transaction in base58: ====
+	2HwuWrhiDwLQ7a9Q8UkU7nSz2T1QiGRsPWLLFGCoGyu57WpXvTLveNVTT6KiLgUEhcVdx6BqYsiHV8azEVxetNt7fwzPJJTtWMyXQoDiVTBNRjq8x9tEivsW7CJ1ZsNLCtwNizmJujz5qzBvdYVbpCvKQx37XeWXU6XhxtHbZ4gMqZRkUnzDXmJKSDv9fJMKcq1sZQzx4sVReSFpU6FJxX5SaFBaEoxbexBpffecNLERkFK8GydJ6YD8cbyxHyVhKGWNWVeKBY7pFcgnzF9ekbYUYf3qMXeoe76SfyLz6jNpZFNvU5CZhrAAP72AmoVKZ4xhqmjPrMbk9L68ThHiMCQ1Me8otSRt5AqN6uWVNtnoJPeRhfsQu7A1BcTXbfSQJNWc3dmm2Cm7xSCJv6Qt4SX4QRnf
+	==== Message in base58: ====
+	4KRmHCVcLcTmAU11mM6BYTTJ3wym2Tm3rvNEwSzj6uMDmLfikS2dTwHNKys9pjjQk75c7qLchF5cjZ3TgKispgoRBervtPQZVheRRm7nPk8AiDDm6Uk8HL6Km3bhHTHEUiYrioSp4Gaa8JJSbx7yqwHBme1gn6qidXM1Cyvadseb1s1RfsMKFkpm3nAeQXsrRURpX2CaWxNLa3dtKjFjBFzEnctGodQEiGBVkQYL1ZVoyXx6KiqX882TaiUFvzM7ortRrkadSCx996fEETMeENRPCyhuXQkLEtkrsQm4sxEo8eBT4nVzgmWZvF1qeVpuxo9
+[0;32m✅[0m Destination Gas configurado: domain=1325 gas=3000000
+
+[0;36m[1mETAPA 5 — ENROLL REMOTE ROUTER (Solana → Terra Classic)[0m
+────────────────────────────────────────────────────────────────
+[0;34mℹ️ [0m Enrollando Terra Classic Warp no Solana...
+  Terra Classic domain: 1325
+  Terra Classic Warp (hex): 0x82f91c7fdbbae1856d25c078beb92dd3359af553b6ef70def5f7e031c65ab2da
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+    Finished release [optimized] target(s) in 0.52s
+     Running `/home/lunc/hyperlane-monorepo/rust/sealevel/target/release/hyperlane-sealevel-client -k /home/lunc/keys/solana-keypair-EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd.json -u 'https://api.testnet.solana.com' token enroll-remote-router --program-id G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y 1325 0x82f91c7fdbbae1856d25c078beb92dd3359af553b6ef70def5f7e031c65ab2da`
+	==== Instructions: ====
+	Instruction 0: Set compute unit limit to 1400000
+	Instruction 1: No description provided
+	==== Transaction in base58: ====
+	XA722NZHBfvS3g781s13SZ1rEZw8HdutpDsbKV6c8KKLMLivQNc75pdvPQibxFkfGZkZNg3dTaikQFsezB7VAZkhxXg9Wir5rJroeTUmVEpV8ktopNZY6DzJqBYE2Vc9m3NVBD9KDYXe84ShAusJRkjrBLgXy6pzE44NFmQFkSgvpCdKALe8jPSKhTPcxoRFFFxgddu55sr2Gav3V9esUhcWuPQLb9d9NZEKwaxC89cfoh2DkLCTi2RU7MU6GHqJLu2HC8zSAvt2r3nsW5yU8mfDtnU6gsjFzqiELmZUkph6weuQZmGcfwU5Rtvz1rFJbYMqWoCe6Nxgj5V6FE6xeVoFbnyVeG7EoMrhCVHLyeYw6XN9fAk9rvfF1ncZc11RXAhkpS6ihnMM2zeTVuP8oszdBv9LcVydrcDLN8hs1qqRe1xHmtsVfaBVoYgy
+	==== Message in base58: ====
+	2LRrjv43KXgzLXGnctLbk3SF1xbwBSC29kDz7k3fsHGybmoK5EtF6jWo2bPS3ofTX993e8AgV9bnxf1AQTVPRgdR6EhukdR3a8aoNpL4WTP5fRvMZgaagtgc63aGdUMaT7HPVriJEvwqqqtYjdiryujvhqTR6cCh89r7eXd5CPRHHLD5wqn1BbdgLijxUQrjmRsF5rQRZXqbbm5yhvBxaEa2ajz4gvz7zBuAcT6NKTUg668cp9ocGjjizGnSYLiFSyhnFjCfooCjMJNAPQxdpKzMxV8nnigzEUrvHkRyY9FweszmqpmKXBsZykX4jKeurN3r76khGnyPM3FyNsA6UUKikPuG2KZDwZYd
+[0;32m✅[0m Remote Router enrollado! Solana agora conhece Terra Classic (domain 1325)
+
+[0;36m[1mETAPA 6 — SET ROUTE NO TERRA CLASSIC (Terra Classic → Solana)[0m
+────────────────────────────────────────────────────────────────
+[0;34mℹ️ [0m Terra Classic Warp: terra1stu3cl7mhtsc2mf9cputawfd6v6e4a2nkmhhphh47lsrr3j6ktdqlcfe2l
+[0;34mℹ️ [0m Solana Domain: 1399811150
+[0;34mℹ️ [0m Solana Route (hex32): df8c90c47b713b222855f782b0f13e2d0a65ba45ba08a6f46c7ec93ee67327a6
+[0;32m✅[0m Rota já configurada no Terra Classic (df8c90c47b713b222855f782b0f13e2d0a65ba45ba08a6f46c7ec93ee67327a6).
+
+[0;36m[1mETAPA 7 — CONSULTAR WARP (Mint Address + Verificação)[0m
+────────────────────────────────────────────────────────────────
+hyperlane-sealevel-token=G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y
+--------------------------------
+Hyperlane Token Storage: FMdS5Pird32idbLmc8gfSDHkeVpUb4oCs9LoUDYGzkvb, bump=253
+Account {
+    lamports: 2916240,
+    data.len: 291,
+    owner: G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y,
+    executable: false,
+    rent_epoch: 18446744073709551615,
+    data: 01fd5a3ebc069888c6d5581617d7d50dfd49e8b4fd7e30d6b4dbb5592c3132f36f4a101b05c24464826bc0a94b343611e5f354963b30d532c80a45ab1a13c8db,
+}
+AccountData {
+    data: HyperlaneToken {
+        bump: 253,
+        mailbox: 75HBBLae3ddeneJVrZeyrDfv6vb7SMC3aCpBucSXS5aR,
+        mailbox_process_authority: 25sRUbXV4B6FAPbY4potZjZqpL9ibHE1karUDVVaGRCQ,
+        dispatch_authority_bump: 255,
+        decimals: 6,
+        remote_decimals: 6,
+        owner: Some(
+            EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd,
+        ),
+        interchain_security_module: Some(
+            5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh,
+        ),
+        interchain_gas_paymaster: Some(
+            (
+                5p7Hii6CJL4xGBYYTGEQmH9LnUSZteFJUu9AVLDExZX2,
+                Igp(
+                    E9i32KsKGQZMYTguZ81VHUueNvpTGh7nb9J5bRif4xT1,
+                ),
+            ),
+        ),
+        destination_gas: {
+            1325: 3000000,
+        },
+        remote_routers: {
+            1325: 0x82f91c7fdbbae1856d25c078beb92dd3359af553b6ef70def5f7e031c65ab2da,
+        },
+        plugin_data: SyntheticPlugin {
+            mint: ExzEij8z7xc71kvjuMHmejRkmM4ACgKjDWuEaXdDubRa,
+            mint_bump: 255,
+            ata_payer_bump: 255,
+        },
+    },
+}
+--------------------------------
+Mint / Mint Authority: ExzEij8z7xc71kvjuMHmejRkmM4ACgKjDWuEaXdDubRa, bump=255
+Account {
+    lamports: 3946320,
+    data.len: 439,
+    owner: TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb,
+    executable: false,
+    rent_epoch: 18446744073709551615,
+    data: 01000000cf7f97943f0fb3cf04ff213f51c4de741a1017e348cdb09fae2ac0a4b3753ab90005ea06000000000601000000000000000000000000000000000000,
+}
+Mint {
+    mint_authority: Some(
+        ExzEij8z7xc71kvjuMHmejRkmM4ACgKjDWuEaXdDubRa,
+    ),
+    supply: 116000000,
+    decimals: 6,
+    is_initialized: true,
+    freeze_authority: None,
+}
+ATA payer account: HckcSfrbC8yESzQEZg1Gn16YJWPRcAB2uoxpLbkAAuhv, bump=255
+[0;32m✅[0m Mint Address: [0;32mExzEij8z7xc71kvjuMHmejRkmM4ACgKjDWuEaXdDubRa[0m
+[0;32m✅[0m [0;36mwarp-sealevel-config.json[0m atualizado com mint_address e deployed=true
+[0;34mℹ️ [0m Transferindo ownership para: EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+  See https://doc.rust-lang.org/cargo/reference/unstable.html#workspace-inheritance for more information about using this feature.
+    Finished release [optimized] target(s) in 0.49s
+     Running `/home/lunc/hyperlane-monorepo/rust/sealevel/target/release/hyperlane-sealevel-client -k /home/lunc/keys/solana-keypair-EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd.json -u 'https://api.testnet.solana.com' token transfer-ownership --program-id G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd`
+	==== Instructions: ====
+	Instruction 0: Set compute unit limit to 1400000
+	Instruction 1: Transfer ownership to EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd
+	==== Transaction in base58: ====
+	Y9wjmzR1qSrszemVyVVjdUMBRgNXwsGrpP7G8gVMRvPcqN4ZW5mRkBFJrF8EHAtBf9AC4Y37H2846EdVb2koTwaiHGGWE6q3tRkrDav5LdfPgnn1tmsRM8NopX2DiAFRsDCTEqFwBddGFvPM8uwUKgi48iSWPUDGqZgL5WAqYtyT7nTfA9xFbwgwQqbGiuhYk4mvbgojS8BawnYB7kJzXNjsTXJ7kYr7LWcF47M4Rn8tB25QVjsA6zCPgTa78zgZafRYCGzB3FTmsX9JBGsYYEm43zUnDhJ95VNCthdpHVc5pXox45GxNTrYbUyPj84fGxQ4NUQdnq5fKu1ytaCvdFiiwmxSUaSQcNTP2gbQKZ7MGDzgJSb5JVv6q6R4hDgdJ6mh
+	==== Message in base58: ====
+	2NzHviGh8ULNG3FcXUj37FAi7wGS1rSqseskkUvaJQWrLF55NF12JJJgbzMWdzBW5vveCp9wiDZaWE4uuobKFhaaUNpqeJcPWC3HwGjw5ZXK418wwejA9xinY4PyPXQwJg1Ui26G7WthuhaF8oQFteirpxVAyougqxFHaqhfyynMziKQhnn4VUvWyPuenPgqPDWNr2ZSAwtwJn7ASGaMDJtoZuxft2F5uF1rywy3HcpvVnFoVZGhQJLHZSHgjsuTFiL2FXT7Y9HNbKUj5RNZcZ6YCnHg7r36Rh57XK59wRbR
+[0;32m✅[0m Ownership transferido para: EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd
+
+[0;36m[1mETAPA 8 — VERIFICAÇÃO FINAL[0m
+────────────────────────────────────────────────────────────────
+[0;34mℹ️ [0m Verificando remote routers no Warp Solana...
+[0;32m✅[0m Estado do Warp Solana:
+                    Igp(
+            destination_gas: {
+            remote_routers: {
+[0;34mℹ️ [0m Verificando rota no Terra Classic (domain 1399811150)...
+    Terra Classic route: N/A
+[0;32m✅[0m Info salvo em: [0;36m/home/lunc/cw-hyperlane/script-certo/WARP-SOLANATESTNET-JURIS.txt[0m
+
+╔══════════════════════════════════════════════════════════════════════════╗
+║               ✅  WARP SOLANA CONFIGURADO COM SUCESSO!                  ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+[0;32m📝 Warp Solana:[0m
+   Token:       Juris Token (JURIS)
+   Program ID:  [0;32mG3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y[0m
+   Hex32:       [0;32m0xdf8c90c47b713b222855f782b0f13e2d0a65ba45ba08a6f46c7ec93ee67327a6[0m
+   Mint:        [0;32mExzEij8z7xc71kvjuMHmejRkmM4ACgKjDWuEaXdDubRa[0m
+   ISM:         5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh
+   IGP Account: E9i32KsKGQZMYTguZ81VHUueNvpTGh7nb9J5bRif4xT1
+   Dest Gas:    3000000 (Terra Classic domain 1325)
+
+[0;32m📝 Warp Terra Classic:[0m
+   Address: terra1stu3cl7mhtsc2mf9cputawfd6v6e4a2nkmhhphh47lsrr3j6ktdqlcfe2l
+   Domain:  1325
+
+[0;32m📝 Links:[0m
+   ✅ Solana → Terra Classic (domain 1325)
+   ✅ Terra Classic → Solana (domain 1399811150)
+
+[0;36m  Atualizações automáticas em warp-sealevel-config.json:[0m
+    .networks.solanatestnet.warp_tokens.juris.program_id  = "G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y"
+    .networks.solanatestnet.warp_tokens.juris.program_hex = "0xdf8c90c47b713b222855f782b0f13e2d0a65ba45ba08a6f46c7ec93ee67327a6"
+    .networks.solanatestnet.warp_tokens.juris.mint_address = "ExzEij8z7xc71kvjuMHmejRkmM4ACgKjDWuEaXdDubRa"
+    .networks.solanatestnet.warp_tokens.juris.deployed    = true
+
+[0;34m📄 Detalhes: /home/lunc/cw-hyperlane/script-certo/WARP-SOLANATESTNET-JURIS.txt[0m
+[0;34m📋 Log:      /home/lunc/cw-hyperlane/script-certo/create-warp-sealevel.log[0m
+

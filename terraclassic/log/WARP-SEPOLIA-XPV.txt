@@ -1,0 +1,33 @@
+═══════════════════════════════════════════════════════════
+  WARP: XPV em ETHEREUM SEPOLIA TESTNET
+  Gerado: 2026-03-11 02:15:39
+═══════════════════════════════════════════════════════════
+
+TOKEN:
+  Nome:     XPV Token
+  Símbolo:  XPV
+  Decimais: 6
+  Tipo:     cw20 / collateral
+
+REDE EVM: Ethereum Sepolia Testnet
+  Chain ID:  11155111
+  Domain:    11155111
+
+CONTRATOS EVM:
+  Mailbox:   0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766
+  Warp:      0x6a573cba0f06B3994bc8B31b737Ab50cdfc0aB8f
+  IGP:       0x4B3A327560f2838b0cC570D685809D3DBcf11ff5
+  GasOracle: 0x7113Df4d1D8B230e6339011d10277a6E5AC4eC9c
+  ISM:       messageIdMultisigIsm | validators: 0x8804770d6a346210c0fd011258fdf3ab0a5bb0d0
+
+TERRA CLASSIC:
+  Domain:    1325
+  Tipo:      cw20 / collateral
+  Owner:     terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze
+  CW20/Denom: terra1f2jw36hc7fzeu7dz2fhk250ezec7e80c2s6uxt3ry5ujjjslf9nqwvpu88
+  Warp:      terra1dnflusc7slapvals97em3fj4vrfyx90npr3znq6y45qjy7hhd6jqchqsgx
+
+IGP CONFIG (EVM → Terra):
+  Exchange Rate: 142244393
+  Gas Price:     38325000000 wei
+═══════════════════════════════════════════════════════════

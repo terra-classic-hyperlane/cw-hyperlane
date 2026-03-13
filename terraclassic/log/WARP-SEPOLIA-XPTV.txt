@@ -1,0 +1,33 @@
+═══════════════════════════════════════════════════════════
+  WARP: XPTV em ETHEREUM SEPOLIA TESTNET
+  Gerado: 2026-03-11 02:00:06
+═══════════════════════════════════════════════════════════
+
+TOKEN:
+  Nome:     XPTV Token
+  Símbolo:  XPTV
+  Decimais: 6
+  Tipo:     cw20 / collateral
+
+REDE EVM: Ethereum Sepolia Testnet
+  Chain ID:  11155111
+  Domain:    11155111
+
+CONTRATOS EVM:
+  Mailbox:   0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766
+  Warp:      0x7d92c2E01933F1C651845152DBd4222d475Bd9f0
+  IGP:       0xf285D5769db5AE6E79Bb3179d03082f6bc47055f
+  GasOracle: 0x7113Df4d1D8B230e6339011d10277a6E5AC4eC9c
+  ISM:       messageIdMultisigIsm | validators: 0x8804770d6a346210c0fd011258fdf3ab0a5bb0d0
+
+TERRA CLASSIC:
+  Domain:    1325
+  Tipo:      cw20 / collateral
+  Owner:     terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze
+  CW20/Denom: terra19ujvy60tjeyehjrwlrdpqlp0gxmtt4qv452nwjqc6w6m38pm8xmq22lux3
+  Warp:      terra1n8y4sj9lrqq66pf7je0nm7s6nhln5z4s3accw9g2aassdh8dzqts9y0928
+
+IGP CONFIG (EVM → Terra):
+  Exchange Rate: 142244393
+  Gas Price:     38325000000 wei
+═══════════════════════════════════════════════════════════

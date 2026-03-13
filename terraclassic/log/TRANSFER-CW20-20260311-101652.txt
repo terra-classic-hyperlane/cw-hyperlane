@@ -1,0 +1,29 @@
+TRANSFERÊNCIA CW20 — TERRA CLASSIC
+====================================
+Data/Hora  : 2026-03-11 10:16:52
+Chain      : rebel-2
+RPC        : https://rpc.terra-classic.hexxagon.dev
+
+PARÂMETROS
+-----------
+Token      : XPTO
+Contrato   : terra1f2jw36hc7fzeu7dz2fhk250ezec7e80c2s6uxt3ry5ujjjslf9nqwvpu88
+Remetente  : terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze
+Destinat.  : terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k
+Valor      : 100000000000
+
+RESULTADO
+----------
+TX Hash    : 6AA084B8430E02F32CDE6175D718BB0D57660C847876383548957D6836CB7A0A
+Bloco      : 29783296
+Gas Usado  : 193440 / 234692
+Taxa       : 6647651uluna
+
+SALDOS
+-------
+Remetente antes : 1000000000000000000 XPTO
+Remetente depois: 999999900010000000 XPTO
+Destinat. antes : 0 XPTO
+Destinat. depois: 99990000000 XPTO
+
+Explorer: https://finder.terra-classic.hexxagon.dev/testnet/tx/6AA084B8430E02F32CDE6175D718BB0D57660C847876383548957D6836CB7A0A

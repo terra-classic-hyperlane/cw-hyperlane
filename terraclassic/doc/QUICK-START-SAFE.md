@@ -76,7 +76,7 @@ python3 script/safe-execute-complete.py <PRIVATE_KEY> <CALLDATA> [SAFE_TX_HASH]
 # If you have the CALLDATA
 CALLDATA=0x3f4ba83a...
 python3 script/safe-execute-complete.py \
-  0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef \
+  0x819b680e3578eac4f79b8fde643046e88f.... \
   $CALLDATA \
   0x73b17378c1d8d5a48dd32dc483faa17aa6e23538ff5e68473f634b91cfe49367
 ```

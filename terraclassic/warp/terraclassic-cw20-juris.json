@@ -1,0 +1,12 @@
+{
+  "type": "cw20",
+  "mode": "collateral",
+
+  "id": "juris",
+  "owner": "terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze",
+  "config": {
+    "collateral": {
+      "address": "terra1w7d0jqehn0ja3hkzsm0psk6z2hjz06lsq0nxnwkzkkq4fqwgq6tqa5te8e"
+    }
+  }
+}
