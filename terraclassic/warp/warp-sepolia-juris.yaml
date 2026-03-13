@@ -1,0 +1,18 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Warp Route: Ethereum Sepolia Testnet ↔ Terra Classic
+# Token:      Juris Token (JURIS)
+# Generated:  2026-03-13 11:39:45
+# ─────────────────────────────────────────────────────────────────────────────
+sepolia:
+  isNft: false
+  type: synthetic
+  name: "Juris Token"
+  symbol: "JURIS"
+  decimals: 6
+  owner: "0x133fD7F7094DBd17b576907d052a5aCBd48dB526"
+  mailbox: "0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766"
+  interchainSecurityModule:
+    type: messageIdMultisigIsm
+    validators:
+    - "0x8804770d6a346210c0fd011258fdf3ab0a5bb0d0"
+    threshold: 1

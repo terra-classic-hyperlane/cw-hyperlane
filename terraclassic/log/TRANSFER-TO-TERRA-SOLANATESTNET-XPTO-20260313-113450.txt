@@ -1,0 +1,10 @@
+TRANSFER REMOTE — SOLANATESTNET → Terra Classic
+Date           : Fri Mar 13 11:34:50 -03 2026
+Token          : XPTO / XPTO
+Source         : SOLANATESTNET  (sealevel, domain 1399811150)
+Destination    : Terra Classic  (domain 1325)
+Recipient TC   : terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k
+Recipient b32  : 0000000000000000000000003fc7ee49a59c1041d4a58bc21ef657eb443c8bbb
+Amount         : 81000000
+Source Warp    : jNkiNLXQetj9L2tDX6xTgx9QP1tgtNgYXamouNbbwx9
+TX Hash        : 2rUnmGGfD7Xij4NkQzAgRG3fC2nY4ZMbbWHi8NjVA6buL3Sd9FvufgzXSF7uBWyczqU2HkCuQh6D2Dhb5P3c8rRu

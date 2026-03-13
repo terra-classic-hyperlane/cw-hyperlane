@@ -1,0 +1,33 @@
+═══════════════════════════════════════════════════════════
+  WARP: JURIS on ETHEREUM SEPOLIA TESTNET
+  Generated: 2026-03-13 11:44:07
+═══════════════════════════════════════════════════════════
+
+TOKEN:
+  Name:     Juris Token
+  Symbol:   JURIS
+  Decimals: 6
+  Type:     cw20 / collateral
+
+EVM NETWORK: Ethereum Sepolia Testnet
+  Chain ID:  11155111
+  Domain:    11155111
+
+EVM CONTRACTS:
+  Mailbox:   0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766
+  Warp:      0xc2Da334D32724B97D5990229a9752a0d31087bC9
+  IGP:       0xBc699827EA28494C64CD52586B366ef806429730
+  GasOracle: 0x7113Df4d1D8B230e6339011d10277a6E5AC4eC9c
+  ISM:       messageIdMultisigIsm | validators: 0x8804770d6a346210c0fd011258fdf3ab0a5bb0d0
+
+TERRA CLASSIC:
+  Domain:    1325
+  Type:      cw20 / collateral
+  Owner:     terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze
+  CW20/Denom: terra1w7d0jqehn0ja3hkzsm0psk6z2hjz06lsq0nxnwkzkkq4fqwgq6tqa5te8e
+  Warp:      terra1stu3cl7mhtsc2mf9cputawfd6v6e4a2nkmhhphh47lsrr3j6ktdqlcfe2l
+
+IGP CONFIG (EVM → Terra):
+  Exchange Rate: 142244393
+  Gas Price:     38325000000 wei
+═══════════════════════════════════════════════════════════
