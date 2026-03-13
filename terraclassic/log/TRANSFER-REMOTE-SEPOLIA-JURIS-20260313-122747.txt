@@ -1,0 +1,12 @@
+TRANSFER REMOTE — Terra Classic → SEPOLIA
+Date          : Fri Mar 13 12:27:47 -03 2026
+Token         : JURIS  (cw20)
+Destination   : SEPOLIA  (domain 11155111)
+Recipient     : 0x867f9ce9f0d7218b016351cb6122406e6d247a5e
+Recipient b32 : 000000000000000000000000867f9ce9f0d7218b016351cb6122406e6d247a5e
+Amount        : 1000000
+Fee IGP       : 1780832150 uluna
+Warp TC       : terra1stu3cl7mhtsc2mf9cputawfd6v6e4a2nkmhhphh47lsrr3j6ktdqlcfe2l
+Collateral    : terra1w7d0jqehn0ja3hkzsm0psk6z2hjz06lsq0nxnwkzkkq4fqwgq6tqa5te8e
+TX Hash       : A5C6B9F0057D79ECA587853D489CD909FFED91E883DA6CB8022A87295041F927
+Explorer      : https://finder.hexxagon.io/rebel-2/tx/A5C6B9F0057D79ECA587853D489CD909FFED91E883DA6CB8022A87295041F927
