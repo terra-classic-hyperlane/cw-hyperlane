@@ -2,12 +2,12 @@
 ║                                                                          ║
 ║     🚀  CREATE WARP ROUTE EVM ↔ TERRA CLASSIC — HYPERLANE CLI  🚀       ║
 ║                                                                          ║
-║     Config: warp-evm-config.json     Data: 2026-03-13 11:39:30          ║
+║     Config: warp-evm-config.json     Data: 2026-03-13 11:53:38          ║
 ║                                                                          ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 
 [0;32m✅[0m Configuration: /home/lunc/cw-hyperlane-tc/terraclassic/warp-evm-config.json
-[1;33m⚠️ [0m Previous state: network=bsctestnet, token=xpv, warp=0x11D6aa52d60611a513ab783842Dc397C86E7fff0, igp=0x7d17d237c74Fa1bA3B5B56d94E414a4eAa41cE1e
+[1;33m⚠️ [0m Previous state: network=sepolia, token=juris, warp=0xc2Da334D32724B97D5990229a9752a0d31087bC9, igp=0xBc699827EA28494C64CD52586B366ef806429730
    To restart: [1;33mrm -f /home/lunc/cw-hyperlane-tc/terraclassic/.warp-evm-state.json[0m
 
 [0;36m[1mSTEP 1/2 — SELECT TOKEN (Terra Classic)[0m
@@ -62,7 +62,7 @@
         Mailbox: 0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766
 
 [0;32m✅[0m Network selected: [0;36msepolia[0m
-[0;34mℹ️ [0m Previous state was for xpv/bsctestnet — ignored for juris/sepolia.
+[0;34mℹ️ [0m State restored: warp=0xc2Da334D32724B97D5990229a9752a0d31087bC9, igp=0xBc699827EA28494C64CD52586B366ef806429730
 
 ╔══════════════════════════════════════════════════════════════════════════╗
 ║   📋  SUMMARY: Token [0;36mjuris[0m → Network [0;36mEthereum Sepolia Testnet[0m
@@ -88,10 +88,11 @@
      Gas Overhead:  200000
      Exchange Rate: 142244393  (→ Terra domain 1325)
      Gas Price:     38325000000 wei
+     Custom IGP:    [0;32m0xBc699827EA28494C64CD52586B366ef806429730[0m  [0;32m(already deployed)[0m
 
   [1m🪙 TOKEN[0m  —  Juris Token (JURIS)
      Tipo EVM:   synthetic  |  Decimals: 6
-     Status:     [1;33mNew deploy[0m
+     Warp Route: [0;32m0xc2Da334D32724B97D5990229a9752a0d31087bC9[0m  [0;32m(already deployed)[0m
 
   [1m🌉 TERRA CLASSIC LINK[0m  —  for enrollRemoteRouter
      Tipo:    cw20 / collateral
@@ -100,8 +101,8 @@
      Warp:    [0;32mterra1stu3cl7mhtsc2mf9cputawfd6v6e4a2nkmhhphh47lsrr3j6ktdqlcfe2l[0m
      Hex:     0x82f91c7fdbbae1856d25c078beb92dd3359af553b6ef70def5f7e031c65ab2da
 
-[0;32m✅[0m Wallet: [0;32m0x133fD7F7094DBd17b576907d052a5aCBd48dB526[0m
-[0;34mℹ️ [0m Balance: [0;32m1.001847872526194310 ETH[0m
+[0;32m✅[0m Wallet: [0;32m0x8BD456605473ad4727ACfDCA0040a0dBD4be2DEA[0m
+[0;34mℹ️ [0m Balance: [0;32m0 ETH[0m
 
 
 [0;36m[1mTOOLS[0m
@@ -110,7 +111,7 @@
 [0;32m✅[0m forge (Foundry)
 [0;32m✅[0m cast (Foundry)
 [0;34mℹ️ [0m Testing RPC: https://ethereum-sepolia-rpc.publicnode.com
-{"jsonrpc":"2.0","result":"0x9f4bde","id":1}
+{"jsonrpc":"2.0","result":"0x9f4c1d","id":1}
 [0;32m✅[0m RPC OK: https://ethereum-sepolia-rpc.publicnode.com
 
 [0;36m[1mSTEP 1 — GENERATE WARP YAML[0m
@@ -119,197 +120,11 @@
 
 [0;36m[1mSTEP 2 — WARP ROUTE DEPLOY[0m
 ────────────────────────────────────────────────────────────────
-[0;34mℹ️ [0m Running: hyperlane warp deploy ...
-[1;33m⏳ Please wait (~2 minutes)...[0m
-Hyperlane CLI
-{"level":30,"time":1773412788226,"pid":8584,"msg":"Your CLI version: 26.0.0, latest version: 27.1.0"}
-Using warp route deployment config at /home/lunc/cw-hyperlane-tc/terraclassic/warp/warp-sepolia-juris.yaml
-Hyperlane Warp Route Deployment
-_______________________________
-
-Warp Route Deployment Plan
-==========================
-📋 Token Standard: ERC20
-📋 Warp Route Config:
-┌─────────┬───────┬─────────────┬──────────────────────────────────────────────┬──────────────────────────────────────────────┬───────────────────────┐
-│ (index) │ NFT?  │ Type        │ Owner                                        │ Mailbox                                      │ ISM Config(s)         │
-├─────────┼───────┼─────────────┼──────────────────────────────────────────────┼──────────────────────────────────────────────┼───────────────────────┤
-│ sepolia │ false │ 'synthetic' │ '0x133fD7F7094DBd17b576907d052a5aCBd48dB526' │ '0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766' │ 'See table(s) below.' │
-└─────────┴───────┴─────────────┴──────────────────────────────────────────────┴──────────────────────────────────────────────┴───────────────────────┘
-📋 sepolia ISM Config(s):
-┌────────────┬──────────────────────────────────────────────┬────────────────────────┐
-│ (index)    │ 0                                            │ Values                 │
-├────────────┼──────────────────────────────────────────────┼────────────────────────┤
-│ Type       │                                              │ 'messageIdMultisigIsm' │
-│ Validators │ '0x8804770d6a346210c0fd011258fdf3ab0a5bb0d0' │                        │
-│ Threshold  │                                              │ 1                      │
-└────────────┴──────────────────────────────────────────────┴────────────────────────┘
-Running pre-flight checks for chains...
-✅ Sepolia signer is valid
-✅ Chains are valid
-✅ Balances are sufficient
-🚀 All systems ready, captain! Beginning deployment...
-Loading registry factory addresses for sepolia...
-Creating messageIdMultisigIsm ISM for token on sepolia chain...
-Finished creating messageIdMultisigIsm ISM for token on sepolia chain.
-Config Hook is empty, skipping deployment.
-Deploying to sepolia from https://sepolia.etherscan.io/address/0x133fD7F7094DBd17b576907d052a5aCBd48dB526
-Deploying proxyAdmin on sepolia with constructor args ()...
-Pending https://sepolia.etherscan.io/tx/0xa8fc0fb33ddbf546a9ff575a83dd0828966f37c66e6e6668f12eb3011cfc86d0 (waiting 1 blocks for confirmation)
-Error fetching contract verification status for 0xf52fD358eE28f79564A74B869cDC0CD6A6953c13 on chain sepolia: Error: Error while performing request to Etherscan like API at api.etherscan.io: NOTOK Invalid API Key (#err2)|SEPOLIA-
-Failed to verify implementation contract at address "0xf52fD358eE28f79564A74B869cDC0CD6A6953c13" on chain "sepolia" Error: Error while performing request to Etherscan like API at api.etherscan.io: NOTOK Invalid API Key (#err2)|SEPOLIA-
-    at handleEtherscanResponse (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:691206:15)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at async ContractVerifier.verify (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:698310:34)
-    at async ContractVerifier.verifyContract (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:698159:9)
-    at async HypERC20Deployer.deployContractFromFactory (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:697698:13)
-    at async HypERC20Deployer.deployContracts (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:756331:26)
-    at async file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:697503:35
-    at async runWithTimeout (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:895709:24)
-    at async Promise.allSettled (index 0)
-    at async HypERC20Deployer.deploy (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:697516:13)
-Deploying HypERC20 on sepolia with constructor args (6, 1, 1, 0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766)...
-Pending https://sepolia.etherscan.io/tx/0x04e260bbef2e7e34897ead7388b93a899df812d6a41b76ece634ebe15669ec6d (waiting 1 blocks for confirmation)
-Pending https://sepolia.etherscan.io/tx/0x436d4111171deb04a41433fda05060c16fffb3b081f9024968b30a4d232573ba (waiting 1 blocks for confirmation)
-Error fetching contract verification status for 0xfCFC2DC983275b1A38F511979A37C466A2B13d78 on chain sepolia: Error: Error while performing request to Etherscan like API at api.etherscan.io: NOTOK Invalid API Key (#err2)|SEPOLIA-
-Failed to verify implementation contract at address "0xfCFC2DC983275b1A38F511979A37C466A2B13d78" on chain "sepolia" Error: Error while performing request to Etherscan like API at api.etherscan.io: NOTOK Invalid API Key (#err2)|SEPOLIA-
-    at handleEtherscanResponse (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:691206:15)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at async ContractVerifier.verify (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:698310:34)
-    at async ContractVerifier.verifyContract (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:698159:9)
-    at async HypERC20Deployer.deployContractFromFactory (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:697698:13)
-    at async HypERC20Deployer.deployContractWithName (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:697720:26)
-    at async HypERC20Deployer.deployProxiedContract (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:697810:32)
-    at async HypERC20Deployer.deployContracts (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:756351:31)
-    at async file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:697503:35
-    at async runWithTimeout (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:895709:24)
-Deploying TransparentUpgradeableProxy on sepolia with constructor args (0xfCFC2DC983275b1A38F511979A37C466A2B13d78, 0xf52fD358eE28f79564A74B869cDC0CD6A6953c13, 0xe80a7c79000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b14fbb042272786b4cb3af86207c20e4f865e0f3000000000000000000000000133fd7f7094dbd17b576907d052a5acbd48db526000000000000000000000000000000000000000000000000000000000000000b4a7572697320546f6b656e00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000054a55524953000000000000000000000000000000000000000000000000000000)...
-Pending https://sepolia.etherscan.io/tx/0x00f629e863e3bf30995b8b406d1e9c2d89ea2e859fefe6ed8d30c706ec7719e9 (waiting 1 blocks for confirmation)
-Error fetching contract verification status for 0xc2Da334D32724B97D5990229a9752a0d31087bC9 on chain sepolia: Error: Error while performing request to Etherscan like API at api.etherscan.io: NOTOK Invalid API Key (#err2)|SEPOLIA-
-Failed to verify proxy contract at address "0xc2Da334D32724B97D5990229a9752a0d31087bC9" on chain "sepolia" Error: Error while performing request to Etherscan like API at api.etherscan.io: NOTOK Invalid API Key (#err2)|SEPOLIA-
-    at handleEtherscanResponse (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:691206:15)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at async ContractVerifier.verify (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:698307:34)
-    at async ContractVerifier.verifyContract (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:698159:9)
-    at async HypERC20Deployer.deployContractFromFactory (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:697698:13)
-    at async HypERC20Deployer.deployProxy (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:697755:23)
-    at async HypERC20Deployer.deployProxiedContract (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:697812:26)
-    at async HypERC20Deployer.deployContracts (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:756351:31)
-    at async file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:697503:35
-    at async runWithTimeout (file:///home/lunc/.nvm/versions/node/v20.19.5/lib/node_modules/@hyperlane-xyz/cli/bundle/index.js:895709:24)
-Successfully deployed contracts on sepolia
-✅ Warp contract deployments complete
-Start enrolling cross chain routers
-Missing address for contract "incrementalDomainRoutingIsmFactory" on chain sepolia
-Warning: Core deployment incomplete for chain(s): sepolia. Please run 'core deploy' again for these chains to fix the deployment.
-Comparing target ISM config with sepolia chain
-Missing address for contract "incrementalDomainRoutingIsmFactory" on chain sepolia
-Warning: Core deployment incomplete for chain(s): sepolia. Please run 'core deploy' again for these chains to fix the deployment.
-Comparing target Hook config with current one for sepolia chain
-Writing deployment artifacts...
-Skipping adding warp route at github registry (not supported)
-Now adding warp route at filesystem registry at /home/lunc/.hyperlane
-Done adding warp route at filesystem registry
-    tokens:
-      - chainName: sepolia
-        standard: EvmHypSynthetic
-        decimals: 6
-        symbol: JURIS
-        name: Juris Token
-        addressOrDenom: "0xc2Da334D32724B97D5990229a9752a0d31087bC9"
-    
-Skipping adding warp route deploy config at github registry (not supported)
-Now adding warp route deploy config at filesystem registry at /home/lunc/.hyperlane
-Done adding warp route deploy config at filesystem registry
-⛽️ Gas Usage Statistics
-	- Gas required for warp deploy on sepolia: 0.000005318602621497 ETH
-[0;32m✅[0m Warp Route: [0;32m0xc2Da334D32724B97D5990229a9752a0d31087bC9[0m
+[1;33m⚠️ [0m Warp Route already set: [0;32m0xc2Da334D32724B97D5990229a9752a0d31087bC9[0m  → Skipping.
 
 [0;36m[1mSTEP 3 — CUSTOM IGP DEPLOY[0m
 ────────────────────────────────────────────────────────────────
-Warning: Target directory is not empty, but `--force` was specified
-Initializing /tmp/igp-deploy-8001...
-Installing forge-std in /tmp/igp-deploy-8001/lib/forge-std (url: https://github.com/foundry-rs/forge-std, tag: None)
-Cloning into '/tmp/igp-deploy-8001/lib/forge-std'...
-    Installed forge-std
-    Initialized forge project
-[0;34mℹ️ [0m Compiling...
-Compiling 24 files with Solc 0.8.22
-Solc 0.8.22 finished in 803.13ms
-Compiler run successful!
-note[mixed-case-variable]: mutable variables should use mixedCase
-   --> src/TerraClassicIGP.sol:150:17
-    |
-150 |         uint256 REFUND_ADDRESS_OFFSET = 66;
-    |                 ^^^^^^^^^^^^^^^^^^^^^ help: consider using: `refundAddressOffset`
-    |
-    = help: https://book.getfoundry.sh/reference/forge/forge-lint#mixed-case-variable
-
-note[mixed-case-variable]: mutable variables should use mixedCase
-   --> src/TerraClassicIGP.sol:160:17
-    |
-160 |         uint256 SENDER_OFFSET = 9;
-    |                 ^^^^^^^^^^^^^ help: consider using: `senderOffset`
-    |
-    = help: https://book.getfoundry.sh/reference/forge/forge-lint#mixed-case-variable
-
-note[mixed-case-variable]: mutable variables should use mixedCase
-   --> src/TerraClassicIGP.sol:161:17
-    |
-161 |         uint256 DESTINATION_OFFSET_LOCAL = 41;
-    |                 ^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `destinationOffsetLocal`
-    |
-    = help: https://book.getfoundry.sh/reference/forge/forge-lint#mixed-case-variable
-
-note[unwrapped-modifier-logic]: wrap modifier logic to reduce code size
-  --> src/TerraClassicIGP.sol:46:5
-   |
-46 | /     modifier onlyOwner() {
-47 | |         require(msg.sender == owner, "!owner");
-48 | |         _;
-49 | |     }
-   | |_____^
-   |
-help: wrap modifier logic to reduce code size
-   |
-46 ~     modifier onlyOwner() {
-47 +         _onlyOwner();
-48 +         _;
-49 +     }
-50 + 
-51 +     function _onlyOwner() internal {
-52 +         require(msg.sender == owner, "!owner");
-53 +     }
-   |
-   = help: https://book.getfoundry.sh/reference/forge/forge-lint#unwrapped-modifier-logic
-
-note[asm-keccak256]: use of inefficient hashing mechanism; consider using inline assembly
-  --> src/TerraClassicIGP.sol:93:29
-   |
-93 |         bytes32 messageId = keccak256(message);
-   |                             ^^^^^^^^^^^^^^^^^^
-   |
-   = help: https://book.getfoundry.sh/reference/forge/forge-lint#asm-keccak256
-
-[0;34mℹ️ [0m Deploying IGP on Ethereum Sepolia Testnet via cast send --create...
-
-blockHash            0x2eae9177c121ca287cf860c1e62e23bb90bfa8fedabdcfa0eb18a3d7ddbe0a6a
-blockNumber          10439662
-contractAddress      0xBc699827EA28494C64CD52586B366ef806429730
-cumulativeGasUsed    8048284
-effectiveGasPrice    1000011
-from                 0x133fD7F7094DBd17b576907d052a5aCBd48dB526
-gasUsed              1441970
-logs                 [{"address":"0xbc699827ea28494c64cd52586b366ef806429730","topics":["0xf87fa08ae8c61d63d66ef4ad3d050eb76d151119fef3efa830f31c8ede5e2b11","0x0000000000000000000000007113df4d1d8b230e6339011d10277a6e5ac4ec9c"],"data":"0x0000000000000000000000000000000000000000000000000000000000030d40","blockHash":"0x2eae9177c121ca287cf860c1e62e23bb90bfa8fedabdcfa0eb18a3d7ddbe0a6a","blockNumber":"0x9f4bee","blockTimestamp":"0x69b42274","transactionHash":"0x34841bb7cd22b01cf9a5162e89adaa6e97b9bb10c52fe045770462aacec596f9","transactionIndex":"0x4c","logIndex":"0x6d","removed":false},{"address":"0xbc699827ea28494c64cd52586b366ef806429730","topics":["0x04d55a8be181fb8d75b76f2d48aa0b2ee40f47e53d6e61763eeeec46feea8a24","0x000000000000000000000000133fd7f7094dbd17b576907d052a5acbd48db526"],"data":"0x","blockHash":"0x2eae9177c121ca287cf860c1e62e23bb90bfa8fedabdcfa0eb18a3d7ddbe0a6a","blockNumber":"0x9f4bee","blockTimestamp":"0x69b42274","transactionHash":"0x34841bb7cd22b01cf9a5162e89adaa6e97b9bb10c52fe045770462aacec596f9","transactionIndex":"0x4c","logIndex":"0x6e","removed":false}]
-logsBloom            0x00000000000080000000000000000000000000000000000000000000100000000000000000000000010000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000040000000000000000000000000000010000000008000000000000080000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000020000000010000000000000000000000200000000000000000400000000000400000000000000000000000000000000000000000000000000000000000000000000
-root                 
-status               1 (success)
-transactionHash      0x34841bb7cd22b01cf9a5162e89adaa6e97b9bb10c52fe045770462aacec596f9
-transactionIndex     76
-type                 0
-blobGasPrice         
-blobGasUsed          
-[0;32m✅[0m IGP deployed: [0;32m0xBc699827EA28494C64CD52586B366ef806429730[0m
+[1;33m⚠️ [0m IGP already set: [0;32m0xBc699827EA28494C64CD52586B366ef806429730[0m  → Skipping.
 
 [0;36m[1mSTEP 4 — CONFIGURE GAS ORACLE (setRemoteGasData)[0m
 ────────────────────────────────────────────────────────────────
@@ -325,8 +140,10 @@ blobGasUsed
 [0;32m✅[0m Gas Oracle already configured for Terra Classic (domain 1325)!
   Current Exchange Rate: [0;32m142244393 [1.422e8][0m
 [0;34mℹ️ [0m Updating with new values...
-[0;32m✅[0m Gas Oracle configured for Terra Classic!
-   TX: [0;34mhttps://sepolia.etherscan.io/tx/0x18f902e5c2345e1fd33737f5aec20a26dc6c29cac55ee5da7e7492b6621e7d53[0m
+[1;33m⚠️ [0m TX failed (1/3), waiting 5s...
+[1;33m⚠️ [0m TX failed (2/3), waiting 5s...
+[1;33m⚠️ [0m setRemoteGasData falhou (pode não ser owner do oracle) — continuando...
+[0;34mℹ️ [0m Gas Oracle possibly already configured or lacking owner permission.
 
 [0;36m[1mSTEP 5 — CONFIGURE HOOK (AggregationHook = MerkleTree + IGP)[0m
 ────────────────────────────────────────────────────────────────
@@ -339,12 +156,12 @@ blobGasUsed
   [0;34mℹ️ [0m (necessário para o validator assinar) E pagam o IGP customizado.
 
 [0;34mℹ️ [0m Deploying AggregationHook [MerkleTree + IGP] via factory...
-   TX AggHook: [0;34mhttps://sepolia.etherscan.io/tx/0xb72678de4d7d1ec0cf11b8558c71fd232b069a4b2be87d9077fa88e4329d631e[0m
+[1;33m⚠️ [0m TX failed (1/3), waiting 5s...
+[1;33m⚠️ [0m TX failed (2/3), waiting 5s...
+   TX AggHook: [0;34mhttps://sepolia.etherscan.io/tx/[1;33m⚠️ [0m TX failed (1/3), waiting 5s...
+[1;33m⚠️ [0m TX failed (2/3), waiting 5s...[0m
 [0;32m✅[0m AggregationHook: [0;32m0x186A2a6909aF0a1be630014412E123190018a31b[0m
-[0;34mℹ️ [0m Current hook: 0x0000000000000000000000000000000000000000
-[0;34mℹ️ [0m Setting hook to AggregationHook [MerkleTree + IGP]...
-[0;32m✅[0m Hook updated: [0;32m0x186A2a6909aF0a1be630014412E123190018a31b[0m
-   TX: [0;34mhttps://sepolia.etherscan.io/tx/0x69ebad09391cc980e7a72c4f99dc216df7bd4d5ef6fc6cc2ce7a36c83eac9b11[0m
+[0;32m✅[0m Hook already configured correctly: [0;32m0x186A2a6909aF0a1be630014412E123190018a31b[0m
 
 [0;36m[1mSTEP 6 — CONFIGURE WARP ROUTE ISM[0m
 ────────────────────────────────────────────────────────────────
@@ -356,17 +173,20 @@ blobGasUsed
 ────────────────────────────────────────────────────────────────
   sepolia (domain 11155111) → Terra Classic (domain 1325)
   Terra Warp bytes32: [0;32m82f91c7fdbbae1856d25c078beb92dd3359af553b6ef70def5f7e031c65ab2da[0m
+[1;33m⚠️ [0m TX failed (1/3), waiting 5s...
+[1;33m⚠️ [0m TX failed (2/3), waiting 5s...
+[1;33m⚠️ [0m enrollRemoteRouter falhou (pode já estar configurado)
 [0;32m✅[0m Terra Classic route linked!
-   TX: [0;34mhttps://sepolia.etherscan.io/tx/0xd5240640376ac4fae7b08b3436f4c5c262c552da34b2dc3533ebab1a4a514454[0m
+   TX: [0;34mhttps://sepolia.etherscan.io/tx/[1;33m⚠️ [0m TX failed (1/3), waiting 5s...
+[1;33m⚠️ [0m TX failed (2/3), waiting 5s...[0m
 
 [0;36m[1mSTEP 7B — LINK EVM ROUTE ON TERRA CLASSIC (set_route)[0m
 ────────────────────────────────────────────────────────────────
   Terra Classic Warp: [0;32mterra1stu3cl7mhtsc2mf9cputawfd6v6e4a2nkmhhphh47lsrr3j6ktdqlcfe2l[0m
   EVM (sepolia) domain 11155111 → bytes32: [0;32m000000000000000000000000c2Da334D32724B97D5990229a9752a0d31087bC9[0m
 
-[1;33m⚠️ [0m Terra Classic set_route failed: Broadcasting transaction failed with code 13 (codespace: sdk). Log: insufficient fees; got: "3349uluna", required: "212082uaud,212082ucad,156271uchf,1093896ucny,1004598udkk,139528ueur,122785ugbp,1305978uhkd,2433359600uidr,12144474uinr,18272522ujpy,189757400ukrw,6323387uluna,478379522umnt,669732umyr,1395275unok,8483272uphp,117134usdr,1395275usek,223244usgd,5156937uthb,4464880utwd,167433uusd"(gas) [+ ""(tax)]: insufficient fee
-  Detalhes: ERR=Broadcasting transaction failed with code 13 (codespace: sdk). Log: insufficient fees; got: "3349uluna", required: "212082uaud,212082ucad,156271uchf,1093896ucny,1004598udkk,139528ueur,122785ugbp,1305978uhkd,2433359600uidr,12144474uinr,18272522ujpy,189757400ukrw,6323387uluna,478379522umnt,669732umyr,1395275unok,8483272uphp,117134usdr,1395275usek,223244usgd,5156937uthb,4464880utwd,167433uusd"(gas) [+ ""(tax)]: insufficient fee
-  Run manually: [0;36m./enroll-terra-router.sh[0m
+[0;32m✅[0m set_route executed! Terra Classic knows the sepolia Warp.
+   TX: [0;34mhttps://finder.hexxagon.io/rebel-2/tx/3A8CD9D7E2967799A562EAA435B739999376C1A32145F456AD8D39B90EACBADA[0m
 
 [0;36m[1mSTEP 8 — FINAL VERIFICATION[0m
 ────────────────────────────────────────────────────────────────
