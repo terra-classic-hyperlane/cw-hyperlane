@@ -69,15 +69,19 @@ deploy:
         - type: merkle
 
         - type: igp
-          owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze 
+          owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze
           configs:
             97:
-              exchange_rate: 1805936462255558    
-              gas_price: 50_000_000   # 0.05 Gwei                          
-            
+              exchange_rate: 177534              # on-chain value (was: 1805936462255558)
+              gas_price: 1000000000              # 1 Gwei on-chain (was: 50_000_000 = 0.05 Gwei)
+
             1399811150:
-              exchange_rate: 57675000000000000     
-              gas_price: 1   
+              exchange_rate: 40000000000000      # on-chain value (was: 57675000000000000)
+              gas_price: 1
+
+            11155111:
+              exchange_rate: 177534              # on-chain value (Sepolia — added, was missing)
+              gas_price: 1000000000              # 1 Gwei on-chain
 
           default_gas_usage: 100000
          
