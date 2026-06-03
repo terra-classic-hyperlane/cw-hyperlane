@@ -3,7 +3,7 @@ networks:
   - id: 'terraclassic'
     chainId: 'columbus-5'
     hrp: 'terra'
-    signer: deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+    signer: cf20d02716966e399315ae42f55d742f6f8d39acf52b50dfdaa96bba55abee86
     endpoint:
        rpc: 'https://rpc.terra-classic.hexxagon.io'
        rest: 'https://lcd.terra-classic.hexxagon.io'
@@ -83,12 +83,12 @@ deploy:
   hooks:
     default:
       type: aggregate
-      owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze 
+      owner: terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp 
       hooks:
         - type: merkle
 
         - type: igp
-          owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze
+          owner: terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp
           configs:
             97:
               exchange_rate: 177534              # on-chain value (was: 1805936462255558)
@@ -107,15 +107,15 @@ deploy:
 
     required:
       type: aggregate
-      owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze 
+      owner: terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp 
       hooks:
         
         - type: pausable
-          owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze 
+          owner: terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp 
           paused: false
 
         - type: fee
-          owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze 
+          owner: terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp 
           fee:
             # if you didn't set the denom, it will be set as gas denom of network config
             denom: uluna
