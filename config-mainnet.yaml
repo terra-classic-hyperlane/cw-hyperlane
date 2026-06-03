@@ -3,7 +3,7 @@ networks:
   - id: 'terraclassic'
     chainId: 'columbus-5'
     hrp: 'terra'
-    signer: cf20d02716966e399315ae42f55d742f6f8d39acf52b50dfdaa96bba55abee86
+    signer: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  # replace with your hex private key
     endpoint:
        rpc: 'https://rpc.terra-classic.hexxagon.io'
        rest: 'https://lcd.terra-classic.hexxagon.io'
