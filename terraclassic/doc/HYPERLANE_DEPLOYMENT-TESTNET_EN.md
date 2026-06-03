@@ -7,6 +7,7 @@ This guide documents the complete process of deploying and configuring Hyperlane
 ## 📋 Table of Contents
 
 1. [Prerequisites](#prerequisites)
+   - [Generating a Private Key in Hex Format](#generating-a-private-key-in-hex-format)
 2. [Verify Available Contracts](#verify-available-contracts)
 3. [Contract Deployment (Upload)](#contract-deployment-upload)
 4. [Contract Instantiation](#contract-instantiation)
@@ -31,6 +32,168 @@ This guide documents the complete process of deploying and configuring Hyperlane
 ```bash
 export PRIVATE_KEY="your_private_key_hexadecimal"
 ```
+
+---
+
+### Generating a Private Key in Hex Format
+
+The deployment and instantiation scripts require a **32-byte private key in hexadecimal format** (64 hex characters prefixed with `0x`).
+
+This section shows how to generate or export that key for **Terra Classic** (Cosmos) and the **EVM/Solana** chains used alongside it.
+
+---
+
+#### Terra Classic (Cosmos / `terrad`)
+
+Terra Classic uses the Cosmos key format. The private key is derived from a mnemonic phrase and exported as raw hex.
+
+**Step 1 — Install `terrad`**
+
+```bash
+TERRA_VERSION="v3.0.1"
+wget https://github.com/classic-terra/core/releases/download/${TERRA_VERSION}/terrad-${TERRA_VERSION}-linux-amd64
+chmod +x terrad-${TERRA_VERSION}-linux-amd64
+sudo mv terrad-${TERRA_VERSION}-linux-amd64 /usr/local/bin/terrad
+terrad version
+```
+
+**Step 2 — Generate a new key**
+
+```bash
+# A keyring password will be prompted
+terrad keys add deployer-key --keyring-backend file
+```
+
+> Save the 24-word mnemonic phrase immediately — it is the only way to recover the wallet.
+
+**Step 3 — Export the private key in hex**
+
+```bash
+terrad keys export deployer-key --keyring-backend file --unarmored-hex --unsafe
+```
+
+**Step 4 — Save with `0x` prefix**
+
+```bash
+echo "0x$(terrad keys export deployer-key --keyring-backend file --unarmored-hex --unsafe)" \
+  > ~/.terra-private-key
+chmod 600 ~/.terra-private-key
+```
+
+**Step 5 — Get the Terra address**
+
+```bash
+terrad keys show deployer-key --keyring-backend file --address
+# Example: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze
+```
+
+**Step 6 — Set the environment variable**
+
+```bash
+export PRIVATE_KEY="0xYOUR_64_CHAR_HEX_KEY"
+```
+
+**Import an existing key (if you already have a mnemonic):**
+
+```bash
+terrad keys add deployer-key --recover --keyring-backend file
+# Type the 24-word mnemonic when prompted
+```
+
+---
+
+#### Ethereum / BSC (EVM chains — `cast`)
+
+EVM chains (Ethereum, Sepolia, BSC Testnet) use ECDSA secp256k1 — the same key format.
+
+**Step 1 — Install Foundry**
+
+```bash
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
+cast --version
+```
+
+**Step 2 — Generate a new key**
+
+```bash
+cast wallet new
+```
+
+Output:
+```
+Private Key: 0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890
+Address:     0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0
+```
+
+**Alternative — generate with `openssl`:**
+
+```bash
+echo "0x$(openssl rand -hex 32)"
+# Then derive the address:
+cast wallet address --private-key 0xYOUR_GENERATED_KEY
+```
+
+---
+
+#### Solana (`solana-keygen`)
+
+Solana uses ED25519. The keypair JSON contains 64 bytes — the **first 32 are the private key**.
+
+**Step 1 — Install Solana CLI**
+
+```bash
+sh -c "$(curl -sSfL https://release.solana.com/stable/install)"
+solana-keygen --version
+```
+
+**Step 2 — Generate a new keypair**
+
+```bash
+solana-keygen new --outfile ./solana-keypair.json
+chmod 600 ./solana-keypair.json
+```
+
+**Step 3 — Extract the private key as hex**
+
+```bash
+python3 << 'EOF'
+import json
+with open('./solana-keypair.json') as f:
+    kp = json.load(f)
+print(f"0x{bytes(kp[:32]).hex()}")
+EOF
+```
+
+**Step 4 — Get the public address**
+
+```bash
+solana-keygen pubkey ./solana-keypair.json
+```
+
+---
+
+#### Key Format Validation
+
+All keys must follow this format before being used in scripts or config files:
+
+| Chain | Algorithm | Expected format |
+|-------|-----------|-----------------|
+| Terra Classic | secp256k1 | `0x` + 64 hex chars |
+| Ethereum / BSC | secp256k1 | `0x` + 64 hex chars |
+| Solana | ED25519 | `0x` + 64 hex chars (first 32 bytes of keypair) |
+
+**Validate your key:**
+
+```bash
+echo "0xYOUR_KEY" | wc -c
+# Must return 67  (= 0x + 64 chars + newline)
+```
+
+> Never commit private keys to Git. Use `chmod 600` on all files containing keys.
+> For detailed per-chain instructions see: [`HYPERLANE-PRIVATE-KEYS-HEX.md`](../../../../tc-hyperlane-validator/HYPERLANE-PRIVATE-KEYS-HEX.md)
+
+---
 
 ### Install Dependencies
 
