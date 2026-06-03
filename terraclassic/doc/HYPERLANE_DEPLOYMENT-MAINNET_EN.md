@@ -163,7 +163,7 @@ yarn cw-hpl upload remote-list -n terraclassic
 ### Upload to Blockchain
 
 ```bash
-yarn cw-hpl upload remote v0.0.6-rc8 -n terraclassic
+yarn cw-hpl upload remote v0.0.7-rc0 -n terraclassic
 ```
 
 **What this command does:**
@@ -217,8 +217,8 @@ sha256sum download.wasm
 **Method 2: Verify against official release**
 
 ```bash
-wget https://github.com/many-things/cw-hyperlane/releases/download/v0.0.6-rc8/cw-hyperlane-v0.0.6-rc8.zip
-unzip cw-hyperlane-v0.0.6-rc8.zip
+wget https://github.com/many-things/cw-hyperlane/releases/download/v0.0.7-rc0/cw-hyperlane-v0.0.7-rc0.zip
+unzip cw-hyperlane-v0.0.7-rc0.zip
 sha256sum -c checksums.txt
 ```
 
@@ -884,7 +884,7 @@ https://rpc.terraclassic.community
 ---
 
 **Last updated:** 2026-06-03
-**Contract Version:** v0.0.6-rc8
+**Contract Version:** v0.0.7-rc0
 **Chain:** Terra Classic Mainnet (columbus-5)
 **RPC:** https://rpc.terra-classic.hexxagon.io
 **LCD:** https://lcd.terra-classic.hexxagon.io
