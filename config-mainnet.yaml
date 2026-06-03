@@ -43,81 +43,79 @@ deploy:
           validators:
             56:
               addrs:
-                - '570af9b7b36568c8877eebba6c6727aa9dab7268'
-                - '5450447aee7b544c462c9352bef7cad049b0c2dc'
-                - '0d4c1394a255568ec0ecd11795b28d1bda183ca4'
-                - '24c1506142b2c859aee36474e59ace09784f71e8'
-                - 'c67789546a7a983bf06453425231ab71c119153f'
-                - '2d74f6edfd08261c927ddb6cb37af57ab89f0eff'
-               
-              threshold: 2
+                - '570af9b7b36568c8877eebba6c6727aa9dab7268'  # Abacus Works
+                - '5450447aee7b544c462c9352bef7cad049b0c2dc'  # Zee Prime
+                - '0d4c1394a255568ec0ecd11795b28d1bda183ca4'  # Tessellated
+                - '24c1506142b2c859aee36474e59ace09784f71e8'  # Substance Labs
+                - 'c67789546a7a983bf06453425231ab71c119153f'  # Luganodes
+                - '2d74f6edfd08261c927ddb6cb37af57ab89f0eff'  # Enigma
+              threshold: 4  # official: 4 of 6
       1:
           type: multisig
           owner: terra1lmwng9g3gws5c9v0awxdankjl6a2psfhm8pc8z
           validators:
             1:
               addrs:
-                - '03c842db86a6a3e524d4a6615390c1ea8e2b9541'
-                - '94438a7de38d4548ae54df5c6010c4ebc5239eae'
-                - '5450447aee7b544c462c9352bef7cad049b0c2dc'
-                - 'b3ac35d3988bca8c2ffd195b1c6bee18536b317b'
-                - 'b683b742b378632a5f73a2a5a45801b3489bba44'
-                - '3786083ca59dc806d894104e65a13a70c2b39276'
-                - '4f977a59fdc2d9e39f6d780a84d5b4add1495a36'
-                - '29d783efb698f9a2d3045ef4314af1f5674f52c5'
-                - '36a669703ad0e11a0382b098574903d2084be22c'
-               
-              threshold: 6
+                - '03c842db86a6a3e524d4a6615390c1ea8e2b9541'  # Abacus Works
+                - '94438a7de38d4548ae54df5c6010c4ebc5239eae'  # DSRV
+                - '5450447aee7b544c462c9352bef7cad049b0c2dc'  # Zee Prime
+                - 'b3ac35d3988bca8c2ffd195b1c6bee18536b317b'  # Staked
+                - 'b683b742b378632a5f73a2a5a45801b3489bba44'  # AVS: Luganodes
+                - '3786083ca59dc806d894104e65a13a70c2b39276'  # Imperator
+                - '4f977a59fdc2d9e39f6d780a84d5b4add1495a36'  # Mitosis
+                - '29d783efb698f9a2d3045ef4314af1f5674f52c5'  # Substance Labs
+                - '36a669703ad0e11a0382b098574903d2084be22c'  # Enigma
+              threshold: 6  # official: 6 of 9
       1399811149:
           type: multisig
           owner: terra1lmwng9g3gws5c9v0awxdankjl6a2psfhm8pc8z
           validators:
             1399811149:
               addrs:
-                - '28464752829b3ea59a497fca0bdff575c534c3ff'
-                - '2b7514a2f77bd86bbf093fe6bb67d8611f51c659'
-                - 'cb6bcbd0de155072a7ff486d9d7286b0f71dcc2d'
-                - '4f977a59fdc2d9e39f6d780a84d5b4add1495a36'
-                - '5450447aee7b544c462c9352bef7cad049b0c2dc'
-               
-               
-              threshold: 3
+                - '28464752829b3ea59a497fca0bdff575c534c3ff'  # Abacus Works
+                - '2b7514a2f77bd86bbf093fe6bb67d8611f51c659'  # Luganodes
+                - 'cb6bcbd0de155072a7ff486d9d7286b0f71dcc2d'  # Eclipse
+                - '4f977a59fdc2d9e39f6d780a84d5b4add1495a36'  # Mitosis
+                - '5450447aee7b544c462c9352bef7cad049b0c2dc'  # Zee Prime
+              threshold: 3  # official: 3 of 5
       
     
   hooks:
     default:
       type: aggregate
-      owner: terra1lmwng9g3gws5c9v0awxdankjl6a2psfhm8pc8z 
+      owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze 
       hooks:
         - type: merkle
 
         - type: igp
-          owner: terra1lmwng9g3gws5c9v0awxdankjl6a2psfhm8pc8z 
+          owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze
           configs:
-            56:
-              exchange_rate: 1805936462255558    
-              gas_price: 50_000_000   # 0.05 Gwei                          
-            1:
-              exchange_rate: 1805936462255558   
-              gas_price: 50_000_000   # 0.05 Gwei  
-            1399811149:
-              exchange_rate: 57675000000000000     
-              gas_price: 1   # 0.05 Gwei  
+            97:
+              exchange_rate: 177534              # on-chain value (was: 1805936462255558)
+              gas_price: 1000000000              # 1 Gwei on-chain (was: 50_000_000 = 0.05 Gwei)
+
+            1399811150:
+              exchange_rate: 40000000000000      # on-chain value (was: 57675000000000000)
+              gas_price: 1
+
+            11155111:
+              exchange_rate: 177534              # on-chain value (Sepolia — added, was missing)
+              gas_price: 1000000000              # 1 Gwei on-chain
 
           default_gas_usage: 100000
          
 
     required:
       type: aggregate
-      owner: terra1lmwng9g3gws5c9v0awxdankjl6a2psfhm8pc8z 
+      owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze 
       hooks:
         
         - type: pausable
-          owner: terra1lmwng9g3gws5c9v0awxdankjl6a2psfhm8pc8z 
+          owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze 
           paused: false
 
         - type: fee
-          owner: terra1lmwng9g3gws5c9v0awxdankjl6a2psfhm8pc8z 
+          owner: terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze 
           fee:
             # if you didn't set the denom, it will be set as gas denom of network config
             denom: uluna
