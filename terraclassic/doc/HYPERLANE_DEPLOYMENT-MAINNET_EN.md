@@ -282,13 +282,7 @@ This script instantiates all contracts on the blockchain with their initial conf
 # Run from project root
 cd /home/lunc/tc-cw-hyperlane
 
-# Basic usage (owner defaults to the deployer wallet)
 PRIVATE_KEY="0xYOUR_HEX_KEY" yarn tsx terraclassic/CustomInstantiateWasm-mainnet.ts
-
-# Override owner address (e.g. set governance from the start)
-PRIVATE_KEY="0xYOUR_HEX_KEY" \
-OWNER_ADDRESS="terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n" \
-yarn tsx terraclassic/CustomInstantiateWasm-mainnet.ts
 ```
 
 #### Script Configuration
@@ -298,18 +292,14 @@ yarn tsx terraclassic/CustomInstantiateWasm-mainnet.ts
 | **RPC** | `https://rpc.terra-classic.hexxagon.io` |
 | **Chain ID** | `columbus-5` |
 | **Gas Price** | `28.5uluna` |
-| **Owner** | Deployer wallet (default) or `OWNER_ADDRESS` env var |
-| **Code IDs** | Read from `CODE_IDS` constant (11371–11390) |
-
-> After instantiation, transfer ownership to the governance module.
-> See: [`TRANSFER-OWNERSHIP-TO-GOVERNANCE.md`](./TRANSFER-OWNERSHIP-TO-GOVERNANCE.md)
+| **Owner (all contracts)** | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` |
+| **Code IDs** | `11371–11390` (hardcoded in `CODE_IDS` constant) |
 
 #### Environment Variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `PRIVATE_KEY` | ✅ Yes | Deployer private key in hex (`0x...` or without prefix) |
-| `OWNER_ADDRESS` | No | Override owner of all contracts (default: deployer address) |
 
 #### What the script does after running
 
@@ -331,7 +321,7 @@ The script instantiates **14 contracts** supporting **3 chains** (Ethereum, BSC,
 {
   "hrp": "terra",
   "domain": 1325,
-  "owner": "YOUR_DEPLOYER_ADDRESS"
+  "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp"
 }
 ```
 
@@ -357,7 +347,7 @@ The script instantiates **14 contracts** supporting **3 chains** (Ethereum, BSC,
 #### 3. 🔐 ISM MULTISIG #1 - For Ethereum (Domain 1)
 
 ```json
-{ "owner": "YOUR_DEPLOYER_ADDRESS" }
+{ "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp" }
 ```
 
 **Code ID:** `11374`  
@@ -379,7 +369,7 @@ The script instantiates **14 contracts** supporting **3 chains** (Ethereum, BSC,
 #### 4. 🔐 ISM MULTISIG #2 - For BSC (Domain 56)
 
 ```json
-{ "owner": "YOUR_DEPLOYER_ADDRESS" }
+{ "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp" }
 ```
 
 **Code ID:** `11374`  
@@ -398,7 +388,7 @@ The script instantiates **14 contracts** supporting **3 chains** (Ethereum, BSC,
 #### 5. 🔐 ISM MULTISIG #3 - For Solana (Domain 1399811149)
 
 ```json
-{ "owner": "YOUR_DEPLOYER_ADDRESS" }
+{ "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp" }
 ```
 
 **Code ID:** `11374`  
@@ -417,7 +407,7 @@ The script instantiates **14 contracts** supporting **3 chains** (Ethereum, BSC,
 
 ```json
 {
-  "owner": "YOUR_DEPLOYER_ADDRESS",
+  "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
   "isms": [
     { "domain": 1,          "address": "<ISM_MULTISIG_ETH>" },
     { "domain": 56,         "address": "<ISM_MULTISIG_BSC>" },
@@ -447,9 +437,9 @@ The script instantiates **14 contracts** supporting **3 chains** (Ethereum, BSC,
 ```json
 {
   "hrp": "terra",
-  "owner": "YOUR_DEPLOYER_ADDRESS",
+  "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
   "gas_token": "uluna",
-  "beneficiary": "YOUR_DEPLOYER_ADDRESS",
+  "beneficiary": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
   "default_gas_usage": "100000"
 }
 ```
@@ -462,7 +452,7 @@ The script instantiates **14 contracts** supporting **3 chains** (Ethereum, BSC,
 #### 9. 🔮 IGP ORACLE - Gas Price Oracle
 
 ```json
-{ "owner": "YOUR_DEPLOYER_ADDRESS" }
+{ "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp" }
 ```
 
 **Code ID:** `11388`  
@@ -476,7 +466,7 @@ The script instantiates **14 contracts** supporting **3 chains** (Ethereum, BSC,
 
 ```json
 {
-  "owner": "YOUR_DEPLOYER_ADDRESS",
+  "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
   "hooks": ["<HOOK_MERKLE>", "<IGP>"]
 }
 ```
@@ -489,7 +479,7 @@ The script instantiates **14 contracts** supporting **3 chains** (Ethereum, BSC,
 #### 11. ⏸️ HOOK PAUSABLE
 
 ```json
-{ "owner": "YOUR_DEPLOYER_ADDRESS", "paused": false }
+{ "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp", "paused": false }
 ```
 
 **Code ID:** `11381`  
@@ -501,7 +491,7 @@ The script instantiates **14 contracts** supporting **3 chains** (Ethereum, BSC,
 
 ```json
 {
-  "owner": "YOUR_DEPLOYER_ADDRESS",
+  "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
   "fee": { "denom": "uluna", "amount": "283215" }
 }
 ```
@@ -515,7 +505,7 @@ The script instantiates **14 contracts** supporting **3 chains** (Ethereum, BSC,
 
 ```json
 {
-  "owner": "YOUR_DEPLOYER_ADDRESS",
+  "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
   "hooks": ["<HOOK_PAUSABLE>", "<HOOK_FEE>"]
 }
 ```

@@ -21,11 +21,10 @@ const CHAIN_ID = "columbus-5";
 // ==============================
 // OWNERS — aligned with config-mainnet.yaml
 //
-//   deploy.ism.owner              → ISM_OWNER
-//   deploy.hooks.default.owner    → HOOKS_OWNER
-//   deploy.hooks.required.owner   → HOOKS_OWNER
+//   All contracts use the same owner:
+//   terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp
 // ==============================
-const ISM_OWNER   = "terra1lmwng9g3gws5c9v0awxdankjl6a2psfhm8pc8z";
+const ISM_OWNER   = "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp";
 const HOOKS_OWNER = "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp";
 
 // ==============================
