@@ -271,23 +271,53 @@ terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n
 
 This script instantiates all contracts on the blockchain with their initial configurations.
 
-> **Note:** The script is located at `terraclassic/CustomInstantiateWasm-mainnet.ts`.
-> Run it from the **project root** (`/home/lunc/tc-cw-hyperlane`) to ensure Node.js dependencies are resolved correctly.
+**File location:** `terraclassic/CustomInstantiateWasm-mainnet.ts`
+
+> **Important:** Always run from the **project root** (`/home/lunc/tc-cw-hyperlane`),
+> not from inside `terraclassic/`, so that Node.js resolves `node_modules` correctly.
 
 #### Execute Instantiation
 
 ```bash
+# Run from project root
 cd /home/lunc/tc-cw-hyperlane
+
+# Basic usage (owner defaults to the deployer wallet)
 PRIVATE_KEY="0xYOUR_HEX_KEY" yarn tsx terraclassic/CustomInstantiateWasm-mainnet.ts
+
+# Override owner address (e.g. set governance from the start)
+PRIVATE_KEY="0xYOUR_HEX_KEY" \
+OWNER_ADDRESS="terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n" \
+yarn tsx terraclassic/CustomInstantiateWasm-mainnet.ts
 ```
 
 #### Script Configuration
 
-The script is configured with:
-- **RPC**: `https://rpc.terra-classic.hexxagon.io`
-- **Chain ID**: `columbus-5`
-- **Owner**: deployer wallet (transfer to governance after deployment — see `doc/TRANSFER-OWNERSHIP-TO-GOVERNANCE.md`)
-- **Gas Price**: `28.5uluna`
+| Parameter | Value |
+|-----------|-------|
+| **RPC** | `https://rpc.terra-classic.hexxagon.io` |
+| **Chain ID** | `columbus-5` |
+| **Gas Price** | `28.5uluna` |
+| **Owner** | Deployer wallet (default) or `OWNER_ADDRESS` env var |
+| **Code IDs** | Read from `CODE_IDS` constant (11371–11390) |
+
+> After instantiation, transfer ownership to the governance module.
+> See: [`TRANSFER-OWNERSHIP-TO-GOVERNANCE.md`](./TRANSFER-OWNERSHIP-TO-GOVERNANCE.md)
+
+#### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `PRIVATE_KEY` | ✅ Yes | Deployer private key in hex (`0x...` or without prefix) |
+| `OWNER_ADDRESS` | No | Override owner of all contracts (default: deployer address) |
+
+#### What the script does after running
+
+1. Prints all instantiated addresses to the console
+2. Shows the `hexed` (32-byte hex) for each contract
+3. Prints next steps (ownership transfer + governance proposal)
+
+**Copy the output addresses** into section 6 of this document after running.
 
 ### 📋 Instantiated Contracts
 
