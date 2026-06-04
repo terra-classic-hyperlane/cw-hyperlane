@@ -1307,7 +1307,34 @@ fi
 # ═════════════════════════════════════════════════════════════════════════════
 log_sep "STEP 8 — FINAL VERIFICATION"
 
-wait_sec 12 "Waiting for propagation"
+# Ethereum mainnet has ~12s block time — wait longer before verifying
+WAIT_TIME=12
+[ "$NET_CHAIN_ID" = "1" ] && WAIT_TIME=30
+wait_sec "$WAIT_TIME" "Waiting for propagation"
+
+# Helper: tries NET_RPC first, then NET_RPC_ALT on empty/error result
+# Usage: cast_read <contract> <signature> [args...]
+cast_read() {
+    local addr="$1"; shift
+    local sig="$1";  shift
+    local result
+    # Try primary RPC
+    result=$(cast call "$addr" "$sig" "$@" --rpc-url "$NET_RPC" 2>/dev/null || echo "")
+    # If empty or 0x, try alternate RPC
+    if [ -z "$result" ] || [ "$result" = "0x" ]; then
+        [ -n "$NET_RPC_ALT" ] && result=$(cast call "$addr" "$sig" "$@" --rpc-url "$NET_RPC_ALT" 2>/dev/null || echo "")
+    fi
+    echo "$result"
+}
+cast_code_read() {
+    local addr="$1"
+    local result
+    result=$(cast code "$addr" --rpc-url "$NET_RPC" 2>/dev/null || echo "0x")
+    if [ -z "$result" ] || [ "$result" = "0x" ]; then
+        [ -n "$NET_RPC_ALT" ] && result=$(cast code "$addr" --rpc-url "$NET_RPC_ALT" 2>/dev/null || echo "0x")
+    fi
+    echo "$result"
+}
 
 ERROS=0
 
@@ -1315,23 +1342,26 @@ if [ "$HAVE_CAST" = "true" ]; then
 
     # 1. Mailbox
     log_info "1. Mailbox (${MAILBOX})..."
-    MB_CODE=$(cast code "$MAILBOX" --rpc-url "$NET_RPC" 2>/dev/null || echo "0x")
-    [ "$MB_CODE" != "0x" ] && log_ok "Mailbox ok" || { log_warn "Mailbox not found"; ERROS=$((ERROS+1)); }
+    MB_CODE=$(cast_code_read "$MAILBOX")
+    [ "$MB_CODE" != "0x" ] && log_ok "Mailbox ok" || { log_warn "Mailbox not found (RPC may be rate-limited — deploy succeeded)"; ERROS=$((ERROS+1)); }
 
     # 2. Warp Route exists
     log_info "2. Warp Route (${WARP_ADDRESS})..."
-    WP_CODE=$(cast code "$WARP_ADDRESS" --rpc-url "$NET_RPC" 2>/dev/null || echo "0x")
+    WP_CODE=$(cast_code_read "$WARP_ADDRESS")
     [ "$WP_CODE" != "0x" ] && log_ok "Warp Route exists" || { log_err "Warp Route not found!"; ERROS=$((ERROS+1)); }
 
     # 3. Hook = AggregationHook (or IGP fallback)
     log_info "3. Warp Route Hook..."
-    HOOK=$(cast call "$WARP_ADDRESS" "hook()(address)" --rpc-url "$NET_RPC" 2>/dev/null || echo "")
+    HOOK=$(cast_read "$WARP_ADDRESS" "hook()(address)")
     EXPECTED_HOOK="${HOOK_AGG_ADDRESS:-${IGP_ADDRESS}}"
     if [ "${HOOK,,}" = "${EXPECTED_HOOK,,}" ]; then
         log_ok "Hook = AggregationHook ✅  (${HOOK})"
     elif [ "${HOOK,,}" = "${IGP_ADDRESS,,}" ]; then
         log_warn "Hook = IGP (legacy) — no MerkleTree! Msgs will not be signed by validator."
         log_warn "Run again to fix with AggregationHook."
+        ERROS=$((ERROS+1))
+    elif [ -z "$HOOK" ]; then
+        log_warn "Hook: could not read (RPC rate limit) — verify manually: cast call ${WARP_ADDRESS} \"hook()(address)\" --rpc-url ${NET_RPC_ALT:-$NET_RPC}"
         ERROS=$((ERROS+1))
     else
         log_warn "Hook: ${HOOK} ≠ ${EXPECTED_HOOK}"
@@ -1340,14 +1370,19 @@ if [ "$HAVE_CAST" = "true" ]; then
 
     # 4. hookType of custom IGP
     log_info "4. Custom IGP hookType..."
-    HTYPE=$(cast call "$IGP_ADDRESS" "hookType()(uint8)" --rpc-url "$NET_RPC" 2>/dev/null || echo "")
-    [ "$HTYPE" = "4" ] && log_ok "hookType IGP = 4 (INTERCHAIN_GAS_PAYMASTER) ✅" \
-                       || { log_err "hookType IGP=$HTYPE (must be 4)"; ERROS=$((ERROS+1)); }
+    HTYPE=$(cast_read "$IGP_ADDRESS" "hookType()(uint8)")
+    if [ "$HTYPE" = "4" ]; then
+        log_ok "hookType IGP = 4 (INTERCHAIN_GAS_PAYMASTER) ✅"
+    elif [ -z "$HTYPE" ]; then
+        log_warn "hookType: could not read (RPC rate limit) — verify manually: cast call ${IGP_ADDRESS} \"hookType()(uint8)\" --rpc-url ${NET_RPC_ALT:-$NET_RPC}"
+        ERROS=$((ERROS+1))
+    else
+        log_err "hookType IGP=$HTYPE (must be 4)"; ERROS=$((ERROS+1))
+    fi
 
     # 5. ISM
     log_info "5. Warp Route ISM..."
-    ISM_WP=$(cast call "$WARP_ADDRESS" "interchainSecurityModule()(address)" \
-        --rpc-url "$NET_RPC" 2>/dev/null || echo "")
+    ISM_WP=$(cast_read "$WARP_ADDRESS" "interchainSecurityModule()(address)")
     if [ -n "$ISM_WP" ] && [ "$ISM_WP" != "0x0000000000000000000000000000000000000000" ]; then
         log_ok "ISM: ${ISM_WP}"
     else
@@ -1357,8 +1392,7 @@ if [ "$HAVE_CAST" = "true" ]; then
     # 6. Terra Classic Router
     if [ -z "${SKIP_ENROLL:-}" ] && [ -n "$TERRA_WARP_HEX" ]; then
         log_info "6. Terra Classic Route..."
-        ROUTER=$(cast call "$WARP_ADDRESS" "routers(uint32)(bytes32)" "$TERRA_DOMAIN" \
-            --rpc-url "$NET_RPC" 2>/dev/null || echo "0x00")
+        ROUTER=$(cast_read "$WARP_ADDRESS" "routers(uint32)(bytes32)" "$TERRA_DOMAIN")
         TERRA_B32_EXP=$(to_bytes32 "$TERRA_WARP_HEX")
         if echo "${ROUTER,,}" | grep -q "${TERRA_B32_EXP,,}"; then
             log_ok "Terra Classic route linked ✅"

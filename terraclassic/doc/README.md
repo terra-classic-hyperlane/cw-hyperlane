@@ -2,7 +2,7 @@
 
 > Index document for all Warp Route scripts and guides for Terra Classic ↔ EVM and Terra Classic ↔ Sealevel (Solana).
 
-**Last updated:** 2026-06-04 — **All 17 install steps complete**: ISM validators (ETH/BSC/SOL) + mailbox hooks + IGP oracle all configured. BSC↔TC bridge fully tested: IGORFAKE TC→BSC ✅ and BSC→TC ✅. Script `CustomInstantiateWasm-mainnet.ts` updated with all steps.
+**Last updated:** 2026-06-04 — IGORFAKE deployed on Ethereum mainnet; Step 8 verification uses RPC fallback to handle rate limits; Ethereum mainnet section added to deployed contracts reference.
 
 ---
 
@@ -115,13 +115,16 @@ Configures/updates the Terra Classic IGP oracle for each destination chain.
 
 **Exchange rate formula (EVM chains):**
 ```
-exchange_rate = (LUNC_USD / NATIVE_USD) × 1e12
+exchange_rate = (LUNC_USD / NATIVE_USD) × 1e12   (Solana uses 1e15)
 
 Examples (2026-06-04):
-  BSC mainnet:  (0.00006824 / 617.38) × 1e12 = 110,531  ✅ configured
-  Ethereum:     (0.00006824 / 3500)   × 1e12 = 19,491   ❌ pending
-  Solana:       (0.00006824 / 150)    × 1e15 = 454,933  ❌ pending (uses 1e15)
+  BSC mainnet:  (0.00006824 / 617.38) × 1e12 = 110,531    ✅ configured
+  Ethereum:     (0.00006782 / 1803.18) × 1e12 = 37,611    ✅ configured (2026-06-04)
+  Solana:       (0.00006782 / SOL_USD) × 1e15               ✅ see table below
 ```
+
+> **Two oracle systems:** `exchange_rate` in the **TC oracle** = `LUNC_USD/NATIVE_USD × 1e12` (pay LUNC for EVM gas).  
+> `exchange_rate` in the **EVM TerraClassicOracle.sol** = `NATIVE_USD/LUNC_USD` (e.g. 26,585,078 for ETH) — used to price TC gas in ETH/BNB when sending EVM→TC.
 
 **Payment formula:**
 ```
@@ -264,6 +267,7 @@ Deployed 2026-06-03 via `CustomInstantiateWasm-mainnet.ts`.
 | Token | Warp Address | Hex bytes32 |
 |---|---|---|
 | **ZTT** | `terra13uhhpfzfxx0t0w2adxm75vkufe4f4m8stmv23nc806gahw6jd3psadyjl2` | `0x8f2f70a449319eb7b95d69b7ea32dc4e6a9aecf05ed8a8cf077e91dbbb526c43` |
+| **IGORFAKE** | `terra1m5ktcghalv0tlj0zzx2kt6u8adnuslwd449ml55uam57s0eclyssv634a4` | `0xdd2cbc22fdfb1ebfc9e2119565eb87eb67c87dcdad4bbfd29ceee9e83f38f921` |
 
 ---
 
@@ -287,6 +291,31 @@ Deployed 2026-06-03 via `CustomInstantiateWasm-mainnet.ts`.
 | **ZTT** | [`0x6AB3EaF4dC64496BB435D221563C5e3e1132A592`](https://bscscan.com/address/0x6AB3EaF4dC64496BB435D221563C5e3e1132A592) | [`0x5Ea49420DFCa83ca8E7eddA9160A3009F6aE6a7B`](https://bscscan.com/address/0x5Ea49420DFCa83ca8E7eddA9160A3009F6aE6a7B) | [`0x38fC50ecC1D21e45705be7441cc1Ff9bcDDec488`](https://bscscan.com/address/0x38fC50ecC1D21e45705be7441cc1Ff9bcDDec488) | [`0x0Eb97DFC380fD71F62C9d42498CC0C1135A910b7`](https://bscscan.com/address/0x0Eb97DFC380fD71F62C9d42498CC0C1135A910b7) | [`0xa82087B8eea0394B1476f716B91c10531025Ef42`](https://bscscan.com/address/0xa82087B8eea0394B1476f716B91c10531025Ef42) |
 
 **ZTT exchange_rate**: `9047190` (BNB $617.38 / LUNC $0.00006824 — 2026-06-04)
+
+---
+
+### Ethereum Mainnet — chain 1 (domain 1)
+
+**Hyperlane core contracts (official):**
+
+| Contract | Address |
+|---|---|
+| Mailbox | `0xc005dc82818d67AF737725bD4bf75435d065D239` |
+| MerkleTreeHook | `0x48e6c30B97748d1e2e03bf3e9FbE3890ca5f8CCA` |
+| AggregationHookFactory | `0x6D2555A8ba483CcF4409C39013F5e9a3285D3C9E` |
+| StorageGasOracle (official) | `0xc9a103990A8dB11b4f627bc5CD1D0c2685484Ec5` |
+| InterchainGasPaymaster (official) | `0x9e6B1022bE9BBF5aFd152483DAD9b88911bC8611` |
+| ISM MultisigFactory | `0xfA21D9628ADce86531854C2B7ef00F07394B0B69` |
+
+**Deployed Warp Routes:**
+
+| Token | Warp Route | Custom IGP | Custom Oracle | AggHook |
+|---|---|---|---|---|
+| **IGORFAKE** | [`0xA687a4C4Ca49795999b36fDC8A18D1ddD63EdfB5`](https://etherscan.io/address/0xA687a4C4Ca49795999b36fDC8A18D1ddD63EdfB5) | [`0x574f760b...`](https://etherscan.io/address/0x574f760bA7488CDc987bfa85A655Db735CB0b18f) | [`0x3987cCE8...`](https://etherscan.io/address/0x3987cCE8f08037EBF93Ef3a934753540A94196cE) | [`0x77761888...`](https://etherscan.io/address/0x77761888F33AF67627806A26Bb3F8ee727B1317A) |
+
+**IGORFAKE exchange_rate**: `26585078` (ETH_USD/LUNC_USD = 1803/0.00006782 — 2026-06-04)
+
+> **RPC note:** `rpc.ankr.com/eth` and `1rpc.io/eth` can rate-limit during deploys. Use `ethereum-rpc.publicnode.com` for Step 8 verification.
 
 ---
 

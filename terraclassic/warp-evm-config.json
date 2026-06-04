@@ -369,8 +369,8 @@
       }
     },
     "ethereum": {
-      "_comment": "Ethereum Mainnet — disabled until production deploy",
-      "enabled": false,
+      "_comment": "Ethereum Mainnet",
+      "enabled": true,
       "display_name": "Ethereum Mainnet",
       "chain_id": 1,
       "domain": 1,
@@ -381,8 +381,9 @@
         "decimals": 18
       },
       "rpc_urls": [
-        "https://eth.llamarpc.com",
-        "https://1rpc.io/eth"
+        "https://ethereum-rpc.publicnode.com",
+        "https://1rpc.io/eth",
+        "https://eth.drpc.org"
       ],
       "explorer": "https://etherscan.io",
       "mailbox": {
@@ -390,23 +391,26 @@
       },
       "ism": {
         "type": "messageIdMultisigIsm",
-        "factory": "0xEb9FcFDC9EfDC17c1EC5E1dc085B98485da213D6",
+        "factory": "0xfA21D9628ADce86531854C2B7ef00F07394B0B69",
         "deployed_address": "",
-        "validators": [],
+        "validators": [
+          "0x71b2b8c36a0c76b74be92eb7915e26a69b3b03eb"
+        ],
         "threshold": 1
       },
       "hook": {
-        "_comment": "Use AggregationHook=[merkle_tree+igp_custom]",
-        "merkle_tree": "0x19DC3De9E2E8b69975F775b18dF7a2c2B2C0b8e2",
-        "agg_hook_factory": "0x160C28C92cA453570aD7C031972b58d5Dd128F72"
+        "_comment": "Ethereum Mainnet MerkleTreeHook + AggregationHookFactory",
+        "merkle_tree": "0x48e6c30B97748d1e2e03bf3e9FbE3890ca5f8CCA",
+        "agg_hook_factory": "0x6D2555A8ba483CcF4409C39013F5e9a3285D3C9E"
       },
       "igp": {
         "official_address": "0x9e6B1022bE9BBF5aFd152483DAD9b88911bC8611",
-        "gas_oracle": "0x",
+        "gas_oracle": "0xc9a103990A8dB11b4f627bc5CD1D0c2685484Ec5",
         "overhead_default": 300000,
         "terra_classic_config": {
-          "exchange_rate": 0,
-          "gas_price_wei": 0
+          "exchange_rate": 26585078,
+          "gas_price_wei": 10000000000,
+          "_comment": "exchange_rate: ETH_USD/LUNC_USD = 1803.0/6.782e-05 (2026-06-04)"
         }
       },
       "warp_tokens": {
@@ -442,6 +446,22 @@
           "owner": ""
         },
         "igorfake": {
+          "deployed": true,
+          "address": "0xA687a4C4Ca49795999b36fDC8A18D1ddD63EdfB5",
+          "igp_custom": "0x574f760bA7488CDc987bfa85A655Db735CB0b18f",
+          "hook_aggregation": "0x77761888F33AF67627806A26Bb3F8ee727B1317A",
+          "owner": "0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae",
+          "oracle_custom": "0x3987cCE8f08037EBF93Ef3a934753540A94196cE",
+          "ism_custom": ""
+        },
+        "xptv": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
+        },
+        "xpv": {
           "deployed": false,
           "address": "",
           "igp_custom": "",

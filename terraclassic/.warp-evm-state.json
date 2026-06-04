@@ -1,7 +1,8 @@
 {
-  "network":      "sepolia",
-  "token":        "juris",
-  "warp_address": "0xc2Da334D32724B97D5990229a9752a0d31087bC9",
-  "igp_address":  "0xBc699827EA28494C64CD52586B366ef806429730",
-  "timestamp":    "2026-03-13T11:55:03-03:00"
+  "network":        "ethereum",
+  "token":          "igorfake",
+  "warp_address":   "0xA687a4C4Ca49795999b36fDC8A18D1ddD63EdfB5",
+  "igp_address":    "0x574f760bA7488CDc987bfa85A655Db735CB0b18f",
+  "oracle_address": "0x3987cCE8f08037EBF93Ef3a934753540A94196cE",
+  "timestamp":      "2026-06-04T12:31:15-03:00"
 }

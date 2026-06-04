@@ -1,0 +1,33 @@
+═══════════════════════════════════════════════════════════
+  WARP: IGORFAKE on ETHEREUM MAINNET
+  Generated: 2026-06-04 12:31:15
+═══════════════════════════════════════════════════════════
+
+TOKEN:
+  Name:     IGORFAKE
+  Symbol:   IGORFAKE
+  Decimals: 6
+  Type:     cw20 / collateral
+
+EVM NETWORK: Ethereum Mainnet
+  Chain ID:  1
+  Domain:    1
+
+EVM CONTRACTS:
+  Mailbox:   0xc005dc82818d67AF737725bD4bf75435d065D239
+  Warp:      0xA687a4C4Ca49795999b36fDC8A18D1ddD63EdfB5
+  IGP:       0x574f760bA7488CDc987bfa85A655Db735CB0b18f
+  GasOracle: 0x3987cCE8f08037EBF93Ef3a934753540A94196cE
+  ISM:       messageIdMultisigIsm | validators: 0x71b2b8c36a0c76b74be92eb7915e26a69b3b03eb
+
+TERRA CLASSIC:
+  Domain:    1325
+  Type:      cw20 / collateral
+  Owner:     terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp
+  CW20/Denom: terra1lpkaaqjaq8zfwktge3vy0zg46nxxsynsge2wxa7addpweu2w6gmsy3lhkr
+  Warp:      terra1m5ktcghalv0tlj0zzx2kt6u8adnuslwd449ml55uam57s0eclyssv634a4
+
+IGP CONFIG (EVM → Terra):
+  Exchange Rate: 26585078
+  Gas Price:     10000000000 wei
+═══════════════════════════════════════════════════════════

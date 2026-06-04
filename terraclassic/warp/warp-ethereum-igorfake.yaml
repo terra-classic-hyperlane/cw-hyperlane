@@ -1,0 +1,18 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Warp Route: Ethereum Mainnet ↔ Terra Classic
+# Token:      IGORFAKE (IGORFAKE)
+# Generated:  2026-06-04 12:26:30
+# ─────────────────────────────────────────────────────────────────────────────
+ethereum:
+  isNft: false
+  type: synthetic
+  name: "IGORFAKE"
+  symbol: "IGORFAKE"
+  decimals: 6
+  owner: "0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae"
+  mailbox: "0xc005dc82818d67AF737725bD4bf75435d065D239"
+  interchainSecurityModule:
+    type: messageIdMultisigIsm
+    validators:
+    - "0x71b2b8c36a0c76b74be92eb7915e26a69b3b03eb"
+    threshold: 1
