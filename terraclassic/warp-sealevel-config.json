@@ -94,25 +94,41 @@
       }
     },
     "solana": {
-      "_comment": "Solana Mainnet — desabilitado até deploy em produção",
-      "enabled": false,
+      "_comment": "Solana Mainnet — habilitado 2026-06-04",
+      "enabled": true,
       "display_name": "Solana Mainnet",
-      "environment": "mainnet",
+      "environment": "mainnet3",
       "domain": 1399811149,
       "rpc": "https://api.mainnet-beta.solana.com",
+      "rpc_alt": "https://solana-mainnet.rpc.extrnode.com",
+      "mailbox": "E588QtVUvresuXq2KoNEwAmoifCzYGpRBdHByN9KQMbi",
       "explorer": "https://explorer.solana.com",
-      "keypair": "",
-      "monorepo_dir": "",
+      "keypair": "/home/lunc/keys/solana-keypair-EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd.json",
+      "monorepo_dir": "/home/lunc/hyperlane-monorepo/rust/sealevel",
       "ism": {
-        "program_id": "",
+        "_comment": "MultisigISM mainnet — LwNfVYMDzAe5dCJgA5CipTZcT34Eyf74zLr81K91jxk",
+        "program_id": "LwNfVYMDzAe5dCJgA5CipTZcT34Eyf74zLr81K91jxk",
         "threshold": 1
       },
       "igp": {
-        "program_id": "",
-        "account": "",
+        "_comment": "IGP program mainnet + overhead_igp_account (AkeHBb...)",
+        "program_id": "BhNcatUDC2D5JTyeaqrdSukiVFsEHK7e3hVmKMztwefv",
+        "account": "AkeHBbE5JkwVppujCQQ6WuxsVsJtruBAjUo6fDCFp6fF",
         "destination_gas_terra": 3000000
       },
-      "warp_tokens": {}
+      "warp_tokens": {
+        "igorfake": {
+          "_comment": "IGORFAKE CW20 → token sintético no Solana Mainnet",
+          "deployed": false,
+          "type": "synthetic",
+          "program_id": "",
+          "program_hex": "",
+          "mint_address": "",
+          "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-igorfake.json",
+          "decimals": 6,
+          "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
+        }
+      }
     }
   }
 }

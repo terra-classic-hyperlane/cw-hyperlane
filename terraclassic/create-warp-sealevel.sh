@@ -230,10 +230,15 @@ for TK in "${TOKEN_KEYS[@]}"; do
     TK_DEPLOYED_TC=$(evm_cfg ".terra_classic.tokens.${TK}.terra_warp.deployed")
     TK_WARP_TC=$(evm_cfg     ".terra_classic.tokens.${TK}.terra_warp.warp_address")
 
-    # Check if token has Solana config
-    SOL_EXISTS=$(sol_cfg ".networks.solanatestnet.warp_tokens.${TK}.type" 2>/dev/null || echo "")
-    SOL_DEPLOYED=$(sol_cfg ".networks.solanatestnet.warp_tokens.${TK}.deployed" 2>/dev/null || echo "false")
-    SOL_PID=$(sol_cfg      ".networks.solanatestnet.warp_tokens.${TK}.program_id" 2>/dev/null || echo "")
+    # Check token across ALL enabled Solana networks
+    SOL_EXISTS=""; SOL_DEPLOYED="false"; SOL_PID=""
+    for _NK in $(jq -r '.networks | to_entries[] | select(.value.enabled==true) | .key' "$SOL_CONFIG" 2>/dev/null); do
+        _d=$(sol_cfg ".networks.${_NK}.warp_tokens.${TK}.deployed" 2>/dev/null || echo "")
+        _p=$(sol_cfg ".networks.${_NK}.warp_tokens.${TK}.program_id" 2>/dev/null || echo "")
+        _t=$(sol_cfg ".networks.${_NK}.warp_tokens.${TK}.type" 2>/dev/null || echo "")
+        [ -n "$_t" ] && SOL_EXISTS="$_t"
+        [ "$_d" = "true" ] && [ -n "$_p" ] && SOL_DEPLOYED="true" && SOL_PID="$_p"
+    done
 
     TOKEN_MENU+=("$TK")
 
