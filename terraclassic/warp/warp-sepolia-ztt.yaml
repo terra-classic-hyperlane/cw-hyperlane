@@ -1,0 +1,18 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Warp Route: Ethereum Sepolia Testnet ↔ Terra Classic
+# Token:      ZTT Token (ZTT)
+# Generated:  2026-06-04 00:56:53
+# ─────────────────────────────────────────────────────────────────────────────
+sepolia:
+  isNft: false
+  type: synthetic
+  name: "ZTT Token"
+  symbol: "ZTT"
+  decimals: 6
+  owner: "0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291"
+  mailbox: "0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766"
+  interchainSecurityModule:
+    type: messageIdMultisigIsm
+    validators:
+    - "0x8804770d6a346210c0fd011258fdf3ab0a5bb0d0"
+    threshold: 1

@@ -269,13 +269,133 @@ async function main() {
     ],
   });
 
+  // ----------------------------------------------------------------
+  // 14. SET ISM VALIDATORS — official Hyperlane mainnet validators for each chain
+  //     CRITICAL: Without this, inbound messages (EVM → TC) CANNOT be validated.
+  //     The ISM contracts were instantiated empty — validators MUST be set here.
+  //     Source: https://docs.hyperlane.xyz/docs/reference/addresses/validators/mainnet-default-ism-validators
+  // ----------------------------------------------------------------
+  console.log("\n🔐 [14/17] SET ISM VALIDATORS — official Hyperlane mainnet validators");
+
+  const validatorSets = [
+    {
+      addr: ADDRESSES["hpl_ism_multisig_eth"],
+      label: "ETH mainnet (domain 1) — threshold 6/9",
+      msg: {
+        set_validators: {
+          domain: 1,
+          threshold: 6,
+          validators: [
+            "03c842db86a6a3e524d4a6615390c1ea8e2b9541", // Abacus Works
+            "94438a7de38d4548ae54df5c6010c4ebc5239eae", // DSRV
+            "5450447aee7b544c462c9352bef7cad049b0c2dc", // Zee Prime
+            "b3ac35d3988bca8c2ffd195b1c6bee18536b317b", // Staked
+            "b683b742b378632a5f73a2a5a45801b3489bba44", // Luganodes (AVS)
+            "3786083ca59dc806d894104e65a13a70c2b39276", // Imperator
+            "4f977a59fdc2d9e39f6d780a84d5b4add1495a36", // Mitosis
+            "29d783efb698f9a2d3045ef4314af1f5674f52c5", // Substance Labs
+            "36a669703ad0e11a0382b098574903d2084be22c", // Enigma
+          ],
+        },
+      },
+    },
+    {
+      addr: ADDRESSES["hpl_ism_multisig_bsc"],
+      label: "BSC mainnet (domain 56) — threshold 4/6",
+      msg: {
+        set_validators: {
+          domain: 56,
+          threshold: 4,
+          validators: [
+            "570af9b7b36568c8877eebba6c6727aa9dab7268", // Abacus Works
+            "5450447aee7b544c462c9352bef7cad049b0c2dc", // Zee Prime
+            "0d4c1394a255568ec0ecd11795b28d1bda183ca4", // Tessellated
+            "24c1506142b2c859aee36474e59ace09784f71e8", // Substance Labs
+            "c67789546a7a983bf06453425231ab71c119153f", // Luganodes
+            "2d74f6edfd08261c927ddb6cb37af57ab89f0eff", // Enigma
+          ],
+        },
+      },
+    },
+    {
+      addr: ADDRESSES["hpl_ism_multisig_sol"],
+      label: "Solana mainnet (domain 1399811149) — threshold 3/5",
+      msg: {
+        set_validators: {
+          domain: 1399811149,
+          threshold: 3,
+          validators: [
+            "28464752829b3ea59a497fca0bdff575c534c3ff", // Abacus Works
+            "2b7514a2f77bd86bbf093fe6bb67d8611f51c659", // Luganodes
+            "cb6bcbd0de155072a7ff486d9d7286b0f71dcc2d", // Eclipse
+            "4f977a59fdc2d9e39f6d780a84d5b4add1495a36", // Mitosis
+            "5450447aee7b544c462c9352bef7cad049b0c2dc", // Zee Prime
+          ],
+        },
+      },
+    },
+  ];
+
+  for (const { addr, label, msg } of validatorSets) {
+    console.log(`\n  → ${label}`);
+    const r = await client.execute(sender, addr, msg, "auto",
+      `set_validators — ${label}`);
+    console.log("    TX:", r.transactionHash);
+  }
+
+  // ----------------------------------------------------------------
+  // 15. CONFIGURE MAILBOX — set_default_ism, set_default_hook, set_required_hook
+  //     Executed as owner (deployer). After governance transfer, update via proposal.
+  //     Without this step, transfer_remote FAILS with "default_hook not set".
+  // ----------------------------------------------------------------
+  console.log("\n⚙️  [15/17] CONFIGURE MAILBOX (direct — as owner)");
+
+
+  const configMsgs = [
+    { msg: { set_default_ism:   { ism:  ADDRESSES["hpl_ism_routing"]              } }, label: "set_default_ism   → ISM Routing" },
+    { msg: { set_default_hook:  { hook: ADDRESSES["hpl_hook_aggregate_default"]   } }, label: "set_default_hook  → Hook Agg [Merkle+IGP]" },
+    { msg: { set_required_hook: { hook: ADDRESSES["hpl_hook_aggregate_required"]  } }, label: "set_required_hook → Hook Agg [Pausable+Fee]" },
+  ];
+
+  for (const { msg, label } of configMsgs) {
+    console.log(`\n  → ${label}`);
+    const r = await client.execute(sender, ADDRESSES["hpl_mailbox"], msg, "auto",
+      `mailbox config — ${label}`);
+    console.log("    TX:", r.transactionHash);
+  }
+
+  // ----------------------------------------------------------------
+  // 15. CONFIGURE IGP ORACLE — set_remote_gas_data_configs + router.set_routes
+  //     Sets exchange_rate and gas_price for domains 1 (ETH), 56 (BSC), 1399811149 (SOL).
+  //     Update rates periodically via ./update-igp-oracle.sh or governance.
+  //     Values below use: LUNC=$0.00006782, ETH=$1803, BNB=$617, SOL=$70 (2026-06-04)
+  // ----------------------------------------------------------------
+  console.log("\n⚙️  [16/17] CONFIGURE IGP ORACLE (direct — as owner)");
+
+  const oracleConfigs = [
+    { remote_domain: 1,          token_exchange_rate: "37611",          gas_price: "10000000000" }, // ETH 10 gwei
+    { remote_domain: 56,         token_exchange_rate: "110531",         gas_price: "3000000000"  }, // BSC 3 gwei
+    { remote_domain: 1399811149, token_exchange_rate: "38300155301425", gas_price: "1"           }, // SOL lamport
+  ];
+
+  const rOracle = await client.execute(sender, ADDRESSES["hpl_igp_oracle"],
+    { set_remote_gas_data_configs: { configs: oracleConfigs } },
+    "auto", "IGP oracle config — domains 1/56/1399811149");
+  console.log("  Oracle config TX:", rOracle.transactionHash);
+
+  const oracleRoutes = oracleConfigs.map(c => ({ domain: c.remote_domain, route: ADDRESSES["hpl_igp_oracle"] }));
+  const rRoutes = await client.execute(sender, ADDRESSES["hpl_igp"],
+    { router: { set_routes: { set: oracleRoutes } } },
+    "auto", "IGP routes — domains 1/56/1399811149");
+  console.log("  IGP routes TX:   ", rRoutes.transactionHash);
+
   // ==============================
   // SUMMARY
   // ==============================
   console.log("\n" + "=".repeat(80));
-  console.log("✅ ALL 13 CONTRACTS INSTANTIATED — MAINNET (columbus-5)");
+  console.log("✅ ALL 17 STEPS COMPLETE — MAINNET (columbus-5) FULLY CONFIGURED");
   console.log("=".repeat(80));
-  console.log("\n📊 CONTRACTS:");
+  console.log("\n📊 CONTRACT ADDRESSES:");
   console.log("  Mailbox           :", ADDRESSES["hpl_mailbox"]);
   console.log("  Validator Announce:", ADDRESSES["hpl_validator_announce"]);
   console.log("  ISM Multisig ETH  :", ADDRESSES["hpl_ism_multisig_eth"]);
@@ -290,19 +410,35 @@ async function main() {
   console.log("  Hook Fee          :", ADDRESSES["hpl_hook_fee"]);
   console.log("  Hook Agg Required :", ADDRESSES["hpl_hook_aggregate_required"]);
 
-  console.log("\n📝 Full JSON:");
+  console.log("\n📝 Full JSON (copy to context/terraclassic.json → deployments):");
   console.log(JSON.stringify(ADDRESSES, null, 2));
 
-  console.log("\n⚠️  NEXT STEPS:");
-  console.log("  1. Fill contract addresses in:");
-  console.log("     terraclassic/doc/HYPERLANE_DEPLOYMENT-MAINNET_EN.md  (section 6)");
-  console.log("  2. Submit governance proposal:");
-  console.log("     set_validators for ETH/BSC/Solana ISMs");
-  console.log("     set_remote_gas_data_configs in IGP Oracle");
-  console.log("     set_default_ism  →", ADDRESSES["hpl_ism_routing"]);
-  console.log("     set_default_hook →", ADDRESSES["hpl_hook_aggregate_default"]);
-  console.log("     set_required_hook→", ADDRESSES["hpl_hook_aggregate_required"]);
-  console.log("  3. Transfer ISM ownership to governance (optional):");
+  console.log("\n✅ ISM VALIDATORS CONFIGURED (official Hyperlane mainnet):");
+  console.log("  domain 1   (ETH):         6/9 validators (Abacus Works, DSRV, Zee Prime...)");
+  console.log("  domain 56  (BSC):         4/6 validators (Abacus Works, Zee Prime...)");
+  console.log("  domain 1399811149 (SOL):  3/5 validators (Abacus Works, Luganodes, Eclipse...)");
+
+  console.log("\n✅ MAILBOX CONFIGURED:");
+  console.log("  default_ism       → ISM Routing");
+  console.log("  default_hook      → Hook Agg [Merkle + IGP]");
+  console.log("  required_hook     → Hook Agg [Pausable + Fee (0.283215 LUNC)]");
+
+  console.log("\n✅ IGP ORACLE CONFIGURED:");
+  console.log("  domain 1   (ETH): exchange_rate=37611,          gas_price=10gwei");
+  console.log("  domain 56  (BSC): exchange_rate=110531,         gas_price=3gwei");
+  console.log("  domain 1399811149 (SOL): exchange_rate=38300155301425, gas_price=1");
+  console.log("  ⚠️  Update rates via ./update-igp-oracle.sh when prices change >20%");
+
+  console.log("\n⚠️  REMAINING NEXT STEPS:");
+  console.log("  1. Update doc section 7:");
+  console.log("     terraclassic/doc/HYPERLANE_DEPLOYMENT-MAINNET_EN.md");
+  console.log("  2. Submit governance proposal (sets ISM validators — required for inbound msgs):");
+  console.log("     PRIVATE_KEY='0x...' yarn tsx terraclassic/submit-proposal-mainnet.ts");
+  console.log("  3. Deploy Warp Routes for each token:");
+  console.log("     cd terraclassic && ./create-warp-evm.sh");
+  console.log("  4. Update IGP oracle rates when prices change >20%:");
+  console.log("     ./update-igp-oracle.sh");
+  console.log("  5. Transfer ownership to governance (optional, after testing):");
   console.log("     ./transfer-ownership-to-governance.sh");
 }
 

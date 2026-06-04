@@ -21,5 +21,117 @@
     "hpl_warp_cw20": 11389,
     "hpl_warp_native": 11390
   },
-  "deployments": {}
+  "deployments": {
+    "core": {
+      "mailbox": {
+        "type": "hpl_mailbox",
+        "address": "terra1qeutmjcnwmhmumv4xlzrqmva0m4usdw6lt7mayk7wfw7gftsv6wq2xnxh5",
+        "hexed": "0x0678bdcb1376efbe6d9537c4306d9d7eebc835dafafdbe92de725de42570669c"
+      },
+      "validator_announce": {
+        "type": "hpl_validator_announce",
+        "address": "terra1jg7904q2305f8qm6ph8jz95uez7undc57wd4dgaf9mvfxcw5j9wq3zdn8c",
+        "hexed": "0x923c57d40a8be893837a0dcf21169cc8bdc9b714f39b56a3a92ed89361d4915c"
+      }
+    },
+    "isms": {
+      "type": "hpl_ism_routing",
+      "address": "terra1gd3re2pmv34ruwlmmhq80qtp6xqt8htgjqdvsj6clzh0wef6s7mqt6p5ka",
+      "hexed": "0x43623ca83b646a3e3bfbddc0778161d180b3dd68901ac84b58f8aef7653a87b6",
+      "isms": [
+        {
+          "domain": 1,
+          "route": {
+            "type": "hpl_ism_multisig",
+            "address": "terra16axf5f8pqjz3kap0hmrwhatav2q8yrngn6f9vrzx0ralypzxw47s9tml5u",
+            "hexed": "0xd74c9a24e104851b742fbec6ebf57d6280720e689e92560c4678fbf20446757d"
+          }
+        },
+        {
+          "domain": 56,
+          "route": {
+            "type": "hpl_ism_multisig",
+            "address": "terra16hqg4napp3vypdvyymzd3sdsc3uewhyctxjng79j67lku27a5r7q4z8lnt",
+            "hexed": "0xd5c08acfa10c5840b58426c4d8c1b0c479975c9859a53478b2d7bf6e2bdda0fc"
+          }
+        },
+        {
+          "domain": 1399811149,
+          "route": {
+            "type": "hpl_ism_multisig",
+            "address": "terra180s622shslcldkrl93ksaddhnfvvclejvgt70xsz8flphwzc3fcqkn7m09",
+            "hexed": "0x3be1a52a1787f1f6d87f2c6d0eb5b79a58cc7f326217e79a023a7e1bb8588a70"
+          }
+        }
+      ]
+    },
+    "hooks": {
+      "default": {
+        "type": "hpl_hook_aggregate",
+        "address": "terra1vtxef5jzax9uaktygay7nnl48akxekt94yg6ak4xa7unawp3du2qevkgde",
+        "hexed": "0x62cd94d242e98bced9644749e9cff53f6c6cd965a911aedaa6efb93eb8316f14",
+        "hooks": [
+          {
+            "type": "hpl_hook_merkle",
+            "address": "terra1edwd2rhpzhl73uyqf24cc8zp0j5leuc72m7dxtmgfcgvpypj6afsryacf5",
+            "hexed": "0xcb5cd50ee115ffe8f0804aab8c1c417ca9fcf31e56fcd32f684e10c09032d753"
+          },
+          {
+            "type": "hpl_igp",
+            "address": "terra1f6n8asv4ecqjjhvf57cprgcjwzd4y2mncpp6gcc95gd22mljnrcs3gcgkk",
+            "hexed": "0x4ea67ec195ce01295d89a7b011a312709b522b73c043a46305a21aa56ff298f1",
+            "oracle": {
+              "type": "hpl_igp_oracle",
+              "address": "terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2",
+              "hexed": "0xa90354b2462fffc841a4f22e1e451010da91bc1165220c12bfb185053b146cd0"
+            }
+          },
+          {
+            "type": "hpl_hook_pausable",
+            "address": "terra162q4qzmdy5rutkpkxwqw5xlw0vdjg8c7gw0njnk6ma2s8j52arhsgv3u29",
+            "hexed": "0xd281500b6d2507c5d8363380ea1bee7b1b241f1e439f394edadf5503ca8ae8ef"
+          },
+          {
+            "type": "hpl_hook_fee",
+            "address": "terra1w8923j0nfvahxcsllqqslwqc0wj22673tf25exwx2vm8dag2a86sk2mdv0",
+            "hexed": "0x71caa8c9f34b3b73621ff8010fb8187ba4a56bd15a554c99c6533676f50ae9f5"
+          }
+        ]
+      },
+      "required": {
+        "type": "hpl_hook_aggregate",
+        "address": "terra1vtxef5jzax9uaktygay7nnl48akxekt94yg6ak4xa7unawp3du2qevkgde",
+        "hexed": "0x62cd94d242e98bced9644749e9cff53f6c6cd965a911aedaa6efb93eb8316f14",
+        "hooks": [
+          {
+            "type": "hpl_hook_pausable",
+            "address": "terra162q4qzmdy5rutkpkxwqw5xlw0vdjg8c7gw0njnk6ma2s8j52arhsgv3u29",
+            "hexed": "0xd281500b6d2507c5d8363380ea1bee7b1b241f1e439f394edadf5503ca8ae8ef"
+          },
+          {
+            "type": "hpl_hook_fee",
+            "address": "terra1w8923j0nfvahxcsllqqslwqc0wj22673tf25exwx2vm8dag2a86sk2mdv0",
+            "hexed": "0x71caa8c9f34b3b73621ff8010fb8187ba4a56bd15a554c99c6533676f50ae9f5"
+          }
+        ]
+      }
+    },
+    "warp": {
+      "cw20": [
+        {
+          "id": "ztt",
+          "type": "hpl_warp_cw20",
+          "address": "terra13uhhpfzfxx0t0w2adxm75vkufe4f4m8stmv23nc806gahw6jd3psadyjl2",
+          "hexed": "0x8f2f70a449319eb7b95d69b7ea32dc4e6a9aecf05ed8a8cf077e91dbbb526c43"
+        },
+        {
+          "id": "igorfake",
+          "type": "hpl_warp_cw20",
+          "address": "terra1m5ktcghalv0tlj0zzx2kt6u8adnuslwd449ml55uam57s0eclyssv634a4",
+          "hexed": "0xdd2cbc22fdfb1ebfc9e2119565eb87eb67c87dcdad4bbfd29ceee9e83f38f921"
+        }
+      ],
+      "native": []
+    }
+  }
 }

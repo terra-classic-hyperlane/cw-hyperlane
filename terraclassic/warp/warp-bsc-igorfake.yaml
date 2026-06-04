@@ -1,0 +1,18 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Warp Route: BSC Mainnet ↔ Terra Classic
+# Token:      IGORFAKE (IGORFAKE)
+# Generated:  2026-06-04 01:59:53
+# ─────────────────────────────────────────────────────────────────────────────
+bsc:
+  isNft: false
+  type: synthetic
+  name: "IGORFAKE"
+  symbol: "IGORFAKE"
+  decimals: 6
+  owner: "0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291"
+  mailbox: "0x2971b9Aec44bE4eb673DF1B88cDB57b96eefe8a4"
+  interchainSecurityModule:
+    type: messageIdMultisigIsm
+    validators:
+    - "0x71b2b8c36a0c76b74be92eb7915e26a69b3b03eb"
+    threshold: 1

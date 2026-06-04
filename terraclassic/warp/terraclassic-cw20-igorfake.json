@@ -1,0 +1,11 @@
+{
+  "type": "cw20",
+  "mode": "collateral",
+  "id": "igorfake",
+  "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
+  "config": {
+    "collateral": {
+      "address": "terra1lpkaaqjaq8zfwktge3vy0zg46nxxsynsge2wxa7addpweu2w6gmsy3lhkr"
+    }
+  }
+}

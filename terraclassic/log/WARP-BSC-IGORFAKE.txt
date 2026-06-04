@@ -1,0 +1,33 @@
+═══════════════════════════════════════════════════════════
+  WARP: IGORFAKE on BSC MAINNET
+  Generated: 2026-06-04 02:04:17
+═══════════════════════════════════════════════════════════
+
+TOKEN:
+  Name:     IGORFAKE
+  Symbol:   IGORFAKE
+  Decimals: 6
+  Type:     cw20 / collateral
+
+EVM NETWORK: BSC Mainnet
+  Chain ID:  56
+  Domain:    56
+
+EVM CONTRACTS:
+  Mailbox:   0x2971b9Aec44bE4eb673DF1B88cDB57b96eefe8a4
+  Warp:      0x3605d8946fC6f5a75D89D92173100F59743b5318
+  IGP:       0x5Cda2A25cFba9A6C6E550E20f87d551326F37E7E
+  GasOracle: 0x7dE950f8F0a037783989a6BE84B3620916552306
+  ISM:       messageIdMultisigIsm | validators: 0x71b2b8c36a0c76b74be92eb7915e26a69b3b03eb
+
+TERRA CLASSIC:
+  Domain:    1325
+  Type:      cw20 / collateral
+  Owner:     terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp
+  CW20/Denom: terra1lpkaaqjaq8zfwktge3vy0zg46nxxsynsge2wxa7addpweu2w6gmsy3lhkr
+  Warp:      terra1m5ktcghalv0tlj0zzx2kt6u8adnuslwd449ml55uam57s0eclyssv634a4
+
+IGP CONFIG (EVM → Terra):
+  Exchange Rate: 9047190
+  Gas Price:     10000000000 wei
+═══════════════════════════════════════════════════════════

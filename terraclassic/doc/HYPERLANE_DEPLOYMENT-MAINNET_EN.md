@@ -12,9 +12,10 @@ This guide documents the complete process of deploying and configuring Hyperlane
 3. [Contract Deployment (Upload)](#contract-deployment-upload)
 4. [Contract Instantiation](#contract-instantiation)
 5. [Configuration via Governance](#configuration-via-governance)
-6. [Execution Verification](#execution-verification)
-7. [Contract Addresses and Hexed](#contract-addresses-and-hexed)
-8. [Troubleshooting](#troubleshooting)
+6. [IGP Oracle — Updating Gas Prices](#igp-oracle--updating-gas-prices)
+7. [Execution Verification](#execution-verification)
+8. [Contract Addresses and Hexed](#contract-addresses-and-hexed)
+9. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -269,49 +270,44 @@ terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n
 
 ### Script: `CustomInstantiateWasm-mainnet.ts`
 
-This script instantiates all contracts on the blockchain with their initial configurations.
+This script instantiates **all 13 contracts** AND performs the post-instantiation configuration (mailbox hooks + IGP oracle) in a single run.
 
 **File location:** `terraclassic/CustomInstantiateWasm-mainnet.ts`
 
-> **Important:** Always run from the **project root** (`/home/lunc/tc-cw-hyperlane`),
-> not from inside `terraclassic/`, so that Node.js resolves `node_modules` correctly.
+> **Important:** Always run from the **project root** (`/home/lunc/tc-cw-hyperlane`).
 
-#### Execute Instantiation
+#### Execute
 
 ```bash
-# Run from project root
 cd /home/lunc/tc-cw-hyperlane
-
 PRIVATE_KEY="0xYOUR_HEX_KEY" yarn tsx terraclassic/CustomInstantiateWasm-mainnet.ts
 ```
 
-#### Script Configuration
+#### What the script does (17 steps)
 
-| Parameter | Value |
-|-----------|-------|
-| **RPC** | `https://rpc.terra-classic.hexxagon.io` |
-| **Chain ID** | `columbus-5` |
-| **Gas Price** | `28.5uluna` |
-| **Owner (all contracts)** | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` |
-| **Code IDs** | `11371–11390` (hardcoded in `CODE_IDS` constant) |
+| Step | Action | Why critical |
+|---|---|---|
+| 1–13 | Instantiate all Hyperlane contracts (Mailbox, ISMs, IGP, Hooks) | Creates contracts |
+| **14** | **Set ISM validators** — official Hyperlane validators for ETH/BSC/SOL | **Without this, inbound messages (EVM → TC) cannot be validated — messages get stuck** |
+| **15** | **Configure Mailbox** — `set_default_ism`, `set_default_hook`, `set_required_hook` | **Without this, `transfer_remote` fails with `default_hook not set`** |
+| 16 | Configure IGP Oracle — gas rates for domains 1/56/1399811149 | Users pay correct LUNC fee |
+
+> All 17 steps run automatically in a single execution. The system is fully ready afterwards.
+
+> ⚠️ **Lesson learned (2026-06-04):** The original instantiation only ran steps 1–13. Steps 14–16
+> were missing, causing: (1) `transfer_remote` to fail with `default_hook not set`, and (2) messages
+> from BSC → TC to get stuck because ISM validators were not configured. Both bugs were discovered
+> during testing and are now fixed in the script.
 
 #### Environment Variables
 
 | Variable | Required | Description |
-|----------|----------|-------------|
-| `PRIVATE_KEY` | ✅ Yes | Deployer private key in hex (`0x...` or without prefix) |
-
-#### What the script does after running
-
-1. Prints all instantiated addresses to the console
-2. Shows the `hexed` (32-byte hex) for each contract
-3. Prints next steps (ownership transfer + governance proposal)
-
-**Copy the output addresses** into section 6 of this document after running.
+|---|---|---|
+| `PRIVATE_KEY` | ✅ | Deployer private key hex (`0x...` or no prefix) |
 
 ### 📋 Instantiated Contracts
 
-The script instantiates **14 contracts** supporting **3 chains** (Ethereum, BSC, Solana):
+The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC, Solana):
 
 ---
 
@@ -554,13 +550,30 @@ After instantiation, configure via governance proposal:
 
 ## 4️⃣ Configuration via Governance
 
-After transferring ownership to the governance module, all configurations require governance proposals.
+### `submit-proposal-mainnet.ts` — Governance proposal script
 
-### Governance Proposal Messages
+```bash
+# Generate proposal JSON (no key needed)
+yarn tsx terraclassic/submit-proposal-mainnet.ts
+# → creates proposal_mainnet.json + exec_msgs_mainnet.json
 
-The proposal must execute **7 messages**:
+# Execute directly as owner (without governance, for testing)
+MODE=direct PRIVATE_KEY="0xYOUR_KEY" yarn tsx terraclassic/submit-proposal-mainnet.ts
 
-#### MESSAGE 1: ISM Multisig Validators — Ethereum (Domain 1)
+# Submit via terrad after ownership transfer to governance
+terrad tx gov submit-proposal proposal_mainnet.json \
+  --from YOUR_KEY --chain-id columbus-5 \
+  --node https://rpc.terra-classic.hexxagon.io:443 \
+  --gas auto --gas-adjustment 1.5 --gas-prices 28.5uluna -y
+```
+
+> **Note on current state (2026-06-04):** Messages 4–8 (IGP oracle + Mailbox hooks) were already
+> executed directly by the owner. The critical pending items are **Messages 1–3** (ISM validators),
+> which are required for EVM/Solana → Terra Classic inbound messages to be validated.
+
+### Governance Proposal Messages (8 total)
+
+#### MESSAGE 1: ISM Multisig Validators — Ethereum (Domain 1) ✅ *configured 2026-06-04*
 
 ```json
 {
@@ -586,7 +599,7 @@ The proposal must execute **7 messages**:
 
 ---
 
-#### MESSAGE 2: ISM Multisig Validators — BSC (Domain 56)
+#### MESSAGE 2: ISM Multisig Validators — BSC (Domain 56) ✅ *configured 2026-06-04*
 
 ```json
 {
@@ -607,7 +620,7 @@ The proposal must execute **7 messages**:
 
 ---
 
-#### MESSAGE 3: ISM Multisig Validators — Solana (Domain 1399811149)
+#### MESSAGE 3: ISM Multisig Validators — Solana (Domain 1399811149) ✅ *configured 2026-06-04*
 
 ```json
 {
@@ -633,15 +646,28 @@ The proposal must execute **7 messages**:
 {
   "set_remote_gas_data_configs": {
     "configs": [
-      { "remote_domain": 1,          "token_exchange_rate": "1805936462255558", "gas_price": "50000000" },
-      { "remote_domain": 56,         "token_exchange_rate": "1805936462255558", "gas_price": "50000000" },
-      { "remote_domain": 1399811149, "token_exchange_rate": "57675000000000000", "gas_price": "1" }
+      { "remote_domain": 1,          "token_exchange_rate": "CALCULATE_BEFORE_SUBMIT", "gas_price": "10000000000" },
+      { "remote_domain": 56,         "token_exchange_rate": "CALCULATE_BEFORE_SUBMIT", "gas_price": "3000000000"  },
+      { "remote_domain": 1399811149, "token_exchange_rate": "CALCULATE_BEFORE_SUBMIT", "gas_price": "1"           }
     ]
   }
 }
 ```
 
-> Update `token_exchange_rate` and `gas_price` to reflect current market prices before submitting.
+> **Always recalculate before submitting.** See [Section 6](#igp-oracle--updating-gas-prices) for the formula and the `update-igp-oracle.sh` script.
+>
+> Formula: `token_exchange_rate = (LUNC_USD / NATIVE_USD) * 1e12`
+> - Solana uses `gas_price=1` (lamport model) with `exchange_rate = (LUNC_USD / SOL_USD) * 1e15`
+
+**Current configured values (2026-06-04):**
+
+| Domain | Chain | exchange_rate | gas_price | Fee (300k gas) | Configured |
+|---|---|---|---|---|---|
+| 1 | Ethereum | 37,611 | 10000000000 (10 gwei) | ~113 LUNC ($0.0077) | ✅ 2026-06-04 |
+| 56 | BSC mainnet | 110,531 | 3000000000 (3 gwei) | ~99 LUNC ($0.0068) | ✅ 2026-06-04 |
+| 1399811149 | Solana | 38,300,155,301,425 | 1 (lamport) | ~11 LUNC ($0.0008) | ✅ 2026-06-04 |
+
+Prices used: LUNC=$0.00006782, ETH=$1803.18, BNB=$617.38, SOL=$70.83
 
 ---
 
@@ -663,7 +689,7 @@ The proposal must execute **7 messages**:
 
 ---
 
-#### MESSAGE 6: Set Default ISM in Mailbox
+#### MESSAGE 6: Set Default ISM in Mailbox ✅ *already configured 2026-06-04*
 
 ```json
 { "set_default_ism": { "ism": "terra1gd3re2pmv34ruwlmmhq80qtp6xqt8htgjqdvsj6clzh0wef6s7mqt6p5ka" } }
@@ -671,19 +697,24 @@ The proposal must execute **7 messages**:
 
 ---
 
-#### MESSAGE 7: Set Default Hook in Mailbox
+#### MESSAGE 7: Set Default Hook in Mailbox ✅ *already configured 2026-06-04*
 
 ```json
 { "set_default_hook": { "hook": "terra1vtxef5jzax9uaktygay7nnl48akxekt94yg6ak4xa7unawp3du2qevkgde" } }
 ```
 
+> Without this message, `transfer_remote` fails with `panicked at state.rs: default_hook not set`.
+
 ---
 
-#### MESSAGE 8: Set Required Hook in Mailbox
+#### MESSAGE 8: Set Required Hook in Mailbox ✅ *already configured 2026-06-04*
 
 ```json
 { "set_required_hook": { "hook": "terra1n5wfxj38y5ejkh9kkz4ud7t6gqqshzhhhcu97j2j0kfa4359za8sdsqexu" } }
 ```
+
+> The required hook charges **0.283215 LUNC** per outbound message (protocol fee).
+> Include this fee in `transfer_remote` funds: `total_fee = IGP_fee + 283215 uluna`.
 
 ---
 
@@ -714,7 +745,145 @@ terrad tx gov vote <PROPOSAL_ID> yes \
 
 ---
 
-## 5️⃣ Execution Verification
+## 5️⃣ IGP Oracle — Updating Gas Prices
+
+The IGP Oracle stores the exchange rate and gas price for each destination chain. It must be updated when:
+- Adding a new destination chain (ETH, Solana, etc.)
+- Token prices change significantly (>20%)
+- Destination network gas prices change
+
+### How it works
+
+The Terra Classic Mailbox charges the sender a fee in **LUNC** to cover gas on the destination chain. The oracle provides the conversion data:
+
+```
+fee_uluna = gas_amount × gas_price_dest × exchange_rate / 1e12
+
+Where:
+  gas_amount    = compute units on destination (e.g. 300,000)
+  gas_price_dest = destination gas price in wei (e.g. 3,000,000,000 = 3 gwei for BSC)
+  exchange_rate  = (LUNC_USD / NATIVE_USD) × 1e12
+
+Example (BSC mainnet — 2026-06-04):
+  LUNC = $0.00006824, BNB = $617.38
+  exchange_rate = (0.00006824 / 617.38) × 1e12 = 110,531
+  fee = 300,000 × 3,000,000,000 × 110,531 / 1e12 = 9,948 LUNC ≈ $0.68
+```
+
+**Solana uses a different model** — fees are in compute units × lamports:
+- `gas_price = 1` (1 lamport per compute unit, minimum Solana fee model)
+- `exchange_rate = (LUNC_USD / SOL_USD) × 1e15`
+
+### Quick update — `update-igp-oracle.sh`
+
+```bash
+cd /home/lunc/tc-cw-hyperlane/terraclassic
+
+# Interactive mode (as owner)
+export TERRA_PRIVATE_KEY="your_hex_key"
+./update-igp-oracle.sh
+
+# Non-interactive — configure all chains
+export TERRA_PRIVATE_KEY="your_hex_key"
+LUNC_USD=0.00006824  ETH_USD=3500  BNB_USD=617.38  SOL_USD=150 \
+DOMAINS="1,56,1399811149" ./update-igp-oracle.sh
+
+# Generate governance proposal only (no key needed)
+MODE=governance LUNC_USD=0.00006824 ETH_USD=3500 BNB_USD=617.38 SOL_USD=150 \
+DOMAINS="1,56,1399811149" ./update-igp-oracle.sh
+# → generates log/oracle-update-proposal-TIMESTAMP.json
+```
+
+### Manual update via Node.js (without the script)
+
+```javascript
+// Set oracle data for ETH mainnet (domain 1)
+// LUNC=$0.00006824, ETH=$3500 → exchange_rate = (0.00006824/3500)*1e12 = 19491
+const result = await client.execute(senderAddress, ORACLE, {
+    set_remote_gas_data_configs: {
+        configs: [
+            { remote_domain: 1,          token_exchange_rate: "19491",   gas_price: "10000000000" },
+            { remote_domain: 56,         token_exchange_rate: "110531",  gas_price: "3000000000"  },
+            { remote_domain: 1399811149, token_exchange_rate: "454933",  gas_price: "1"           }
+        ]
+    }
+}, 'auto', 'update IGP oracle');
+
+// Link domains to oracle in IGP contract
+await client.execute(senderAddress, IGP, {
+    router: {
+        set_routes: {
+            set: [
+                { domain: 1,          route: ORACLE },
+                { domain: 56,         route: ORACLE },
+                { domain: 1399811149, route: ORACLE }
+            ]
+        }
+    }
+}, 'auto', 'set IGP routes');
+```
+
+### Verify oracle state
+
+```bash
+# Query via Node.js
+node -e "
+const path=require('path'), nm=path.join('/home/lunc/tc-cw-hyperlane','node_modules');
+const {CosmWasmClient}=require(path.join(nm,'@cosmjs/cosmwasm-stargate'));
+(async()=>{
+    const c=await CosmWasmClient.connect('https://rpc.terra-classic.hexxagon.io');
+    const oracle='terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2';
+    for (const d of [1,56,1399811149]) {
+        try {
+            const r=await c.queryContractSmart(oracle,{oracle:{get_exchange_rate_and_gas_price:{dest_domain:d}}});
+            console.log('domain '+d+':', r);
+        } catch(e) { console.log('domain '+d+': NOT CONFIGURED'); }
+    }
+})();" 2>/dev/null
+
+# Simulate fee for 300k gas on BSC mainnet
+node -e "
+const path=require('path'), nm=path.join('/home/lunc/tc-cw-hyperlane','node_modules');
+const {CosmWasmClient}=require(path.join(nm,'@cosmjs/cosmwasm-stargate'));
+(async()=>{
+    const c=await CosmWasmClient.connect('https://rpc.terra-classic.hexxagon.io');
+    const igp='terra1f6n8asv4ecqjjhvf57cprgcjwzd4y2mncpp6gcc95gd22mljnrcs3gcgkk';
+    const r=await c.queryContractSmart(igp,{igp:{quote_gas_payment:{dest_domain:56,gas_amount:'300000'}}});
+    const lunc=r.gas_needed/1e6;
+    console.log('Fee (300k gas, BSC):', r.gas_needed, 'uluna =', lunc.toFixed(2), 'LUNC');
+})();" 2>/dev/null
+```
+
+### Governance proposal for oracle update
+
+When ownership is transferred to governance (`terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n`), use the governance mode:
+
+```bash
+MODE=governance LUNC_USD=0.0001 ETH_USD=3500 BNB_USD=650 SOL_USD=160 \
+  DOMAINS="1,56,1399811149" ./update-igp-oracle.sh
+```
+
+Then submit the generated JSON:
+```bash
+terrad tx gov submit-proposal log/oracle-update-proposal-TIMESTAMP.json \
+  --from YOUR_KEY --chain-id columbus-5 \
+  --node https://rpc.terra-classic.hexxagon.io:443 \
+  --gas auto --gas-adjustment 1.5 --gas-prices 28.5uluna -y
+```
+
+### Exchange rate reference table
+
+| Date | LUNC | ETH | BNB | SOL | rate_ETH | rate_BSC | rate_SOL |
+|---|---|---|---|---|---|---|---|
+| 2026-06-04 | $0.00006782 | $1803.18 | $617.38 | $70.83 | 37,611 | 110,531 | 38,300,155,301,425 |
+| _next update_ | | | | | | | |
+
+> Update this table after each oracle configuration change.
+> Run `./update-igp-oracle.sh` to recalculate and apply new rates.
+
+---
+
+## 6️⃣ Execution Verification
 
 After the proposal passes, verify all configurations:
 
@@ -759,7 +928,7 @@ terrad query wasm contract-state smart terra1qeutmjcnwmhmumv4xlzrqmva0m4usdw6lt7
 
 ---
 
-## 6️⃣ Contract Addresses and Hexed
+## 7️⃣ Contract Addresses and Hexed
 
 > **Status:** ✅ Instantiated on 2026-06-03 — columbus-5 mainnet
 
@@ -809,7 +978,7 @@ merkleTreeHook: "0xcb5cd50ee115ffe8f0804aab8c1c417ca9fcf31e56fcd32f684e10c09032d
 
 ---
 
-## 7️⃣ Troubleshooting
+## 8️⃣ Troubleshooting
 
 ### Error: "insufficient fees"
 
@@ -869,21 +1038,34 @@ https://rpc.terraclassic.community
 ### Ownership Transfer
 - [ ] Transfer ownership to governance — see [`TRANSFER-OWNERSHIP-TO-GOVERNANCE.md`](./TRANSFER-OWNERSHIP-TO-GOVERNANCE.md)
 
-### Configuration (⏳ Pending governance)
-- [ ] Create governance proposal with 8 messages
-- [ ] Vote on proposal (obtain quorum)
-- [ ] Wait for `PROPOSAL_STATUS_PASSED`
-- [ ] Run all verification queries from section 5
+### IGP Oracle Configuration
+- [x] Domain 1 (Ethereum): exchange_rate=37611, gas_price=10gwei — **2026-06-04**
+- [x] Domain 56 (BSC mainnet): exchange_rate=110531, gas_price=3gwei — **2026-06-04**
+- [x] Domain 1399811149 (Solana): exchange_rate=38300155301425, gas_price=1 — **2026-06-04**
+
+### Mailbox Configuration ✅ (done directly 2026-06-04)
+- [x] `set_default_ism`   → ISM Routing
+- [x] `set_default_hook`  → Hook Agg [Merkle + IGP]
+- [x] `set_required_hook` → Hook Agg [Pausable + Fee (0.283215 LUNC)]
+
+### ISM Validators ✅ (configured directly 2026-06-04)
+- [x] ISM Multisig ETH (domain 1): 9 validators, threshold 6 — TX `FAFDD936...`
+- [x] ISM Multisig BSC (domain 56): 6 validators, threshold 4 — TX `E52FB934...`
+- [x] ISM Multisig SOL (domain 1399811149): 5 validators, threshold 3 — TX `D6366E30...`
+
+### Configuration via Governance (optional — for re-applying after ownership transfer)
+- [ ] Run `yarn tsx terraclassic/submit-proposal-mainnet.ts` — generates `proposal_mainnet.json`
+- [ ] Submit and vote when needed after transferring ownership to governance module
 
 ### Post-Deployment
 - [ ] Configure relayer with hexed contract addresses
-- [ ] Configure validators
-- [ ] Test cross-chain message sending
+- [ ] Configure validators (announce on ValidatorAnnounce per chain)
+- [ ] Test cross-chain message sending (ZTT → BSC mainnet first)
 - [ ] Document final addresses for auditing
 
 ---
 
-**Last updated:** 2026-06-03
+**Last updated:** 2026-06-04
 **Contract Version:** v0.0.7-rc0
 **Chain:** Terra Classic Mainnet (columbus-5)
 **RPC:** https://rpc.terra-classic.hexxagon.io

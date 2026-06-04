@@ -1,13 +1,13 @@
 {
   "_comment": "Centralized configuration for EVM ↔ Terra Classic Warp Routes",
   "_version": "3.0.0",
-  "_updated": "2026-03-10",
+  "_updated": "2026-06-04",
   "terra_classic": {
     "_comment": "Terra Classic configuration. Each token has its type (native/cw20), mode (collateral/locked) and deployed warp address (for enrollRemoteRouter on the EVM side).",
-    "chain_id": "rebel-2",
+    "chain_id": "columbus-5",
     "domain": 1325,
-    "rpc": "https://rpc.terra-classic.hexxagon.dev",
-    "lcd": "https://lcd.terra-classic.hexxagon.dev",
+    "rpc": "https://rpc.terra-classic.hexxagon.io",
+    "lcd": "https://lcd.terra-classic.hexxagon.io",
     "tokens": {
       "wlunc": {
         "_comment": "Native LUNC — hpl_warp_native already deployed",
@@ -122,8 +122,49 @@
           "warp_hexed": "0x6cd3fe431e87fa1677f02fb3b8a65560d24315f308e2298344ad01227af76ea4",
           "deployed": true
         }
+      },
+      "ztt": {
+        "_comment": "ZTT CW20 collateral — warp NOT yet deployed on Terra Classic",
+        "id": "ztt",
+        "name": "ZTT Token",
+        "symbol": "ZTT",
+        "decimals": 6,
+        "description": "ZTT Token via Hyperlane Warp Route",
+        "image": "",
+        "terra_warp": {
+          "type": "cw20",
+          "mode": "collateral",
+          "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
+          "denom": "",
+          "collateral_address": "terra1f5kkww45wrece8syntffgaaek999x4827tpus9jv86kq3vt24ztsxyc8u9",
+          "warp_address": "terra13uhhpfzfxx0t0w2adxm75vkufe4f4m8stmv23nc806gahw6jd3psadyjl2",
+          "warp_hexed": "0x8f2f70a449319eb7b95d69b7ea32dc4e6a9aecf05ed8a8cf077e91dbbb526c43",
+          "deployed": true
+        }
+      },
+      "igorfake": {
+        "_comment": "IGORFAKE CW20 collateral — mainnet columbus-5",
+        "id": "igorfake",
+        "name": "IGORFAKE",
+        "symbol": "IGORFAKE",
+        "decimals": 6,
+        "description": "IGORFAKE Token via Hyperlane Warp Route",
+        "image": "",
+        "terra_warp": {
+          "type": "cw20",
+          "mode": "collateral",
+          "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
+          "denom": "",
+          "collateral_address": "terra1lpkaaqjaq8zfwktge3vy0zg46nxxsynsge2wxa7addpweu2w6gmsy3lhkr",
+          "warp_address": "terra1m5ktcghalv0tlj0zzx2kt6u8adnuslwd449ml55uam57s0eclyssv634a4",
+          "warp_hexed": "0xdd2cbc22fdfb1ebfc9e2119565eb87eb67c87dcdad4bbfd29ceee9e83f38f921",
+          "deployed": true
+        }
       }
-    }
+    },
+    "igp": "terra1f6n8asv4ecqjjhvf57cprgcjwzd4y2mncpp6gcc95gd22mljnrcs3gcgkk",
+    "igp_oracle": "terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2",
+    "_igp_comment": "Mainnet columbus-5 IGP. Domain 56 (BSC) not yet configured in TC IGP oracle — add via governance"
   },
   "networks": {
     "sepolia": {
@@ -209,6 +250,20 @@
           "hook_aggregation": "0x1a13d7A50b76d4527a611e507B3f73058eCa5eAC",
           "_hook_note": "AggregationHook=[MerkleTreeHook+igp_custom]. Same AggHook as XPTO.",
           "owner": "0x133fD7F7094DBd17b576907d052a5aCBd48dB526"
+        },
+        "ztt": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
+        },
+        "igorfake": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
         }
       }
     },
@@ -296,6 +351,20 @@
           "hook_aggregation": "0x3F11a590B50F959E52a660567865f1B65C913C5D",
           "_hook_note": "AggregationHook=[MerkleTreeHook+igp_custom]. Set via setHook() on Warp. Required for messages to enter the validator's merkle tree.",
           "owner": "0x8BD456605473ad4727ACfDCA0040a0dBD4be2DEA"
+        },
+        "ztt": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
+        },
+        "igorfake": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
         }
       }
     },
@@ -364,12 +433,26 @@
           "address": "",
           "igp_custom": "",
           "owner": ""
+        },
+        "ztt": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
+        },
+        "igorfake": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
         }
       }
     },
     "bsc": {
-      "_comment": "BSC Mainnet — disabled until production deploy",
-      "enabled": false,
+      "_comment": "BSC Mainnet",
+      "enabled": true,
       "display_name": "BSC Mainnet",
       "chain_id": 56,
       "domain": 56,
@@ -391,20 +474,27 @@
         "type": "messageIdMultisigIsm",
         "factory": "0xEb9FcFDC9EfDC17c1EC5E1dc085B98485da213D6",
         "deployed_address": "",
-        "validators": [],
+        "validators": [
+          "0x71b2b8c36a0c76b74be92eb7915e26a69b3b03eb"
+        ],
         "threshold": 1
       },
       "hook": {
-        "merkle_tree": ""
+        "merkle_tree": "0xFDb9Cd5f9daAA2E4474019405A328a88E7484f26",
+        "agg_hook_factory": "0xe70E86a7D1e001D419D71F960Cb6CaD59b6A3dB6",
+        "_comment": "BSC Mainnet MerkleTreeHook + AggregationHookFactory"
       },
       "igp": {
-        "official_address": "",
-        "gas_oracle": "0x",
+        "official_address": "0x78E25e7f84416e69b9339B0A6336EB6EFfF6b451",
+        "gas_oracle": "0x91d23D603d60445411C06e6443d81395593B7940",
         "overhead_default": 200000,
         "terra_classic_config": {
-          "exchange_rate": 0,
-          "gas_price_wei": 0
-        }
+          "exchange_rate": 9047190,
+          "gas_price_wei": 10000000000,
+          "_comment": "exchange_rate: BNB_USD / LUNC_USD = 617.38 / 0.00006824 (2026-06-04)"
+        },
+        "gas_oracle_custom": "0x38fC50ecC1D21e45705be7441cc1Ff9bcDDec488",
+        "_note": "gas_oracle_custom é o TerraClassicOracle deployado (owner: deployer). O official gas_oracle (Hyperlane) não tem domain 1325."
       },
       "warp_tokens": {
         "wlunc": {
@@ -430,6 +520,26 @@
           "address": "",
           "igp_custom": "",
           "owner": ""
+        },
+        "ztt": {
+          "_comment": "BSC mainnet synthetic ZTT — deploy pendente",
+          "deployed": true,
+          "address": "0x6AB3EaF4dC64496BB435D221563C5e3e1132A592",
+          "igp_custom": "0x5Ea49420DFCa83ca8E7eddA9160A3009F6aE6a7B",
+          "hook_aggregation": "0x0Eb97DFC380fD71F62C9d42498CC0C1135A910b7",
+          "owner": "0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291",
+          "ism_custom": "0xa82087B8eea0394B1476f716B91c10531025Ef42",
+          "oracle_custom": "0x38fC50ecC1D21e45705be7441cc1Ff9bcDDec488"
+        },
+        "igorfake": {
+          "deployed": true,
+          "address": "0x3605d8946fC6f5a75D89D92173100F59743b5318",
+          "igp_custom": "0x5Cda2A25cFba9A6C6E550E20f87d551326F37E7E",
+          "hook_aggregation": "0x5a2666154ab2c4D43ce9187D2F6780d6eEb50A10",
+          "owner": "0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291",
+          "oracle_custom": "0x7dE950f8F0a037783989a6BE84B3620916552306",
+          "ism_custom": "0xa82087B8eea0394B1476f716B91c10531025Ef42",
+          "_hook_note": "AggregationHook=[MerkleTreeHook+igp_custom]"
         }
       }
     },
@@ -495,6 +605,20 @@
           "deployed": false,
           "address": "",
           "igp_custom": "",
+          "owner": ""
+        },
+        "ztt": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
+        },
+        "igorfake": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
           "owner": ""
         }
       }
@@ -562,6 +686,20 @@
           "address": "",
           "igp_custom": "",
           "owner": ""
+        },
+        "ztt": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
+        },
+        "igorfake": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
         }
       }
     },
@@ -627,6 +765,20 @@
           "deployed": false,
           "address": "",
           "igp_custom": "",
+          "owner": ""
+        },
+        "ztt": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
+        },
+        "igorfake": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
           "owner": ""
         }
       }

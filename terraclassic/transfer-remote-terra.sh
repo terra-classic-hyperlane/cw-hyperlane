@@ -28,17 +28,18 @@ LOG_FILE="$LOG_DIR/transfer-remote-terra.log"
 EVM_CFG="$SCRIPT_DIR/warp-evm-config.json"
 SOL_CFG="$SCRIPT_DIR/warp-sealevel-config.json"
 
-# Fixed Terra Classic addresses
-TC_RPC="https://rpc.terra-classic.hexxagon.dev"
-TC_LCD="https://lcd.terra-classic.hexxagon.dev"
-TC_CHAIN_ID="rebel-2"
-TC_IGP="terra1n70g3vg7xge6q8m44rudm4y6fm6elpspwsgfmfphs3teezpak6cs6wxlk9"
+# Terra Classic defaults (overridden by warp-evm-config.json)
+TC_RPC="https://rpc.terra-classic.hexxagon.io"
+TC_LCD="https://lcd.terra-classic.hexxagon.io"
+TC_CHAIN_ID="columbus-5"
+TC_IGP="terra1f6n8asv4ecqjjhvf57cprgcjwzd4y2mncpp6gcc95gd22mljnrcs3gcgkk"
 
 # Override with config values if it exists
 if command -v jq &>/dev/null && [ -f "$EVM_CFG" ]; then
-    TC_RPC=$(jq -r '.terra_classic.rpc  // "https://rpc.terra-classic.hexxagon.dev"' "$EVM_CFG")
-    TC_LCD=$(jq -r '.terra_classic.lcd  // "https://lcd.terra-classic.hexxagon.dev"' "$EVM_CFG")
-    TC_CHAIN_ID=$(jq -r '.terra_classic.chain_id // "rebel-2"' "$EVM_CFG")
+    TC_RPC=$(jq -r '.terra_classic.rpc      // "https://rpc.terra-classic.hexxagon.io"' "$EVM_CFG")
+    TC_LCD=$(jq -r '.terra_classic.lcd      // "https://lcd.terra-classic.hexxagon.io"' "$EVM_CFG")
+    TC_CHAIN_ID=$(jq -r '.terra_classic.chain_id // "columbus-5"' "$EVM_CFG")
+    TC_IGP=$(jq -r '.terra_classic.igp      // "terra1f6n8asv4ecqjjhvf57cprgcjwzd4y2mncpp6gcc95gd22mljnrcs3gcgkk"' "$EVM_CFG")
 fi
 
 # ─── Banner ───────────────────────────────────────────────────────────────────
@@ -296,15 +297,21 @@ print(base64.b64encode(json.dumps(q).encode()).decode())
     done
 
     if [ -z "$IGP_FEE" ]; then
-        # Fallback: values based on real project usage
+        # Fallback fees based on real usage / gas estimates
+        # BSC mainnet (domain 56): TC IGP oracle not yet configured for this domain
+        #   → use IGP_FEE_ULUNA=<value> to set an exact amount
         case "$DEST_DOMAIN" in
+            56)         IGP_FEE="9947790000" ;;  # BSC Mainnet (300k gas @ 3gwei, exch_rate=110531 — from TC IGP oracle domain 56)
             11155111)   IGP_FEE="1780832150" ;;  # Sepolia (real historical value)
             97)         IGP_FEE="500000000"  ;;  # BSC Testnet
             1399811150) IGP_FEE="300000"     ;;  # Solana Testnet
             *)          IGP_FEE="1000000000" ;;
         esac
-        echo -e "${YELLOW}⚠️  IGP query failed on all LCDs, using default fee: ${IGP_FEE} uluna${RESET}"
-        echo -e "${DIM}     (use IGP_FEE_ULUNA=<value> to override)${RESET}"
+        echo -e "${YELLOW}⚠️  IGP query failed — using estimated fallback fee: ${IGP_FEE} uluna${RESET}"
+        echo -e "${DIM}     Override with: export IGP_FEE_ULUNA=<value>${RESET}"
+        if [ "$DEST_DOMAIN" = "56" ]; then
+            echo -e "${DIM}     domain 56 exchange_rate=110531, gas_price=3gwei (configured 2026-06-04)${RESET}"
+        fi
     fi
 fi
 
@@ -480,7 +487,7 @@ if [ "$IS_OK" -gt 0 ] && [ -n "$TX_HASH" ]; then
     echo -e "${BOLD}${GREEN}╚═══════════════════════════════════════════════════════════╝${RESET}"
     echo ""
     echo -e "  ${BOLD}TX Hash :${RESET} ${TX_HASH}"
-    echo -e "  ${BOLD}Explorer:${RESET} https://finder.hexxagon.io/rebel-2/tx/${TX_HASH}"
+    echo -e "  ${BOLD}Explorer:${RESET} https://finder.hexxagon.io/${TC_CHAIN_ID}/tx/${TX_HASH}"
     echo ""
     echo -e "${DIM}  A mensagem será relayada pelo Hyperlane Relayer."
     echo -e "  Tempo estimado de entrega: 1-5 minutos.${RESET}"
@@ -499,7 +506,7 @@ if [ "$IS_OK" -gt 0 ] && [ -n "$TX_HASH" ]; then
         echo "Warp TC       : ${TC_WARP}"
         [ -n "$TC_COLL" ] && [ "$TC_COLL" != "null" ] && echo "Collateral    : ${TC_COLL}"
         echo "TX Hash       : ${TX_HASH}"
-        echo "Explorer      : https://finder.hexxagon.io/rebel-2/tx/${TX_HASH}"
+        echo "Explorer      : https://finder.hexxagon.io/${TC_CHAIN_ID}/tx/${TX_HASH}"
     } > "$REPORT_FILE"
     echo -e "  ${BOLD}Report    :${RESET} ${REPORT_FILE}"
     echo ""

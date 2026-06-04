@@ -38,6 +38,7 @@ OK="${G}✅${NC}"; ERR="${R}❌${NC}"; WARN="${Y}⚠️ ${NC}"; INFO="${B}ℹ️
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_FILE="$SCRIPT_DIR/warp-evm-config.json"
 IGP_SOL="$SCRIPT_DIR/TerraClassicIGPStandalone-Sepolia.sol"
+ORACLE_SOL="$SCRIPT_DIR/TerraClassicOracle.sol"
 LOG_DIR="$SCRIPT_DIR/log"
 mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/create-warp-evm.log"
@@ -78,11 +79,12 @@ to_bytes32() {
 save_state() {
     cat > "$STATE_FILE" <<EOF
 {
-  "network":      "${NET_KEY:-}",
-  "token":        "${TOKEN_KEY:-}",
-  "warp_address": "${WARP_ADDRESS:-}",
-  "igp_address":  "${IGP_ADDRESS:-}",
-  "timestamp":    "$(date -Iseconds)"
+  "network":        "${NET_KEY:-}",
+  "token":          "${TOKEN_KEY:-}",
+  "warp_address":   "${WARP_ADDRESS:-}",
+  "igp_address":    "${IGP_ADDRESS:-}",
+  "oracle_address": "${ORACLE_ADDRESS:-}",
+  "timestamp":      "$(date -Iseconds)"
 }
 EOF
 }
@@ -91,12 +93,13 @@ load_state() {
     # Only reads saved state into global _STATE_* variables
     # Addresses are ONLY applied after confirming token+network match (see apply_state)
     [ -f "$STATE_FILE" ] || return 0
-    _STATE_NET=$(jq -r '.network      // ""' "$STATE_FILE" 2>/dev/null || echo "")
-    _STATE_TOK=$(jq -r '.token        // ""' "$STATE_FILE" 2>/dev/null || echo "")
-    _STATE_WARP=$(jq -r '.warp_address // ""' "$STATE_FILE" 2>/dev/null || echo "")
-    _STATE_IGP=$(jq -r '.igp_address  // ""' "$STATE_FILE" 2>/dev/null || echo "")
+    _STATE_NET=$(jq -r '.network        // ""' "$STATE_FILE" 2>/dev/null || echo "")
+    _STATE_TOK=$(jq -r '.token          // ""' "$STATE_FILE" 2>/dev/null || echo "")
+    _STATE_WARP=$(jq -r '.warp_address  // ""' "$STATE_FILE" 2>/dev/null || echo "")
+    _STATE_IGP=$(jq -r '.igp_address    // ""' "$STATE_FILE" 2>/dev/null || echo "")
+    _STATE_ORACLE=$(jq -r '.oracle_address // ""' "$STATE_FILE" 2>/dev/null || echo "")
     if [ -n "$_STATE_NET" ] && [ -n "$_STATE_TOK" ]; then
-        log_warn "Previous state: network=${_STATE_NET}, token=${_STATE_TOK}, warp=${_STATE_WARP:-—}, igp=${_STATE_IGP:-—}"
+        log_warn "Previous state: network=${_STATE_NET}, token=${_STATE_TOK}, warp=${_STATE_WARP:-—}, igp=${_STATE_IGP:-—}, oracle=${_STATE_ORACLE:-—}"
         log "   To restart: ${Y}rm -f $STATE_FILE${NC}"
     fi
 }
@@ -105,9 +108,10 @@ apply_state() {
     # Applies saved state addresses ONLY if token+network match the current selection
     [ -z "${_STATE_NET:-}" ] && return 0
     if [ "${_STATE_NET}" = "${NET_KEY}" ] && [ "${_STATE_TOK}" = "${TOKEN_KEY}" ]; then
-        [ -z "${WARP_ADDRESS:-}" ] && [ -n "${_STATE_WARP:-}" ] && export WARP_ADDRESS="$_STATE_WARP"
-        [ -z "${IGP_ADDRESS:-}"  ] && [ -n "${_STATE_IGP:-}"  ] && export IGP_ADDRESS="$_STATE_IGP"
-        [ -n "${WARP_ADDRESS:-}" ] && log_info "State restored: warp=${WARP_ADDRESS}, igp=${IGP_ADDRESS:-—}"
+        [ -z "${WARP_ADDRESS:-}"   ] && [ -n "${_STATE_WARP:-}"   ] && export WARP_ADDRESS="$_STATE_WARP"
+        [ -z "${IGP_ADDRESS:-}"    ] && [ -n "${_STATE_IGP:-}"    ] && export IGP_ADDRESS="$_STATE_IGP"
+        [ -z "${ORACLE_ADDRESS:-}" ] && [ -n "${_STATE_ORACLE:-}" ] && export ORACLE_ADDRESS="$_STATE_ORACLE"
+        [ -n "${WARP_ADDRESS:-}" ] && log_info "State restored: warp=${WARP_ADDRESS}, igp=${IGP_ADDRESS:-—}, oracle=${ORACLE_ADDRESS:-—}"
     else
         log_info "Previous state was for ${_STATE_TOK}/${_STATE_NET} — ignored for ${TOKEN_KEY}/${NET_KEY}."
     fi
@@ -350,7 +354,7 @@ TCFG
         fi
         cd "$PROJECT_ROOT"
         PRIVATE_KEY="$TERRA_PRIVATE_KEY" yarn cw-hpl warp create "$TERRA_WARP_CONFIG" -n terraclassic \
-            2>&1 | tee -a "$LOG_FILE" "$TERRA_DEPLOY_TMP"
+            < /dev/null 2>&1 | tee -a "$LOG_FILE" "$TERRA_DEPLOY_TMP"
         TERRA_DEPLOY_EXIT=${PIPESTATUS[0]}
         cd "$SCRIPT_DIR"
         set -e
@@ -537,15 +541,17 @@ WARP_DEPLOYED_CFG=$(cfg "${N}.warp_tokens.${TOKEN_KEY}.deployed")
 WARP_ADDR_CFG=$(cfg "${N}.warp_tokens.${TOKEN_KEY}.address")
 IGP_ADDR_CFG=$(cfg "${N}.warp_tokens.${TOKEN_KEY}.igp_custom")
 HOOK_AGG_CFG=$(cfg "${N}.warp_tokens.${TOKEN_KEY}.hook_aggregation")
+ORACLE_ADDR_CFG=$(cfg "${N}.warp_tokens.${TOKEN_KEY}.oracle_custom")
 WARP_OWNER_CFG=$(cfg "${N}.warp_tokens.${TOKEN_KEY}.owner")
 
 # Apply saved state only if token+network match (avoids using another token address)
 apply_state
 
 # Use addresses from JSON (only if not yet defined via state or env)
-[ -z "${WARP_ADDRESS:-}" ] && [ -n "$WARP_ADDR_CFG" ] && [ "$WARP_ADDR_CFG" != "null" ] && export WARP_ADDRESS="$WARP_ADDR_CFG"
-[ -z "${IGP_ADDRESS:-}"  ] && [ -n "$IGP_ADDR_CFG"  ] && [ "$IGP_ADDR_CFG"  != "null" ] && export IGP_ADDRESS="$IGP_ADDR_CFG"
-[ -z "${HOOK_AGG_ADDRESS:-}" ] && [ -n "$HOOK_AGG_CFG" ] && [ "$HOOK_AGG_CFG" != "null" ] && export HOOK_AGG_ADDRESS="$HOOK_AGG_CFG"
+[ -z "${WARP_ADDRESS:-}"   ] && [ -n "$WARP_ADDR_CFG"   ] && [ "$WARP_ADDR_CFG"   != "null" ] && export WARP_ADDRESS="$WARP_ADDR_CFG"
+[ -z "${IGP_ADDRESS:-}"    ] && [ -n "$IGP_ADDR_CFG"    ] && [ "$IGP_ADDR_CFG"    != "null" ] && export IGP_ADDRESS="$IGP_ADDR_CFG"
+[ -z "${HOOK_AGG_ADDRESS:-}" ] && [ -n "$HOOK_AGG_CFG" ] && [ "$HOOK_AGG_CFG"     != "null" ] && export HOOK_AGG_ADDRESS="$HOOK_AGG_CFG"
+[ -z "${ORACLE_ADDRESS:-}" ] && [ -n "$ORACLE_ADDR_CFG" ] && [ "$ORACLE_ADDR_CFG" != "null" ] && export ORACLE_ADDRESS="$ORACLE_ADDR_CFG"
 
 # Owner: derive from wallet or use configured value
 if command -v cast &>/dev/null && [ -n "${ETH_PRIVATE_KEY:-}" ]; then
@@ -761,6 +767,15 @@ else
     fi
     log_ok "Warp Route: ${G}${WARP_ADDRESS}${NC}"
 fi
+
+# Persists Warp address + deployed=true in JSON
+TMP_CFG=$(mktemp)
+jq ".networks.\"${NET_KEY}\".warp_tokens.\"${TOKEN_KEY}\".address  = \"${WARP_ADDRESS}\" |
+    .networks.\"${NET_KEY}\".warp_tokens.\"${TOKEN_KEY}\".deployed = true  |
+    .networks.\"${NET_KEY}\".warp_tokens.\"${TOKEN_KEY}\".owner    = \"${WARP_OWNER}\"" \
+    "$CONFIG_FILE" > "$TMP_CFG" && mv "$TMP_CFG" "$CONFIG_FILE"
+log_ok "warp_tokens.${TOKEN_KEY}.address saved in warp-evm-config.json"
+
 save_state
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -842,6 +857,12 @@ else
     log_ok "IGP deployed: ${G}${IGP_ADDRESS}${NC}"
     cd "$SCRIPT_DIR"; rm -rf "$TMP_DIR"
 fi
+
+# Persists IGP address in JSON
+TMP_CFG=$(mktemp)
+jq ".networks.\"${NET_KEY}\".warp_tokens.\"${TOKEN_KEY}\".igp_custom = \"${IGP_ADDRESS}\"" \
+    "$CONFIG_FILE" > "$TMP_CFG" && mv "$TMP_CFG" "$CONFIG_FILE"
+
 save_state
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -853,10 +874,11 @@ log "  Gas Oracle:    ${G}${GAS_ORACLE}${NC}"
 log "  Domain Terra:  ${G}${TERRA_DOMAIN}${NC}"
 log "  Exchange Rate: ${G}${IGP_EXCHANGE_RATE}${NC}"
 log "  Gas Price:     ${G}${IGP_GAS_PRICE} wei${NC}"
+[ -n "${ORACLE_ADDRESS:-}" ] && log "  Custom Oracle: ${G}${ORACLE_ADDRESS}${NC}  ${G}(already deployed)${NC}"
 log ""
-log "  ${INFO} Nota: setRemoteGasData é chamado no GAS ORACLE (não no IGP)."
-log "           O IGP customizado (TerraClassicIGPStandalone) consulta o oracle"
-log "           para calcular o custo de gas."
+log "  ${INFO} setRemoteGasData is called on the GAS ORACLE (not on the IGP)."
+log "  ${INFO} If the official oracle is not writable (not owner), a custom"
+log "           TerraClassicOracle is deployed automatically and the IGP is updated."
 log ""
 
 if [ "$HAVE_CAST" = "false" ]; then
@@ -864,15 +886,15 @@ if [ "$HAVE_CAST" = "false" ]; then
     log "  cast send ${GAS_ORACLE} \"setRemoteGasData(uint32,uint128,uint128)\" \\"
     log "    ${TERRA_DOMAIN} ${IGP_EXCHANGE_RATE} ${IGP_GAS_PRICE} \\"
     log "    --rpc-url ${NET_RPC} --private-key \$ETH_PRIVATE_KEY --legacy"
+    log "  # If not owner, deploy TerraClassicOracle.sol and call setGasOracle on IGP"
 else
-    # Check if there is already data for this domain
+    # ── 1. Try official Hyperlane oracle first ───────────────────────────
     CURRENT_RATE=$(cast call "$GAS_ORACLE" \
         "getExchangeRateAndGasPrice(uint32)(uint128,uint128)" \
         "$TERRA_DOMAIN" --rpc-url "$NET_RPC" 2>/dev/null | head -1 || echo "0")
 
     if [ "${CURRENT_RATE}" != "0" ] && [ "${CURRENT_RATE}" != "null" ]; then
-        log_ok "Gas Oracle already configured for Terra Classic (domain ${TERRA_DOMAIN})!"
-        log "  Current Exchange Rate: ${G}${CURRENT_RATE}${NC}"
+        log_ok "Official oracle already has data for Terra Classic (domain ${TERRA_DOMAIN}): rate=${CURRENT_RATE}"
         log_info "Updating with new values..."
     fi
 
@@ -881,13 +903,104 @@ else
         "$TERRA_DOMAIN" "$IGP_EXCHANGE_RATE" "$IGP_GAS_PRICE" \
         --rpc-url "$NET_RPC" \
         --private-key "$ETH_PRIVATE_KEY" \
-        --legacy) || { log_warn "setRemoteGasData falhou (pode não ser owner do oracle) — continuando..."; TX=""; }
+        --legacy) || TX=""
 
     if [ -n "$TX" ]; then
-        log_ok "Gas Oracle configured for Terra Classic!"
+        log_ok "Official Gas Oracle configured for Terra Classic!"
         log "   TX: ${B}${NET_EXPLORER}/tx/${TX}${NC}"
     else
-        log_info "Gas Oracle possibly already configured or lacking owner permission."
+        # ── 2. Official oracle not writable → deploy custom TerraClassicOracle ──
+        log_warn "Official oracle not writable (not owner) — switching to TerraClassicOracle..."
+
+        if [ -n "${ORACLE_ADDRESS:-}" ]; then
+            log_ok "Custom oracle already deployed: ${G}${ORACLE_ADDRESS}${NC}"
+            log_info "Updating rates on custom oracle..."
+            TX_UPD=$(cast_tx "$ORACLE_ADDRESS" \
+                "setRemoteGasData(uint32,uint128,uint128)" \
+                "$TERRA_DOMAIN" "$IGP_EXCHANGE_RATE" "$IGP_GAS_PRICE" \
+                --rpc-url "$NET_RPC" \
+                --private-key "$ETH_PRIVATE_KEY" \
+                --legacy) || true
+            [ -n "${TX_UPD:-}" ] && log_ok "Rates updated on custom oracle. TX: ${B}${NET_EXPLORER}/tx/${TX_UPD}${NC}"
+
+        elif [ "$HAVE_FORGE" = "false" ]; then
+            log_warn "forge not available — deploy TerraClassicOracle.sol manually via Remix:"
+            log "  Contrato:    ${C}${ORACLE_SOL}${NC}"
+            log "  Constructor: (_exchangeRate=${IGP_EXCHANGE_RATE}, _gasPrice=${IGP_GAS_PRICE})"
+            log "  Após deploy, execute:"
+            log "    ${C}export ORACLE_ADDRESS='0x...'${NC}"
+            log "    ${C}./create-warp-evm.sh${NC}"
+        else
+            [ ! -f "$ORACLE_SOL" ] && { log_err "TerraClassicOracle.sol not found: $ORACLE_SOL"; exit 1; }
+
+            TMP_ORACLE="/tmp/oracle-deploy-$$"
+            mkdir -p "$TMP_ORACLE/src"
+            cp "$ORACLE_SOL" "$TMP_ORACLE/src/TerraClassicOracle.sol"
+            cd "$TMP_ORACLE"
+            forge init --no-git --force . >> "$LOG_FILE" 2>&1
+            log_info "Compiling TerraClassicOracle..."
+            forge build >> "$LOG_FILE" 2>&1 || { log_err "Oracle compilation failed!"; cd "$SCRIPT_DIR"; rm -rf "$TMP_ORACLE"; exit 1; }
+
+            ORACLE_ARTIFACT="$TMP_ORACLE/out/TerraClassicOracle.sol/TerraClassicOracle.json"
+            [ ! -f "$ORACLE_ARTIFACT" ] && { log_err "Oracle artifact not found: $ORACLE_ARTIFACT"; cd "$SCRIPT_DIR"; rm -rf "$TMP_ORACLE"; exit 1; }
+
+            ORACLE_BYTECODE=$(jq -r '.bytecode.object' "$ORACLE_ARTIFACT" 2>/dev/null || echo "")
+            [ -z "$ORACLE_BYTECODE" ] || [ "$ORACLE_BYTECODE" = "null" ] && { log_err "Empty oracle bytecode!"; cd "$SCRIPT_DIR"; rm -rf "$TMP_ORACLE"; exit 1; }
+
+            ORACLE_CTOR=$(cast abi-encode "constructor(uint128,uint128)" \
+                "$IGP_EXCHANGE_RATE" "$IGP_GAS_PRICE" 2>/dev/null || echo "")
+            [ -z "$ORACLE_CTOR" ] && { log_err "Failed to encode oracle constructor!"; cd "$SCRIPT_DIR"; rm -rf "$TMP_ORACLE"; exit 1; }
+
+            log_info "Deploying TerraClassicOracle on ${NET_DISPLAY}..."
+            ORACLE_CAST_OUT=$(cast send \
+                --rpc-url "$NET_RPC" \
+                --private-key "$ETH_PRIVATE_KEY" \
+                --legacy \
+                --create "${ORACLE_BYTECODE}${ORACLE_CTOR:2}" 2>&1 | tee -a "$LOG_FILE")
+
+            ORACLE_ADDRESS=$(echo "$ORACLE_CAST_OUT" | grep -i "^contractAddress" | awk '{print $2}' | tr -d '[:space:]' || echo "")
+            [ -z "$ORACLE_ADDRESS" ] && \
+                ORACLE_ADDRESS=$(echo "$ORACLE_CAST_OUT" | grep -i "contractAddress" | grep -oiE '0x[0-9a-fA-F]{40}' | head -1 || echo "")
+
+            cd "$SCRIPT_DIR"; rm -rf "$TMP_ORACLE"
+
+            if [ -z "$ORACLE_ADDRESS" ] || [ "$ORACLE_ADDRESS" = "null" ]; then
+                log_err "TerraClassicOracle deploy failed!"
+                log "${Y}Set the oracle manually: export ORACLE_ADDRESS='0x...' and re-run.${NC}"
+                ORACLE_ADDRESS=""
+            else
+                log_ok "TerraClassicOracle deployed: ${G}${ORACLE_ADDRESS}${NC}"
+                export ORACLE_ADDRESS
+            fi
+        fi
+
+        # ── 3. Point IGP to the custom oracle ───────────────────────────
+        if [ -n "${ORACLE_ADDRESS:-}" ] && [ -n "${IGP_ADDRESS:-}" ]; then
+            CURRENT_IGP_ORACLE=$(cast call "$IGP_ADDRESS" "gasOracle()(address)" \
+                --rpc-url "$NET_RPC" 2>/dev/null || echo "")
+
+            if [ "${CURRENT_IGP_ORACLE,,}" = "${ORACLE_ADDRESS,,}" ]; then
+                log_ok "IGP already using custom oracle."
+            else
+                log_info "Updating IGP to use TerraClassicOracle..."
+                TX_SETORACLE=$(cast_tx "$IGP_ADDRESS" \
+                    "setGasOracle(address,uint96)" "$ORACLE_ADDRESS" "$GAS_OVERHEAD" \
+                    --rpc-url "$NET_RPC" \
+                    --private-key "$ETH_PRIVATE_KEY" \
+                    --legacy) || { log_warn "setGasOracle failed — check IGP owner"; TX_SETORACLE=""; }
+
+                [ -n "${TX_SETORACLE:-}" ] && {
+                    log_ok "IGP now using custom oracle!"
+                    log "   TX: ${B}${NET_EXPLORER}/tx/${TX_SETORACLE}${NC}"
+                }
+            fi
+
+            # Persist oracle address in warp-evm-config.json
+            TMP_CFG=$(mktemp)
+            jq ".networks.\"${NET_KEY}\".warp_tokens.\"${TOKEN_KEY}\".oracle_custom = \"${ORACLE_ADDRESS}\"" \
+                "$CONFIG_FILE" > "$TMP_CFG" && mv "$TMP_CFG" "$CONFIG_FILE"
+            log_ok "oracle_custom saved in warp-evm-config.json"
+        fi
     fi
 fi
 
@@ -981,6 +1094,14 @@ else
         [ -n "$TX_HOOK" ] && log "   TX: ${B}${NET_EXPLORER}/tx/${TX_HOOK}${NC}"
     fi
 fi
+
+# Persists AggHook address in JSON
+if [ -n "${HOOK_AGG_ADDRESS:-}" ]; then
+    TMP_CFG=$(mktemp)
+    jq ".networks.\"${NET_KEY}\".warp_tokens.\"${TOKEN_KEY}\".hook_aggregation = \"${HOOK_AGG_ADDRESS}\"" \
+        "$CONFIG_FILE" > "$TMP_CFG" && mv "$TMP_CFG" "$CONFIG_FILE"
+fi
+
 save_state
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -1271,6 +1392,7 @@ log "  Token:       ${TOKEN_NAME} (${TOKEN_SYMBOL})"
 log "  📮 Mailbox:  ${G}${MAILBOX}${NC}"
 log "  🔗 Warp EVM: ${G}${WARP_ADDRESS}${NC}"
 log "  ⛽ IGP:       ${G}${IGP_ADDRESS}${NC}"
+log "  🔮 Oracle:   ${G}${ORACLE_ADDRESS:-${GAS_ORACLE} (official)}${NC}"
 log "  🔐 ISM:      ${ISM_TYPE} | validators: ${ISM_VALIDATORS} | threshold: ${ISM_THRESHOLD}"
 log "  🪝 Hook:     custom IGP (hookType=4)"
 log "  🌍 Domains:  EVM=${NET_DOMAIN} | Terra=${TERRA_DOMAIN}"
@@ -1313,7 +1435,7 @@ EVM CONTRACTS:
   Mailbox:   ${MAILBOX}
   Warp:      ${WARP_ADDRESS}
   IGP:       ${IGP_ADDRESS}
-  GasOracle: ${GAS_ORACLE}
+  GasOracle: ${ORACLE_ADDRESS:-${GAS_ORACLE}}
   ISM:       ${ISM_TYPE} | validators: ${ISM_VALIDATORS}
 
 TERRA CLASSIC:

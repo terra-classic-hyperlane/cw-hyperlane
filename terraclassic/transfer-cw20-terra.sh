@@ -9,28 +9,47 @@ set -euo pipefail
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
 CYAN='\033[0;36m'; BOLD='\033[1m'; RESET='\033[0m'
 
-# ─── Default settings (editable) ────────────────────────────────────────────
-CW20_CONTRACT="${CW20_CONTRACT:-terra19ujvy60tjeyehjrwlrdpqlp0gxmtt4qv452nwjqc6w6m38pm8xmq22lux3}"
-SENDER="${SENDER:-terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze}"
-RECIPIENT="${RECIPIENT:-terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k}"
-AMOUNT="${AMOUNT:-100000000}"
-TOKEN_SYMBOL="${TOKEN_SYMBOL:-XPTO}"
-
-# RPC / LCD for Terra Classic (reads from warp-evm-config.json if it exists)
+# ─── Paths ────────────────────────────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_DIR="$SCRIPT_DIR/log"
 mkdir -p "$LOG_DIR"
 CONFIG_JSON="$SCRIPT_DIR/warp-evm-config.json"
 
+# ─── RPC / LCD (reads from warp-evm-config.json) ─────────────────────────────
 if command -v jq &>/dev/null && [ -f "$CONFIG_JSON" ]; then
-    RPC_URL=$(jq -r '.terra_classic.rpc // "https://rpc.terra-classic.hexxagon.dev"' "$CONFIG_JSON")
-    LCD_URL=$(jq -r '.terra_classic.lcd // "https://lcd.terra-classic.hexxagon.dev"' "$CONFIG_JSON")
-    CHAIN_ID=$(jq -r '.terra_classic.chain_id // "rebel-2"' "$CONFIG_JSON")
+    RPC_URL=$(jq -r '.terra_classic.rpc  // "https://rpc.terra-classic.hexxagon.io"' "$CONFIG_JSON")
+    LCD_URL=$(jq -r '.terra_classic.lcd  // "https://lcd.terra-classic.hexxagon.io"' "$CONFIG_JSON")
+    CHAIN_ID=$(jq -r '.terra_classic.chain_id // "columbus-5"' "$CONFIG_JSON")
 else
-    RPC_URL="https://rpc.terra-classic.hexxagon.dev"
-    LCD_URL="https://lcd.terra-classic.hexxagon.dev"
-    CHAIN_ID="rebel-2"
+    RPC_URL="https://rpc.terra-classic.hexxagon.io"
+    LCD_URL="https://lcd.terra-classic.hexxagon.io"
+    CHAIN_ID="columbus-5"
 fi
+
+# ─── Token lookup from warp-evm-config.json ──────────────────────────────────
+# Set TOKEN_KEY=igorfake (or any other token key) to auto-fill CW20_CONTRACT
+# and TOKEN_SYMBOL from the config. Fallback to explicit env vars if not set.
+TOKEN_KEY="${TOKEN_KEY:-igorfake}"
+
+if command -v jq &>/dev/null && [ -f "$CONFIG_JSON" ] && [ -n "$TOKEN_KEY" ]; then
+    _CFG_COLLAT=$(jq -r --arg t "$TOKEN_KEY" \
+        '.terra_classic.tokens[$t].terra_warp.collateral_address // ""' "$CONFIG_JSON" 2>/dev/null || echo "")
+    _CFG_SYM=$(jq -r --arg t "$TOKEN_KEY" \
+        '.terra_classic.tokens[$t].symbol // ""' "$CONFIG_JSON" 2>/dev/null || echo "")
+    _CFG_OWNER=$(jq -r --arg t "$TOKEN_KEY" \
+        '.terra_classic.tokens[$t].terra_warp.owner // ""' "$CONFIG_JSON" 2>/dev/null || echo "")
+    [ -n "$_CFG_COLLAT" ] && CW20_CONTRACT="${CW20_CONTRACT:-$_CFG_COLLAT}"
+    [ -n "$_CFG_SYM"    ] && TOKEN_SYMBOL="${TOKEN_SYMBOL:-$_CFG_SYM}"
+    [ -n "$_CFG_OWNER"  ] && SENDER="${SENDER:-$_CFG_OWNER}"
+fi
+
+# ─── Default settings (override via env vars) ────────────────────────────────
+# Defaults point to IGORFAKE (mainnet columbus-5). Override with TOKEN_KEY=other
+CW20_CONTRACT="${CW20_CONTRACT:-terra1lpkaaqjaq8zfwktge3vy0zg46nxxsynsge2wxa7addpweu2w6gmsy3lhkr}"
+SENDER="${SENDER:-terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp}"
+RECIPIENT="${RECIPIENT:-terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp}"
+AMOUNT="${AMOUNT:-1000000}"
+TOKEN_SYMBOL="${TOKEN_SYMBOL:-IGORFAKE}"
 
 GAS_PRICE="${GAS_PRICE:-28.325}"
 GAS_DENOM="${GAS_DENOM:-uluna}"
@@ -297,7 +316,7 @@ echo -e "   ${CYAN}Recipient (before):${RESET} $BAL_R_BEFORE $TOKEN_SYMBOL"
 echo -e "   ${CYAN}Recipient (after) :${RESET} $BAL_R_AFTER $TOKEN_SYMBOL"
 echo -e ""
 echo -e "${BOLD}🔗 Verify on Explorer:${RESET}"
-echo -e "   ${CYAN}https://finder.terra-classic.hexxagon.dev/testnet/tx/${TX_HASH}${RESET}"
+echo -e "   ${CYAN}https://finder.hexxagon.io/${CHAIN_ID}/tx/${TX_HASH}${RESET}"
 echo -e ""
 
 # ─── Save report ─────────────────────────────────────────────────────────────
@@ -331,7 +350,7 @@ Sender after    : $BAL_S_AFTER $TOKEN_SYMBOL
 Recipient before: $BAL_R_BEFORE $TOKEN_SYMBOL
 Recipient after : $BAL_R_AFTER $TOKEN_SYMBOL
 
-Explorer: https://finder.terra-classic.hexxagon.dev/testnet/tx/$TX_HASH
+Explorer: https://finder.hexxagon.io/${CHAIN_ID}/tx/$TX_HASH
 REPORT
 
 echo -e "${GREEN}📄 Report saved: ${REPORT_FILE}${RESET}"
