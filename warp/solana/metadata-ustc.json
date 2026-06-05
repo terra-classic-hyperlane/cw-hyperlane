@@ -1,0 +1,7 @@
+{
+  "name": "Wrapped TerraClassic USD",
+  "symbol": "USTC",
+  "description": "Wrapped Terra Classic USTC via Hyperlane Warp Route (Solana)",
+  "image": "https://raw.githubusercontent.com/classic-terra/assets/refs/heads/master/icon/svg/Terra/UST.svg",
+  "attributes": []
+}
