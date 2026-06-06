@@ -32,7 +32,7 @@
           "program_id": "5BuTS1oZhUKJgpgwXJyz5VRdTq99SMvHm7hrPMctJk6x",
           "program_hex": "0x3e39de1edbc0495cee651b3e046f63d01ff9436932bb520e8c0cb4ba5c5c7f1d",
           "mint_address": "",
-          "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata.json",
+          "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata.json",
           "decimals": 6,
           "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
         },
@@ -43,7 +43,7 @@
           "program_id": "G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y",
           "program_hex": "0xdf8c90c47b713b222855f782b0f13e2d0a65ba45ba08a6f46c7ec93ee67327a6",
           "mint_address": "ExzEij8z7xc71kvjuMHmejRkmM4ACgKjDWuEaXdDubRa",
-          "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-juris.json",
+          "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-juris.json",
           "decimals": 6,
           "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
         },
@@ -54,18 +54,18 @@
           "program_id": "jNkiNLXQetj9L2tDX6xTgx9QP1tgtNgYXamouNbbwx9",
           "program_hex": "0x0adafdae59c217a1b7409f65ca81505f9991c257be80af8902ebed96d8801ba6",
           "mint_address": "Db8VbMerYxksYwSSdetpy6Jhp2BrE4hk9Sh9dYJT5dQ2",
-          "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-xpto.json",
+          "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-xpto.json",
           "decimals": 6,
           "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
         },
         "xptv": {
           "_comment": "XPTV CW20 → token sintético no Solana",
-          "deployed": false,
+          "deployed": true,
           "type": "synthetic",
-          "program_id": "",
-          "program_hex": "",
-          "mint_address": "",
-          "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-xptv.json",
+          "program_id": "7BwvVDgtTd6rNpP7y76p92KLbWSXSLt6FvZqtr2hxb3u",
+          "program_hex": "0x5bf407c582d6e34a11a150fc4e6a4a22871038dbdf00ebb26ca74b5ea3f10be8",
+          "mint_address": "3Td4MsCDFbhqQDUNPcH13nEQJU7C8uprYFpReo9udKF3",
+          "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-xptv.json",
           "decimals": 6,
           "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
         },
@@ -76,7 +76,7 @@
           "program_id": "",
           "program_hex": "",
           "mint_address": "",
-          "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-xpv.json",
+          "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-xpv.json",
           "decimals": 6,
           "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
         },
@@ -87,23 +87,37 @@
           "program_id": "",
           "program_hex": "",
           "mint_address": "",
-          "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-ustc.json",
+          "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-ustc.json",
+          "decimals": 6,
+          "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
+        },
+        "igorfake": {
+          "deployed": false,
+          "type": "synthetic",
+          "program_id": "",
+          "program_hex": "",
+          "mint_address": "",
+          "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-igorfake.json",
           "decimals": 6,
           "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
         }
       }
     },
-    "solana": {
+    "solanamainnet": {
       "_comment": "Solana Mainnet — habilitado 2026-06-04",
       "enabled": true,
       "display_name": "Solana Mainnet",
       "environment": "mainnet3",
       "domain": 1399811149,
-      "rpc": "https://api.mainnet-beta.solana.com",
-      "rpc_alt": "https://solana-mainnet.rpc.extrnode.com",
+      "rpc": "https://mainnet.helius-rpc.com/?api-key=YOUR_HELIUS_API_KEY",
+      "rpc_fallbacks": [
+        "https://solana-mainnet.rpc.extrnode.com",
+        "https://rpc.ankr.com/solana",
+        "https://mainnet.helius-rpc.com/?api-key=YOUR_HELIUS_API_KEY"
+      ],
       "mailbox": "E588QtVUvresuXq2KoNEwAmoifCzYGpRBdHByN9KQMbi",
       "explorer": "https://explorer.solana.com",
-      "keypair": "/home/lunc/keys/solana-keypair-EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd.json",
+      "keypair": "/home/lunc/keys/solana-keypair-BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j.json",
       "monorepo_dir": "/home/lunc/hyperlane-monorepo/rust/sealevel",
       "ism": {
         "_comment": "MultisigISM mainnet — LwNfVYMDzAe5dCJgA5CipTZcT34Eyf74zLr81K91jxk",
@@ -119,16 +133,63 @@
       "warp_tokens": {
         "igorfake": {
           "_comment": "IGORFAKE CW20 → token sintético no Solana Mainnet",
-          "deployed": false,
+          "deployed": true,
           "type": "synthetic",
-          "program_id": "",
-          "program_hex": "",
-          "mint_address": "",
-          "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-igorfake.json",
+          "program_id": "Hs4FrEgigJaabS5HtdkzceFdCPNmPhntWbbdWBJcXyCn",
+          "program_hex": "0xfa8db67e3dba9c6286873f1ab9ae954232464fa8091881650f3097fe831db30b",
+          "mint_address": "5s6DL6pYGxLNXNf1U915BLzLxNkRjnWCzqyzEfXuYDQT",
+          "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-igorfake.json",
           "decimals": 6,
-          "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
+          "owner": "BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j"
         }
       }
+    },
+    "solanadevnet": {
+      "_comment": "Solana Devnet — para testes locais",
+      "enabled": true,
+      "display_name": "Solana Devnet",
+      "environment": "devnet",
+      "domain": 1399811151,
+      "rpc": "https://api.devnet.solana.com",
+      "explorer": "https://explorer.solana.com/?cluster=devnet",
+      "keypair": "/home/lunc/keys/solana-keypair-BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j.json",
+      "monorepo_dir": "/home/lunc/hyperlane-monorepo/rust/sealevel",
+      "ism": {
+        "_comment": "Placeholder — Hyperlane nao tem infra no devnet; steps ISM/IGP falham graciosamente",
+        "program_id": "GBzvJRqNrTwEEMpaCppvKc9ZWAPp63rPmjLKCfvqSZyQ",
+        "threshold": 1
+      },
+      "igp": {
+        "program_id": "3jwBeFqf2NSj3gSRLNDx4HP2E1t3zrNoERd6MnzRXx7n",
+        "account": "9TmpKr5LiHpuG9K12bH4VDgLfJM2YeFxhSb2AVhQf9Qw",
+        "destination_gas_terra": 3000000
+      },
+      "warp_tokens": {
+        "igorfake": {
+          "deployed": true,
+          "type": "synthetic",
+          "program_id": "FmnESgcwTHQw9X6ksR98AMtdu8qRCLsB4fVpt1q8ht9D",
+          "program_hex": "0xdb7c50f8d0270ab0ad9c3053b49cca77844899fb9a7c55b21f73566b86614e38",
+          "mint_address": "EekKVLr528bsfuiVSUoq6fULWstw75vVShjvyv8Nt88L",
+          "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-igorfake.json",
+          "decimals": 6,
+          "owner": "BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j"
+        },
+        "ustc": {
+          "_comment": "USTC nativo → token sintético no Solana Devnet",
+          "deployed": true,
+          "type": "synthetic",
+          "program_id": "Bzi44qUYceGphbjqyDhT9vQg8TMZUUMDsjHF2nD3HHXJ",
+          "program_hex": "0xa35d64dd59ba4f517a34865e42f19b291ee278a5d989282cde20d2360ce262fd",
+          "mint_address": "4rcvqasD5kEcV3Ctf385cf3sipnhDwJrPgc7FYbZpTaL",
+          "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-ustc.json",
+          "decimals": 6,
+          "owner": "BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j"
+        }
+      },
+      "_comment_mailbox": "mailbox: 21i5MDw3PPVbkS9X1L1Jw78gyrZB7zYB8yTzzfopp1Rc",
+      "mailbox": "21i5MDw3PPVbkS9X1L1Jw78gyrZB7zYB8yTzzfopp1Rc",
+      "validator_announce": "FM1hB4GMPHCBP9xMy44hwZAXw3x97fVUrsnognBVEGYf"
     }
   }
 }

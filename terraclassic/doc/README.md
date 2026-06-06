@@ -2,7 +2,7 @@
 
 > Index document for all Warp Route scripts and guides for Terra Classic ↔ EVM and Terra Classic ↔ Sealevel (Solana).
 
-**Last updated:** 2026-06-04 — IGORFAKE deployed on Ethereum mainnet; Step 8 verification uses RPC fallback to handle rate limits; Ethereum mainnet section added to deployed contracts reference.
+**Last updated:** 2026-06-05 — Solana Devnet full Hyperlane infrastructure deployed; `close-warp-program.sh` script added; `create-warp-sealevel.sh` upgraded (pre-built binary reuse, spl-token image validation, metadata URL fixes).
 
 ---
 
@@ -319,6 +319,50 @@ Deployed 2026-06-03 via `CustomInstantiateWasm-mainnet.ts`.
 
 ---
 
+### Solana Devnet (domain 1399811151)
+
+Deployed 2026-06-05. Full Hyperlane core infrastructure deployed from source.
+
+**Core contracts:**
+
+| Contract | Program ID |
+|---|---|
+| **Mailbox** | `21i5MDw3PPVbkS9X1L1Jw78gyrZB7zYB8yTzzfopp1Rc` |
+| **MultisigISM MessageID** | `GBzvJRqNrTwEEMpaCppvKc9ZWAPp63rPmjLKCfvqSZyQ` |
+| **IGP Program** | `3jwBeFqf2NSj3gSRLNDx4HP2E1t3zrNoERd6MnzRXx7n` |
+| **IGP Account** | `9TmpKr5LiHpuG9K12bH4VDgLfJM2YeFxhSb2AVhQf9Qw` |
+| **IGP Overhead Account** | `DZviyMfWebpQep9fyiPNeH2tgwYNmBsdArNbodj9FzMq` |
+| **Validator Announce** | `FM1hB4GMPHCBP9xMy44hwZAXw3x97fVUrsnognBVEGYf` |
+
+**Warp Routes:**
+
+| Token | Program ID | Mint (Token-2022) |
+|---|---|---|
+| **IGORFAKE** | `FmnESgcwTHQw9X6ksR98AMtdu8qRCLsB4fVpt1q8ht9D` | `EekKVLr528bsfuiVSUoq6fULWstw75vVShjvyv8Nt88L` |
+| **USTC** | *(reset for testing)* | *(reset for testing)* |
+
+> Deploys via `./create-warp-sealevel.sh` → rede **[1] solanadevnet**.
+> See `log/DEVNET-HYPERLANE-ADDRESSES.txt` for full details.
+
+---
+
+### Solana Testnet (domain 1399811150)
+
+**Warp Routes:**
+
+| Token | Program ID | Mint |
+|---|---|---|
+| **wLUNC** | `5BuTS1oZhUKJgpgwXJyz5VRdTq99SMvHm7hrPMctJk6x` | — |
+| **JURIS** | `G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y` | `ExzEij8z7xc71kvjuMHmejRkmM4ACgKjDWuEaXdDubRa` |
+| **XPTO** | `jNkiNLXQetj9L2tDX6xTgx9QP1tgtNgYXamouNbbwx9` | `Db8VbMerYxksYwSSdetpy6Jhp2BrE4hk9Sh9dYJT5dQ2` |
+| **XPTV** | `7BwvVDgtTd6rNpP7y76p92KLbWSXSLt6FvZqtr2hxb3u` | `3Td4MsCDFbhqQDUNPcH13nEQJU7C8uprYFpReo9udKF3` |
+| **USTC** | `BWJm6tjxEY1uzyFvNZsy211mooeVZdph3SMoz4HPKV4B` | `5ZTL6NPun4dmgwXex84MnAucdCtfAoz2s2Te8XsA5FPr` |
+
+> ISM: `5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh`  
+> IGP: `5p7Hii6CJL4xGBYYTGEQmH9LnUSZteFJUu9AVLDExZX2` / Account: `E9i32KsKGQZMYTguZ81VHUueNvpTGh7nb9J5bRif4xT1`
+
+---
+
 ### BSC Testnet — chain 97 (domain 97)
 
 | Contract | Address |
@@ -357,11 +401,13 @@ Deployed 2026-06-03 via `CustomInstantiateWasm-mainnet.ts`.
 | Script | Purpose |
 |---|---|
 | `create-warp-evm.sh` | Deploy Warp Route on EVM network (Sepolia, BSC, etc.) — auto-deploys EVM oracle if needed |
-| `update-igp-oracle.sh` | **Update TC IGP Oracle** for ETH/BSC/Solana — direct or governance mode |
+| `create-warp-sealevel.sh` | **Deploy Warp Route on Solana** (testnet, devnet, mainnet) — interactive menu |
+| `close-warp-program.sh` | **Close a Solana Warp program, recover SOL, reset config** — use before re-deploying |
+| `update-igp-oracle.sh` | Update TC IGP Oracle for ETH/BSC/Solana — direct or governance mode |
 | `transfer-remote-terra.sh` | Send tokens Terra Classic → EVM/Solana |
 | `transfer-remote-to-terra.sh` | Send tokens EVM/Solana → Terra Classic |
 | `enroll-terra-router.sh` | Register EVM route in Terra Classic Warp |
-| `create-warp-sealevel.sh` | Deploy Warp Route on Solana |
+| `deploy-warp-solana-buffer.sh` | Deploy Solana program binary via buffer (manual alternative) |
 | `CustomInstantiateWasm-mainnet.ts` | **Full mainnet install** — 13 contracts + mailbox config + IGP oracle (Steps 1–15) |
 | `submit-proposal-mainnet.ts` | **Governance proposal** — ISM validators + all mailbox/oracle configs |
 
@@ -475,30 +521,43 @@ Sepolia ISM: validators: ["0xYOUR_VALIDATOR_KEY"]  ← same key
 
 ```
 terraclassic/
-├── doc/                                   ← documentation
-│   ├── README.md                          ← this document
-│   ├── create-warp-evm-guide.md           ← full EVM deploy guide
-│   ├── create-warp-sealevel-guide.md      ← full Solana deploy guide
+├── doc/                                    ← documentation
+│   ├── README.md                           ← this document
+│   ├── create-warp-evm-guide.md            ← full EVM deploy guide
+│   ├── create-warp-sealevel-guide.md       ← full Solana deploy guide
 │   ├── transfer-remote-guide.md
 │   ├── transfer-remote-to-terra-guide.md
 │   └── enroll-terra-router-guide.md
 │
-├── create-warp-evm.sh                     ← main EVM deploy script
-├── enroll-terra-router.sh                 ← register route on Terra Classic
-├── transfer-remote-terra.sh               ← send TC → EVM
-├── transfer-remote-to-terra.sh            ← send EVM → TC
+├── create-warp-evm.sh                      ← EVM deploy (BSC, ETH, Sepolia)
+├── create-warp-sealevel.sh                 ← Solana deploy (devnet/testnet/mainnet)
+├── close-warp-program.sh                   ← close program + recover SOL + reset config
+├── deploy-warp-solana-buffer.sh            ← manual Solana buffer deploy
+├── enroll-terra-router.sh                  ← register route on Terra Classic
+├── transfer-remote-terra.sh                ← send TC → EVM/Solana
+├── transfer-remote-to-terra.sh             ← send EVM/Solana → TC
+├── update-igp-oracle.sh                    ← update TC IGP oracle rates
 │
-├── warp-evm-config.json                   ← all networks + tokens config
-├── TerraClassicIGPStandalone-Sepolia.sol  ← custom IGP (hookType=4)
-├── TerraClassicOracle.sol                 ← custom gas oracle (auto-deployed)
+├── warp-evm-config.json                    ← EVM networks + tokens config
+├── warp-sealevel-config.json               ← Solana networks + tokens config
+├── TerraClassicIGPStandalone-Sepolia.sol   ← custom IGP (hookType=4)
+├── TerraClassicOracle.sol                  ← custom gas oracle (auto-deployed)
 │
 ├── warp/
-│   ├── warp-bsc-ztt.yaml                  ← generated per deploy
-│   └── terraclassic-cw20-ztt.json         ← generated for TC deploy
+│   ├── solana/
+│   │   ├── metadata-igorfake.json          ← Token-2022 metadata files
+│   │   ├── metadata-ustc.json
+│   │   └── metadata-*.json
+│   ├── warp-bsc-ztt.yaml                   ← generated per EVM deploy
+│   └── terraclassic-cw20-ztt.json          ← generated for TC deploy
 │
 └── log/
-    ├── create-warp-evm.log                ← full execution log
-    └── WARP-BSC-ZTT.txt                   ← deploy report with all addresses
+    ├── create-warp-evm.log
+    ├── create-warp-sealevel.log
+    ├── DEVNET-HYPERLANE-ADDRESSES.txt      ← Solana devnet core contracts
+    ├── WARP-SOLANADEVNET-*.txt             ← devnet warp deploy reports
+    ├── WARP-SOLANATESTNET-*.txt            ← testnet warp deploy reports
+    └── WARP-BSC-*.txt / WARP-ETHEREUM-*.txt
 ```
 
 **Files managed automatically (do not edit manually):**
@@ -559,11 +618,18 @@ const {CosmWasmClient}=require(p.join(nm,'@cosmjs/cosmwasm-stargate'));
 | TC IGP fee query returns 0 or fails | TC IGP oracle not configured for destination domain | Run `./update-igp-oracle.sh` to configure the domain |
 | `fee is too low` / transfer stuck | TC IGP oracle exchange_rate is stale (prices changed) | Run `./update-igp-oracle.sh` to recalculate with current prices |
 | `route not found` | Terra Classic Warp has no route for the EVM domain | Run `./enroll-terra-router.sh` |
-| `insufficient funds` | Not enough native token (BNB/ETH) | Top up wallet; check `cast balance WALLET --rpc-url RPC --ether` |
+| `insufficient funds` | Not enough native token (BNB/ETH/SOL) | Top up wallet; check `cast balance WALLET --rpc-url RPC --ether` |
 | `invalid_enum_value` (hyperlane CLI) | CLI version below 26 | `npm install -g @hyperlane-xyz/cli@latest` |
 | Wrong network selected (EVM script) | Menu order is **alphabetical** — not JSON order | `bsc=[1], bsctestnet=[2], sepolia=[3]` |
 | TC deploy reads wrong network | `config.yaml` and `warp-evm-config.json` mismatch | `config.yaml` must point to the same chain as `terra_classic.chain_id` |
 | Validator not signing messages | Hook does not include MerkleTreeHook | Re-run script — Step 5 deploys `AggregationHook=[MerkleTree+IGP]` automatically |
+| **Solana: mint NOT FOUND after deploy** | `dan/create-token-for-mint` fork bug on mainnet | Run `./close-warp-program.sh` to recover SOL and redeploy — devnet/testnet use `create-token` (correct) |
+| **Solana: `Max retries exceeded`** | Public mainnet RPC blocks `--use-rpc` program deploy | Devnet/testnet work fine; mainnet needs private RPC |
+| **Solana: `Image URL` panic** | metadata `image` URL returns 404 | Script validates image HTTP status; URI auto-omitted if invalid |
+| **Solana: `Chain config not found`** | Network key in `warp-sealevel-config.json` not in registry | Must match registry name: `solanamainnet`, `solanatestnet`, `solanadevnet` |
+| **Solana: `429 Too Many Requests`** | Public testnet RPC rate limit | Wait 1–2 min and retry; script handles gracefully |
+| **Solana: `run_sealevel: No such file`** | `timeout` called on shell function | Fixed in current script — use latest version |
+| **Solana: program builds take 10+ min** | First-time `cargo build` compilation | Script detects pre-built binary and calls it directly (fast on subsequent runs) |
 
 ### Checking oracle state (quick reference)
 
@@ -640,9 +706,77 @@ export ORACLE_ADDRESS="0xORACLE"   # skips oracle deploy, updates rates only
 
 ---
 
+---
+
+## 10. Solana Quick Reference
+
+### Deploy a new Warp Route (Solana)
+
+```bash
+cd ~/tc-cw-hyperlane/terraclassic
+./create-warp-sealevel.sh
+# → Select token and network interactively
+```
+
+### Close a program and recover SOL
+
+```bash
+./close-warp-program.sh
+# → Lists all deployed programs, select one to close
+# → Closes program + buffers, resets config, removes keypairs
+```
+
+### Deploy Hyperlane core contracts on devnet (one-time setup)
+
+```bash
+# Build programs (run once)
+cd ~/hyperlane-monorepo/rust/sealevel/programs
+bash build-programs.sh core
+
+# Deploy core contracts
+SEALEVEL_BIN=~/hyperlane-monorepo/rust/sealevel/target/release/hyperlane-sealevel-client
+$SEALEVEL_BIN -k <KEYPAIR> -u https://api.devnet.solana.com \
+  core deploy \
+  --local-domain 1399811151 \
+  --environment devnet \
+  --environments-dir ~/hyperlane-monorepo/rust/sealevel/environments \
+  --chain solanadevnet \
+  --built-so-dir ~/hyperlane-monorepo/rust/sealevel/target/deploy \
+  --gas-oracle-config-file ~/hyperlane-monorepo/rust/sealevel/environments/devnet/gas-oracle-configs.json
+```
+
+### Network menu order (create-warp-sealevel.sh)
+
+Networks are listed **alphabetically** by key:
+
+| # | Key | Network |
+|---|---|---|
+| 1 | `solanadevnet` | Solana Devnet |
+| 2 | `solanamainnet` | Solana Mainnet |
+| 3 | `solanatestnet` | Solana Testnet |
+
+### Monorepo (never modify source)
+
+```
+/home/lunc/hyperlane-monorepo/   ← NEVER modify source files
+  rust/sealevel/
+    target/
+      deploy/       ← compiled .so programs
+      release/      ← hyperlane-sealevel-client binary
+    environments/
+      devnet/       ← devnet env (created by deploy)
+      testnet4/     ← testnet reference configs
+      mainnet3/     ← mainnet reference configs
+```
+
+---
+
 **Explorer links:**
 - BSC Mainnet: https://bscscan.com
 - BSC Testnet: https://testnet.bscscan.com
 - Sepolia: https://sepolia.etherscan.io
+- Solana Devnet: https://explorer.solana.com/?cluster=devnet
+- Solana Testnet: https://explorer.solana.com/?cluster=testnet
+- Solana Mainnet: https://explorer.solana.com
 - Terra Classic (hexxagon): https://finder.hexxagon.io/columbus-5
 - Hyperlane Explorer: https://explorer.hyperlane.xyz

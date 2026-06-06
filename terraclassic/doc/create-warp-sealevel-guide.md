@@ -1,7 +1,9 @@
 # Complete Guide: `create-warp-sealevel.sh`
 
 > Interactive script to create and configure Hyperlane Warp Routes on **Solana (Sealevel)** connected to Terra Classic.  
-> Fully portable — just copy the `terraclassic/` folder to any `cw-hyperlane` project.
+> Supports: Solana Devnet, Testnet, and Mainnet.
+>
+> **Last updated:** 2026-06-05 — Devnet infrastructure deployed; `close-warp-program.sh` added; binary reuse (no recompilation); image URL validation; metadata repo fixed to `terra-classic-hyperlane/cw-hyperlane`.
 
 ---
 
@@ -78,8 +80,8 @@ For each chosen **token + Solana network** pair, the script automatically execut
 | `jq` | 1.6+ | `apt install jq` |
 | `python3` | 3.8+ | native on Linux |
 | `node` + `npm` | Node 18+ | `nvm install 18` |
-| `cargo` (Rust) | 1.70+ | `curl https://sh.rustup.rs -sSf \| sh` |
-| `solana` CLI | 1.18+ | [https://docs.solana.com/cli/install-solana-cli-tools](https://docs.solana.com/cli/install-solana-cli-tools) |
+| `cargo` (Rust) | **1.86+** | `curl https://sh.rustup.rs -sSf \| sh` |
+| `solana` CLI | **3.0+** (Agave) | `agave-install init 3.0.14` (used for building programs) |
 
 ### Required Node.js packages
 
@@ -91,15 +93,52 @@ cd ~/cw-hyperlane
 npm install @cosmjs/cosmwasm-stargate @cosmjs/proto-signing
 ```
 
-### Sealevel Rust client binary
+### Sealevel Rust client and programs
 
-The Solana Warp deploy uses the Hyperlane Monorepo Rust client:
+The Solana Warp deploy uses the Hyperlane Monorepo Rust client. **Do not modify any file inside the monorepo.**
 
 ```bash
+# 1. Build the Rust client (one-time, ~10–20 min)
 cd /home/lunc/hyperlane-monorepo/rust/sealevel
-cargo build --release -p hyperlane-sealevel-client
-# Binário: target/release/hyperlane-sealevel-client
+cargo build --release
+# Binary: target/release/hyperlane-sealevel-client
+
+# 2. Build the Warp token programs (.so files)
+cd /home/lunc/hyperlane-monorepo/rust/sealevel/programs
+bash build-programs.sh token
+# Output: ../target/deploy/hyperlane_sealevel_token.so (+ collateral, native)
+
+# 3. Build core programs (mailbox, ISM, IGP — needed for devnet setup)
+bash build-programs.sh core
+# Output: ../target/deploy/hyperlane_sealevel_mailbox.so, igp.so, multisig_ism_*.so
 ```
+
+> **Fast re-runs:** After the first build, the script detects the pre-built binary at `target/release/hyperlane-sealevel-client` and calls it directly — no recompilation delay.
+
+### Deploying Hyperlane core infrastructure (devnet only)
+
+For **devnet**, you must first deploy the core contracts (mailbox, ISM, IGP):
+
+```bash
+cd ~/tc-cw-hyperlane/terraclassic
+
+SEALEVEL_BIN=~/hyperlane-monorepo/rust/sealevel/target/release/hyperlane-sealevel-client
+KEYPAIR=~/keys/solana-keypair-BirXd4....json
+ENVS_DIR=~/hyperlane-monorepo/rust/sealevel/environments
+BUILT_SO=~/hyperlane-monorepo/rust/sealevel/target/deploy
+GAS_CFG=$ENVS_DIR/devnet/gas-oracle-configs.json
+
+$SEALEVEL_BIN -k $KEYPAIR -u https://api.devnet.solana.com \
+  core deploy \
+  --local-domain 1399811151 \
+  --environment devnet \
+  --environments-dir $ENVS_DIR \
+  --chain solanadevnet \
+  --built-so-dir $BUILT_SO \
+  --gas-oracle-config-file $GAS_CFG
+```
+
+> For **testnet** and **mainnet**, core contracts are already deployed by Hyperlane — use the addresses in `warp-sealevel-config.json`.
 
 ### Solana Keypair
 
@@ -124,23 +163,31 @@ export TERRA_PRIVATE_KEY="your_terra_private_key_in_hex"
 
 ```
 terraclassic/
-├── create-warp-sealevel.sh       # Main script
-├── warp-sealevel-config.json     # Solana networks config + warp tokens
-├── warp-evm-config.json          # Terra Classic tokens config (shared with EVM)
-├── .warp-sealevel-state.json     # Last deploy state (automatically generated)
+├── create-warp-sealevel.sh        ← Main deploy script (interactive)
+├── close-warp-program.sh          ← Close program + recover SOL + reset config
+├── deploy-warp-solana-buffer.sh   ← Manual buffer deploy (alternative)
+├── warp-sealevel-config.json      ← Solana networks + warp tokens
+├── warp-evm-config.json           ← Terra Classic tokens (shared with EVM)
+├── .warp-sealevel-state.json      ← Last deploy state (auto-generated, delete to restart)
 ├── log/
-│   ├── create-warp-sealevel.log      # Execution log
-│   └── WARP-SOLANATESTNET-XPTO.txt   # Final report generated after deploy (example)
-└── docs/
-    └── create-warp-sealevel-guide.md  # This document
+│   ├── create-warp-sealevel.log
+│   ├── DEVNET-HYPERLANE-ADDRESSES.txt   ← Devnet core contract addresses
+│   ├── WARP-SOLANADEVNET-*.txt          ← Devnet warp deploy reports
+│   └── WARP-SOLANATESTNET-*.txt         ← Testnet warp deploy reports
+└── doc/
+    └── create-warp-sealevel-guide.md
 
 warp/solana/
-├── metadata-xpto.json            # SPL metadata for XPTO
-├── metadata-xptv.json            # SPL metadata for XPTV
-├── metadata-xpv.json             # SPL metadata for XPV
-├── metadata-ustc.json            # SPL metadata for USTC
-└── metadata.json                 # SPL metadata for wLUNC
+├── metadata-igorfake.json    ← Token-2022 metadata (name, symbol, image, uri)
+├── metadata-ustc.json        ← image: .../Terra/UST.svg (corrected URL)
+├── metadata-juris.json
+├── metadata-xpto.json
+└── metadata.json             ← wLUNC
 ```
+
+> **Metadata repo:** All metadata files are hosted at  
+> `https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/`  
+> The script validates that `image` URLs return HTTP 200 before including `uri` in the token config.
 
 ---
 
@@ -241,12 +288,42 @@ This file centralizes all configuration for Solana networks and deployed Warp to
 
 4. Run the script normally.
 
-### 5.4 Enabling Solana Mainnet
+### 5.4 Available Networks
 
-1. Fill all fields of the `"solana"` section in `warp-sealevel-config.json` with real mainnet addresses
-2. Change `"enabled": false` to `"enabled": true`
-3. Configure `keypair` with a path to a Solana Mainnet keypair with balance
-4. The script will show the network in the menu automatically
+| Key | Display | Domain | RPC | Status |
+|---|---|---|---|---|
+| `solanadevnet` | Solana Devnet | `1399811151` | `api.devnet.solana.com` | ✅ Ready (infra deployed 2026-06-05) |
+| `solanatestnet` | Solana Testnet | `1399811150` | `api.testnet.solana.com` | ✅ Ready (sometimes unstable) |
+| `solanamainnet` | Solana Mainnet | `1399811149` | `api.mainnet-beta.solana.com` | ⚠️ Public RPC blocks program deploy |
+
+> **Network menu order is alphabetical** by JSON key:  
+> `[1] solanadevnet  [2] solanamainnet  [3] solanatestnet`
+
+### 5.5 Adding Solana Devnet to config
+
+Devnet is already configured. Real ISM/IGP addresses (deployed 2026-06-05):
+
+```json
+"solanadevnet": {
+  "enabled": true,
+  "display_name": "Solana Devnet",
+  "environment": "devnet",
+  "domain": 1399811151,
+  "rpc": "https://api.devnet.solana.com",
+  "keypair": "/home/lunc/keys/solana-keypair-BirXd4...json",
+  "monorepo_dir": "/home/lunc/hyperlane-monorepo/rust/sealevel",
+  "mailbox": "21i5MDw3PPVbkS9X1L1Jw78gyrZB7zYB8yTzzfopp1Rc",
+  "ism": {
+    "program_id": "GBzvJRqNrTwEEMpaCppvKc9ZWAPp63rPmjLKCfvqSZyQ",
+    "threshold": 1
+  },
+  "igp": {
+    "program_id": "3jwBeFqf2NSj3gSRLNDx4HP2E1t3zrNoERd6MnzRXx7n",
+    "account": "9TmpKr5LiHpuG9K12bH4VDgLfJM2YeFxhSb2AVhQf9Qw",
+    "destination_gas_terra": 3000000
+  }
+}
+```
 
 ---
 
@@ -309,15 +386,18 @@ The Rust client validates the metadata when deploying the SPL token. The file mu
 | `name` | ✅ Yes | Full token name |
 | `symbol` | ✅ Yes | Symbol (ticker) |
 | `description` | ✅ Yes | Brief description |
-| `image` | ❌ Optional | Image URL (PNG/SVG). Can be `""` to omit |
+| `image` | ⚠️ Must be valid URL or `""` | Image URL (PNG/SVG). **Must return HTTP 200** if set, otherwise deploy panics |
 | `attributes` | ❌ Optional | Array of additional attributes |
 
-> **Note:** If `image` is `""` (empty string), the Rust client accepts it without validation (behavior fixed in the local patch). If you want a logo, use a direct public URL (e.g.: raw.githubusercontent.com).
+> **Image URL validation:** The script checks if `image` returns HTTP 200. If not, the `uri` is automatically omitted from `token-config.json`. This prevents the Rust client panic `Image URL must return a successful status code`.
+
+> **USTC fix:** The correct USTC image URL is `https://raw.githubusercontent.com/classic-terra/assets/refs/heads/master/icon/svg/Terra/UST.svg` (not `USTC.svg` which returns 404).
 
 ### The script auto-detects URI accessibility
 
-- If `metadata_uri` returns **HTTP 200** → the `uri` field is included in `token-config.json` → SPL token will have on-chain metadata
-- If `metadata_uri` returns **HTTP 404** or is **empty** → the `uri` field is **omitted** → SPL token is created without on-chain metadata (you can update later)
+- `image` returns **HTTP 200** AND `metadata_uri` returns **HTTP 200** → `uri` included in `token-config.json` → on-chain metadata
+- `image` returns non-200 → `uri` omitted (WARN shown) → token without on-chain metadata
+- `metadata_uri` returns **HTTP 404** → `uri` omitted → metadata generated locally from `warp-evm-config.json`
 
 To host the metadata on GitHub, commit the file and use the raw URL:
 
@@ -1165,45 +1245,85 @@ export TERRA_PRIVATE_KEY="your_private_key_hex_without_0x"
 
 ## 16. Deployed address reference
 
-### XPTO — Solana Testnet ↔ Terra Classic
+### Solana Devnet — Core Hyperlane Infrastructure
 
-> ✅ **Status: Working in production** — bidirectional transfers confirmed (Solana → Terra Classic and Terra Classic → Solana).
+> Deployed 2026-06-05 from source. See `log/DEVNET-HYPERLANE-ADDRESSES.txt` for full details.
+
+| Contract | Program ID |
+|---|---|
+| **Mailbox** | `21i5MDw3PPVbkS9X1L1Jw78gyrZB7zYB8yTzzfopp1Rc` |
+| **MultisigISM** | `GBzvJRqNrTwEEMpaCppvKc9ZWAPp63rPmjLKCfvqSZyQ` |
+| **IGP Program** | `3jwBeFqf2NSj3gSRLNDx4HP2E1t3zrNoERd6MnzRXx7n` |
+| **IGP Account** | `9TmpKr5LiHpuG9K12bH4VDgLfJM2YeFxhSb2AVhQf9Qw` |
+| **IGP Overhead Account** | `DZviyMfWebpQep9fyiPNeH2tgwYNmBsdArNbodj9FzMq` |
+| **Validator Announce** | `FM1hB4GMPHCBP9xMy44hwZAXw3x97fVUrsnognBVEGYf` |
+
+**Devnet Warp Routes:**
+
+| Token | Program ID | Mint (Token-2022) |
+|---|---|---|
+| **IGORFAKE** | `FmnESgcwTHQw9X6ksR98AMtdu8qRCLsB4fVpt1q8ht9D` | `EekKVLr528bsfuiVSUoq6fULWstw75vVShjvyv8Nt88L` |
+
+---
+
+### Solana Testnet — Warp Routes
+
+| Token | Program ID | Mint | Status |
+|---|---|---|---|
+| **wLUNC** | `5BuTS1oZhUKJgpgwXJyz5VRdTq99SMvHm7hrPMctJk6x` | — | ✅ |
+| **JURIS** | `G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y` | `ExzEij8z7xc71kvjuMHmejRkmM4ACgKjDWuEaXdDubRa` | ✅ |
+| **XPTO** | `jNkiNLXQetj9L2tDX6xTgx9QP1tgtNgYXamouNbbwx9` | `Db8VbMerYxksYwSSdetpy6Jhp2BrE4hk9Sh9dYJT5dQ2` | ✅ |
+| **XPTV** | `7BwvVDgtTd6rNpP7y76p92KLbWSXSLt6FvZqtr2hxb3u` | `3Td4MsCDFbhqQDUNPcH13nEQJU7C8uprYFpReo9udKF3` | ✅ |
+| **USTC** | `BWJm6tjxEY1uzyFvNZsy211mooeVZdph3SMoz4HPKV4B` | `5ZTL6NPun4dmgwXex84MnAucdCtfAoz2s2Te8XsA5FPr` | ✅ |
+
+**Testnet ISM/IGP:**
+- ISM: `5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh`
+- IGP: `5p7Hii6CJL4xGBYYTGEQmH9LnUSZteFJUu9AVLDExZX2` / Account: `E9i32KsKGQZMYTguZ81VHUueNvpTGh7nb9J5bRif4xT1`
+
+---
+
+### XPTO — Solana Testnet ↔ Terra Classic (reference)
+
+> ✅ **Status: Working** — bidirectional transfers confirmed.
 
 | Field | Value |
 |-------|-------|
 | **Program ID (Solana)** | `jNkiNLXQetj9L2tDX6xTgx9QP1tgtNgYXamouNbbwx9` |
 | **Program Hex (32b)** | `0x0adafdae59c217a1b7409f65ca81505f9991c257be80af8902ebed96d8801ba6` |
-| **Route (sem 0x, para set_route)** | `0adafdae59c217a1b7409f65ca81505f9991c257be80af8902ebed96d8801ba6` |
 | **Mint Address (SPL)** | `Db8VbMerYxksYwSSdetpy6Jhp2BrE4hk9Sh9dYJT5dQ2` |
-| **Solana Mailbox (used by Warp)** | `75HBBLae3ddeneJVrZeyrDfv6vb7SMC3aCpBucSXS5aR` |
-| **ISM Program** | `5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh` |
-| **IGP Program** | `5p7Hii6CJL4xGBYYTGEQmH9LnUSZteFJUu9AVLDExZX2` |
-| **IGP Account** | `E9i32KsKGQZMYTguZ81VHUueNvpTGh7nb9J5bRif4xT1` |
-| **Warp Terra Classic (bech32)** | `terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm` |
-| **Warp Terra Hex** | `0xd03fafd53ce350f49ba3c6ebcb1bee7cbbf453f261ec8d5ce9f36c55ab3e26a1` |
-| **CW20 Collateral (Terra)** | `terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch` |
-| **Mailbox Terra Classic** | `terra1s4jwfe0tcaztpfsct5wzj02esxyjy7e7lhkcwn5dp04yvly82rwsvzyqmm` |
-| **ISM Routing Terra Classic** | `terra1na6ljyf4m5x2u7llfvvxxe2nyq0t8628qyk0vnwu4ttpq86tt0cse47t68` |
-| **Multisig ISM Terra Classic** | `terra18gh7nl0tk047ykrvy0a8z2lhv0rvl65wu95texyawrj879qenysq02p98f` |
-| **Metadata URI** | `https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-xpto.json` |
-| **Domain Solana Testnet** | `1399811150` |
-| **Domain Terra Classic** | `1325` |
-| **Deployer (keypair)** | `EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd` |
-
-**Verify on-chain:**
+| **Warp Terra Classic** | `terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm` |
+| **CW20 Collateral** | `terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch` |
+| **Metadata URI** | `https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-xpto.json` |
 
 ```bash
-# Solana Warp — confirm the program exists
+# Verify on-chain
 solana account jNkiNLXQetj9L2tDX6xTgx9QP1tgtNgYXamouNbbwx9 --url https://api.testnet.solana.com
-
-# SPL Mint — confirm the token exists
 solana account Db8VbMerYxksYwSSdetpy6Jhp2BrE4hk9Sh9dYJT5dQ2 --url https://api.testnet.solana.com
-
-# Terra Classic → Solana route
 terrad query wasm contract-state smart terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm \
-  '{"router":{"get_route":{"domain":1399811150}}}' \
-  --node https://rpc.terra-classic.hexxagon.dev
+  '{"router":{"get_route":{"domain":1399811150}}}' --node https://rpc.terra-classic.hexxagon.io
 ```
+
+---
+
+## 16b. Script: `close-warp-program.sh`
+
+Closes a deployed Solana Warp program, recovers SOL, and resets the config.
+
+```bash
+cd ~/tc-cw-hyperlane/terraclassic
+./close-warp-program.sh
+```
+
+Steps executed automatically:
+1. Lists all tokens with `program_id` set in `warp-sealevel-config.json`
+2. You select which one to close
+3. `solana program close <PROGRAM_ID>` → recovers SOL from program account
+4. Closes orphaned buffer accounts → recovers additional SOL
+5. Removes keypair files from `environments/*/warp-routes/TOKEN/keys/`
+6. Clears `.warp-sealevel-state.json` if it matches the closed token/network
+7. Resets config: `deployed=false`, `program_id=""`, `program_hex=""`, `mint_address=""`
+
+> Use before re-running `create-warp-sealevel.sh` to start a fresh deploy.
 
 ---
 
@@ -1211,24 +1331,16 @@ terrad query wasm contract-state smart terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8k
 
 | Resource | URL |
 |---------|-----|
+| Solana Devnet Explorer | https://explorer.solana.com/?cluster=devnet |
 | Solana Testnet Explorer | https://explorer.solana.com/?cluster=testnet |
-| Terra Classic Explorer | https://finder.hexxagon.io/rebel-2 |
+| Solana Mainnet Explorer | https://explorer.solana.com |
+| Terra Classic Explorer | https://finder.hexxagon.io/columbus-5 |
 | Hyperlane Docs | https://docs.hyperlane.xyz |
-| Hyperlane Domínios | https://docs.hyperlane.xyz/docs/reference/domains |
-| Solana CLI | https://docs.solana.com/cli/install-solana-cli-tools |
-| Solana Testnet Faucet | https://faucet.solana.com |
-| Terra Classic Faucet | https://faucet.terra.dev |
+| Hyperlane Domains | https://docs.hyperlane.xyz/docs/reference/domains |
+| Solana CLI (Agave) | https://docs.anza.xyz/cli/install |
+| Solana Devnet Faucet | https://faucet.solana.com (select devnet) |
+| Hyperlane Registry (solanadevnet) | https://github.com/hyperlane-xyz/hyperlane-registry/tree/main/chains/solanadevnet |
+| **Metadata files** | https://github.com/terra-classic-hyperlane/cw-hyperlane/tree/main/warp/solana |
 | **Validators — S3 (checkpoints)** | |
 | Terra Classic S3 Validator | https://hyperlane-validator-signatures-igorveras-terraclassic.s3.us-east-1.amazonaws.com/announcement.json |
 | Sepolia S3 Validator | https://hyperlane-validator-signatures-igorveras-sepolia.s3.us-east-1.amazonaws.com/announcement.json |
-| BSC Testnet S3 Validator | https://hyperlane-validator-signatures-igorveras-bsctestnet.s3.us-east-1.amazonaws.com/announcement.json |
-| **On-chain contracts (XPTO)** | |
-| Terra Classic Mailbox | `terra1s4jwfe0tcaztpfsct5wzj02esxyjy7e7lhkcwn5dp04yvly82rwsvzyqmm` |
-| Terra Classic Warp XPTO | `terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm` |
-| CW20 XPTO (collateral) | `terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch` |
-| Solana XPTO Program | `jNkiNLXQetj9L2tDX6xTgx9QP1tgtNgYXamouNbbwx9` |
-| XPTO SPL Mint | `Db8VbMerYxksYwSSdetpy6Jhp2BrE4hk9Sh9dYJT5dQ2` |
-| **Repositories** | |
-| Hyperlane Registry GitHub | https://github.com/hyperlane-xyz/hyperlane-registry |
-| Hyperlane Monorepo | https://github.com/hyperlane-xyz/hyperlane-monorepo |
-| cw-hyperlane (Solana metadata) | https://github.com/igorv43/cw-hyperlane/tree/main/warp/solana |

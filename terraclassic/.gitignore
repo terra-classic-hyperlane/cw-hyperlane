@@ -1,0 +1,13 @@
+# ── Runtime state files (contain live addresses, never commit) ────────────
+.warp-sealevel-state.json
+.warp-solana-buffer-state.json
+
+# ── Log files (may contain API keys, tx hashes, local paths) ─────────────
+log/
+
+# ── Duplicate / backup scripts ────────────────────────────────────────────
+*copy*.sh
+* copy*.sh
+
+# ── Local keypair references (never store private keys in repo) ───────────
+*.local.json

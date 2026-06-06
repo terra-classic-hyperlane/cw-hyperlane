@@ -1,43 +1,50 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════════
-#  🚀 DEPLOY WARP SOLANA — BUFFER REUSE (sem cargo build do .so)
+#  🚀 DEPLOY WARP ROUTE SOLANA (SEALEVEL) ↔ TERRA CLASSIC — HYPERLANE
+#     Buffer-reuse strategy (no BPF recompilation required)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-#  Estratégia: "binary dump + deploy separado"
+#  Strategy: "binary dump + separate deploy"
 #
-#  Como funciona:
-#    1. Obtém o binário .so via `solana program dump` de programa já deployado
-#       (ou usa binário local já compilado)
-#    2. Faz upload do binário para o chain via `solana program deploy` (direto)
-#    3. Chama `warp-route deploy` → detecta programa existente → pula upload
-#       → executa SOMENTE o init do token (idempotente)
-#    4. Configura ISM, IGP, destination gas, enroll-remote-router, set_route
+#  How it works:
+#    1. Obtains the .so binary via `solana program dump` from an already-deployed
+#       program (or uses a locally compiled binary)
+#    2. Uploads the binary to chain via `solana program deploy` (direct)
+#    3. Calls jito-warp-init.js → MEV-safe init (single atomic transaction)
+#       → creates token storage + mint PDA atomically (no MEV window)
+#    4. Configures ISM, IGP, destination gas, enroll-remote-router, set_route
 #
-#  Economia:
-#    ✅ Sem cargo build do .so (poupa 15-20 min de compilação BPF)
-#    ✅ Binário vem de programa já deployado na mainnet (confiável + sem recompile)
-#    ✅ Buffer reaproveitado em retentativas (deploy com falha parcial = paga só 1x)
-#    ⚠️  Custo SOL do upload do binário (~2-5 SOL) é inevitável por programa
+#  Benefits:
+#    ✅ No cargo build-sbf required (saves 15-20 min BPF compilation)
+#    ✅ Binary sourced from an existing mainnet program (trusted, no recompile)
+#    ✅ Buffer is reused on retries (partial deploy failure = pay only once)
+#    ✅ MEV-safe mint initialization via single atomic transaction
+#    ⚠️  SOL cost for binary upload (~2-5 SOL) is unavoidable per program
 #
-#  Source program padrão (synthetic, solanamainnet):
+#  Default source program (synthetic, solanamainnet):
 #    Fa4zQJCH7id5KL1eFJt2mHyFpUNfCCSkHgtMrLvrRJBN  (TONY / Big Tony)
 #
-#  Uso:
-#    export TERRA_PRIVATE_KEY="hex_key"
+#  Usage:
+#    export TERRA_PRIVATE_KEY="your_hex_private_key"
 #    ./deploy-warp-solana-buffer.sh
 #
-#  Variáveis opcionais:
-#    SOURCE_PROGRAM_ID=<base58>  → programa cujo binário será reutilizado
-#    WARP_PROGRAM_ID=<base58>    → pula deploy (programa já existe)
-#    SKIP_INIT=1                 → pula warp-route deploy (init)
-#    SKIP_ISM=1 / SKIP_IGP=1 / SKIP_GAS=1 / SKIP_ENROLL=1 / SKIP_TC_ROUTE=1
+#  Optional environment variables:
+#    SOURCE_PROGRAM_ID=<base58>  → program whose binary will be reused
+#    WARP_PROGRAM_ID=<base58>    → skip deploy (program already exists)
+#    SKIP_INIT=1                 → skip token init (jito-warp-init.js)
+#    SKIP_ISM=1                  → skip ISM configuration
+#    SKIP_IGP=1                  → skip IGP configuration
+#    SKIP_GAS=1                  → skip destination gas configuration
+#    SKIP_ENROLL=1               → skip enroll-remote-router (Solana → TC)
+#    SKIP_TC_ROUTE=1             → skip set_route (TC → Solana)
+#    JITO_TIP_LAMPORTS=<n>       → override priority tip (default: 5000000)
 #
 # ═══════════════════════════════════════════════════════════════════════════════
 
 set -euo pipefail
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CORES
+# COLORS
 # ─────────────────────────────────────────────────────────────────────────────
 R='\033[0;31m'; G='\033[0;32m'; Y='\033[1;33m'
 B='\033[0;34m'; C='\033[0;36m'; W='\033[1m'; NC='\033[0m'
@@ -54,17 +61,16 @@ mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/deploy-warp-solana-buffer.log"
 STATE_FILE="$SCRIPT_DIR/.warp-solana-buffer-state.json"
 
-# Source program padrão (synthetic, Solana mainnet, mesmo binário que usaremos)
-# TONY/BigTony — programa sintético confirmado no mainnet3
+# Default source program for binary dump (synthetic type, confirmed on mainnet3)
 DEFAULT_SOURCE_PROGRAM="Fa4zQJCH7id5KL1eFJt2mHyFpUNfCCSkHgtMrLvrRJBN"
 
-# Auto-detect PROJECT_ROOT
+# Auto-detect PROJECT_ROOT (looks for package.json going up the directory tree)
 PROJECT_ROOT="$SCRIPT_DIR"
 while [ ! -f "$PROJECT_ROOT/package.json" ] && [ "$PROJECT_ROOT" != "/" ]; do
     PROJECT_ROOT="$(dirname "$PROJECT_ROOT")"
 done
 if [ ! -f "$PROJECT_ROOT/package.json" ]; then
-    echo "❌ Project root (package.json) não encontrado!"; exit 1
+    echo "❌ Project root (package.json) not found!"; exit 1
 fi
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -80,13 +86,7 @@ log_sep()  { log ""; log "${C}${W}$1${NC}"; log "──────────�
 evm_cfg()  { jq -r "$1" "$EVM_CONFIG" 2>/dev/null || echo ""; }
 sol_cfg()  { jq -r "$1" "$SOL_CONFIG" 2>/dev/null || echo ""; }
 
-wait_sec() {
-    local s="$1" msg="${2:-Aguardando}"
-    echo -ne "${INFO} ${msg}: "
-    for ((i=s; i>0; i--)); do echo -ne "${i}s "; sleep 1; done
-    echo "✓"
-}
-
+# Converts a base58 Solana pubkey to a 32-byte hex string (no 0x prefix)
 b58_to_hex32() {
     python3 - "$1" <<'PY' 2>/dev/null
 import sys
@@ -108,6 +108,7 @@ except: sys.exit(1)
 PY
 }
 
+# Extracts the public key (base58) from a Solana keypair JSON file
 keypair_to_pubkey() {
     python3 - "$1" <<'PY' 2>/dev/null
 import json,sys
@@ -125,6 +126,7 @@ except: sys.exit(1)
 PY
 }
 
+# Saves current deploy state to the state file for resume support
 save_state() {
     cat > "$STATE_FILE" <<EOF
 {
@@ -138,6 +140,7 @@ save_state() {
 EOF
 }
 
+# Loads previously saved state from the state file
 load_state() {
     [ -f "$STATE_FILE" ] || return 0
     _ST_NET=$(jq -r '.network    // ""' "$STATE_FILE" 2>/dev/null || echo "")
@@ -145,17 +148,18 @@ load_state() {
     _ST_PID=$(jq -r '.program_id // ""' "$STATE_FILE" 2>/dev/null || echo "")
     _ST_HEX=$(jq -r '.program_hex// ""' "$STATE_FILE" 2>/dev/null || echo "")
     _ST_MINT=$(jq -r '.mint      // ""' "$STATE_FILE" 2>/dev/null || echo "")
-    [ -n "$_ST_TOK" ] && log_warn "Estado anterior: token=${_ST_TOK} net=${_ST_NET:-—} program=${_ST_PID:-—}"
-    log "   Para reiniciar: ${Y}rm -f $STATE_FILE${NC}"
+    [ -n "$_ST_TOK" ] && log_warn "Previous state found: token=${_ST_TOK} net=${_ST_NET:-—} program=${_ST_PID:-—}"
+    log "   To reset: ${Y}rm -f $STATE_FILE${NC}"
 }
 
+# Applies saved state only if token + network match the current selection
 apply_state() {
     [ -z "${_ST_TOK:-}" ] && return 0
     if [ "${_ST_TOK}" = "${TOKEN_KEY}" ] && [ "${_ST_NET}" = "${NET_KEY}" ]; then
         [ -z "${WARP_PROGRAM_ID:-}" ] && [ -n "${_ST_PID:-}" ] && export WARP_PROGRAM_ID="$_ST_PID"
         [ -z "${WARP_HEX:-}"        ] && [ -n "${_ST_HEX:-}" ] && export WARP_HEX="$_ST_HEX"
-        [ -z "${MINT_ADDRESS:-}"    ] && [ -n "${_ST_MINT:-}"] && export MINT_ADDRESS="$_ST_MINT"
-        [ -n "${WARP_PROGRAM_ID:-}" ] && log_info "Estado restaurado: program=${WARP_PROGRAM_ID}"
+        [ -z "${MINT_ADDRESS:-}"    ] && [ -n "${_ST_MINT:-}" ] && export MINT_ADDRESS="$_ST_MINT"
+        [ -n "${WARP_PROGRAM_ID:-}" ] && log_info "State restored: program=${WARP_PROGRAM_ID}"
     fi
 }
 
@@ -165,22 +169,22 @@ apply_state() {
 > "$LOG_FILE"
 clear 2>/dev/null || true
 log "╔══════════════════════════════════════════════════════════════════════════╗"
-log "║  🔄  DEPLOY WARP SOLANA — BUFFER REUSE (sem compilação BPF)            ║"
-log "║  Data: $(date '+%Y-%m-%d %H:%M:%S')                                         ║"
+log "║  🚀  DEPLOY WARP ROUTE SOLANA ↔ TERRA CLASSIC — HYPERLANE              ║"
+log "║  Date: $(date '+%Y-%m-%d %H:%M:%S')                                         ║"
 log "╚══════════════════════════════════════════════════════════════════════════╝"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CHECKS INICIAIS
+# INITIAL CHECKS
 # ─────────────────────────────────────────────────────────────────────────────
 for f in "$EVM_CONFIG" "$SOL_CONFIG"; do
-    [ -f "$f" ] || { log_err "Arquivo não encontrado: $f"; exit 1; }
-    jq empty "$f" 2>/dev/null || { log_err "JSON inválido: $f"; exit 1; }
+    [ -f "$f" ] || { log_err "File not found: $f"; exit 1; }
+    jq empty "$f" 2>/dev/null || { log_err "Invalid JSON: $f"; exit 1; }
 done
-command -v jq      &>/dev/null || { log_err "jq obrigatório"; exit 1; }
-command -v python3 &>/dev/null || { log_err "python3 obrigatório"; exit 1; }
-command -v node    &>/dev/null || { log_err "node obrigatório"; exit 1; }
-command -v solana  &>/dev/null || { log_err "solana-cli obrigatório"; exit 1; }
-command -v cargo   &>/dev/null || { log_err "cargo (Rust) obrigatório"; exit 1; }
+command -v jq      &>/dev/null || { log_err "jq is required"; exit 1; }
+command -v python3 &>/dev/null || { log_err "python3 is required"; exit 1; }
+command -v node    &>/dev/null || { log_err "node is required"; exit 1; }
+command -v solana  &>/dev/null || { log_err "solana-cli is required"; exit 1; }
+command -v cargo   &>/dev/null || { log_err "cargo (Rust) is required"; exit 1; }
 
 TERRA_DOMAIN=$(evm_cfg '.terra_classic.domain')
 TERRA_RPC=$(evm_cfg    '.terra_classic.rpc')
@@ -190,9 +194,9 @@ log_ok "Terra Classic: domain=${TERRA_DOMAIN}, rpc=${TERRA_RPC}"
 load_state
 
 # ═════════════════════════════════════════════════════════════════════════════
-# MENU 1 — TOKEN
+# MENU 1 — SELECT TOKEN
 # ═════════════════════════════════════════════════════════════════════════════
-log_sep "SELEÇÃO DE TOKEN"
+log_sep "TOKEN SELECTION"
 mapfile -t TOKEN_KEYS < <(jq -r '.terra_classic.tokens | keys[]' "$EVM_CONFIG" 2>/dev/null)
 declare -a TOKEN_MENU=()
 i=1
@@ -201,14 +205,14 @@ for TK in "${TOKEN_KEYS[@]}"; do
     TK_SYM=$(evm_cfg  ".terra_classic.tokens.${TK}.symbol")
     TK_DEP=$(evm_cfg  ".terra_classic.tokens.${TK}.terra_warp.deployed")
     TOKEN_MENU+=("$TK")
-    [ "$TK_DEP" = "true" ] && TAG="${G}[TC ok]${NC}" || TAG="${Y}[TC pendente]${NC}"
+    [ "$TK_DEP" = "true" ] && TAG="${G}[TC ok]${NC}" || TAG="${Y}[TC pending]${NC}"
     log "  [${W}$i${NC}]  ${C}${TK}${NC} — ${TK_NAME:-N/A} (${TK_SYM:-?}) ${TAG}"
     i=$((i+1))
 done
 echo -ne "  ${W}Token [1-${#TOKEN_MENU[@]}]: ${NC}"; read -r SEL_TOK 2>/dev/null || SEL_TOK="1"
 SEL_TOK="${SEL_TOK:-1}"
 [[ "$SEL_TOK" =~ ^[0-9]+$ ]] && [ "$SEL_TOK" -ge 1 ] && [ "$SEL_TOK" -le "${#TOKEN_MENU[@]}" ] \
-    || { log_err "Seleção inválida"; exit 1; }
+    || { log_err "Invalid selection"; exit 1; }
 TOKEN_KEY="${TOKEN_MENU[$((SEL_TOK-1))]}"
 TK_TC=".terra_classic.tokens.${TOKEN_KEY}"
 TOKEN_NAME=$(evm_cfg    "${TK_TC}.name")
@@ -220,9 +224,9 @@ TERRA_WARP_DEPLOYED=$(evm_cfg "${TK_TC}.terra_warp.deployed")
 log_ok "Token: ${C}${TOKEN_KEY}${NC} — ${TOKEN_NAME} (${TOKEN_SYMBOL})"
 
 # ═════════════════════════════════════════════════════════════════════════════
-# MENU 2 — REDE SOLANA
+# MENU 2 — SELECT SOLANA NETWORK
 # ═════════════════════════════════════════════════════════════════════════════
-log_sep "SELEÇÃO DE REDE SOLANA"
+log_sep "SOLANA NETWORK SELECTION"
 mapfile -t NET_KEYS < <(jq -r '.networks | to_entries[] | select(.value.enabled==true) | .key' "$SOL_CONFIG" 2>/dev/null)
 declare -a NET_MENU=()
 i=1
@@ -232,16 +236,16 @@ for NK in "${NET_KEYS[@]}"; do
     SOL_WD=$(sol_cfg ".networks.${NK}.warp_tokens.${TOKEN_KEY}.deployed" 2>/dev/null || echo "false")
     SOL_WA=$(sol_cfg ".networks.${NK}.warp_tokens.${TOKEN_KEY}.program_id" 2>/dev/null || echo "")
     NET_MENU+=("$NK")
-    [ "$SOL_WD" = "true" ] && [ -n "$SOL_WA" ] && TAG="${G}[já deployado]${NC}" || TAG="${B}[novo]${NC}"
+    [ "$SOL_WD" = "true" ] && [ -n "$SOL_WA" ] && TAG="${G}[already deployed]${NC}" || TAG="${B}[new]${NC}"
     log "  [${W}$i${NC}]  ${C}${NK}${NC} — ${ND} (domain: ${DOM}) ${TAG}"
     [ -n "$SOL_WA" ] && [ "$SOL_WA" != "null" ] && log "         Program ID: ${G}${SOL_WA}${NC}"
     i=$((i+1))
 done
-[ ${#NET_MENU[@]} -eq 0 ] && { log_err "Nenhuma rede Solana habilitada!"; exit 1; }
-echo -ne "  ${W}Rede [1-${#NET_MENU[@]}]: ${NC}"; read -r SEL_NET 2>/dev/null || SEL_NET="1"
+[ ${#NET_MENU[@]} -eq 0 ] && { log_err "No Solana network enabled!"; exit 1; }
+echo -ne "  ${W}Network [1-${#NET_MENU[@]}]: ${NC}"; read -r SEL_NET 2>/dev/null || SEL_NET="1"
 SEL_NET="${SEL_NET:-1}"
 [[ "$SEL_NET" =~ ^[0-9]+$ ]] && [ "$SEL_NET" -ge 1 ] && [ "$SEL_NET" -le "${#NET_MENU[@]}" ] \
-    || { log_err "Seleção inválida"; exit 1; }
+    || { log_err "Invalid selection"; exit 1; }
 NET_KEY="${NET_MENU[$((SEL_NET-1))]}"
 N=".networks.${NET_KEY}"
 
@@ -265,34 +269,32 @@ SOL_TOK_DEC=$(sol_cfg    "${N}.warp_tokens.${TOKEN_KEY}.decimals")
 SOL_OWNER=$(sol_cfg      "${N}.warp_tokens.${TOKEN_KEY}.owner")
 SOL_TYPE=$(sol_cfg       "${N}.warp_tokens.${TOKEN_KEY}.type")
 
-# Resolve MAILBOX da rede
+# Resolve mailbox address from environment config files if not in warp config
 if [ -z "$MAILBOX" ] || [ "$MAILBOX" = "null" ]; then
-    MAILBOX_JSON="$NET_MONOREPO/environments/${NET_ENV}/$(echo "$NET_KEY" | sed 's/mainnet/solanamainnet/;s/testnet/solanatestnet/')/core/program-ids.json"
+    MAILBOX_JSON="$NET_MONOREPO/environments/${NET_ENV}/solanamainnet/core/program-ids.json"
     [ -f "$MAILBOX_JSON" ] && MAILBOX=$(jq -r '.mailbox // ""' "$MAILBOX_JSON" 2>/dev/null || echo "")
-    # fallback: solanamainnet
-    [ -z "$MAILBOX" ] && MAILBOX=$(jq -r '.mailbox // ""' "$NET_MONOREPO/environments/${NET_ENV}/solanamainnet/core/program-ids.json" 2>/dev/null || echo "")
     [ -z "$MAILBOX" ] && MAILBOX=$(jq -r '.mailbox // ""' "$NET_MONOREPO/environments/${NET_ENV}/solanatestnet/core/program-ids.json" 2>/dev/null || echo "")
 fi
 
-log_ok "Rede: ${C}${NET_KEY}${NC} — ${NET_DISPLAY} (domain: ${NET_DOMAIN})"
-log_info "Mailbox: ${MAILBOX:-NÃO ENCONTRADO}"
+log_ok "Network: ${C}${NET_KEY}${NC} — ${NET_DISPLAY} (domain: ${NET_DOMAIN})"
+log_info "Mailbox: ${MAILBOX:-NOT FOUND}"
 
 apply_state
 
-# Inicializa variáveis runtime
+# Initialize runtime variables (priority: env > config > saved state)
 WARP_PROGRAM_ID="${WARP_PROGRAM_ID:-}"
 WARP_HEX="${WARP_HEX:-}"
 MINT_ADDRESS="${MINT_ADDRESS:-}"
 [ -z "$WARP_PROGRAM_ID" ] && [ -n "$SOL_PID_CFG" ] && [ "$SOL_PID_CFG" != "null" ] && WARP_PROGRAM_ID="$SOL_PID_CFG"
 [ -z "$WARP_HEX"        ] && [ -n "$SOL_HEX_CFG" ] && [ "$SOL_HEX_CFG" != "null" ] && WARP_HEX="${SOL_HEX_CFG#0x}"
-[ -z "$MINT_ADDRESS"    ] && [ -n "$SOL_MINT_CFG"] && [ "$SOL_MINT_CFG" != "null" ] && MINT_ADDRESS="$SOL_MINT_CFG"
+[ -z "$MINT_ADDRESS"    ] && [ -n "$SOL_MINT_CFG" ] && [ "$SOL_MINT_CFG" != "null" ] && MINT_ADDRESS="$SOL_MINT_CFG"
 
-# Validações
+# Validate required paths
 [ -z "$NET_KEYPAIR" ] || [ ! -f "$NET_KEYPAIR" ] && {
-    log_err "Keypair Solana não encontrado: ${NET_KEYPAIR:-NÃO CONFIGURADO}"
+    log_err "Solana keypair not found: ${NET_KEYPAIR:-NOT CONFIGURED}"
     log "  Configure: warp-sealevel-config.json → .networks.${NET_KEY}.keypair"; exit 1; }
 [ -z "$NET_MONOREPO" ] || [ ! -d "$NET_MONOREPO" ] && {
-    log_err "Monorepo não encontrado: ${NET_MONOREPO:-NÃO CONFIGURADO}"; exit 1; }
+    log_err "Monorepo not found: ${NET_MONOREPO:-NOT CONFIGURED}"; exit 1; }
 
 CLIENT_DIR="$NET_MONOREPO/client"
 ENVIRONMENTS_DIR="$NET_MONOREPO/environments"
@@ -301,143 +303,147 @@ WARP_ROUTE_DIR="$ENVIRONMENTS_DIR/${NET_ENV}/warp-routes/${TOKEN_KEY}"
 KEYS_DIR="$WARP_ROUTE_DIR/keys"
 mkdir -p "$KEYS_DIR"
 
-# Pre-built client binary (se existir evita cargo run overhead)
+# Pre-compiled client binary path (avoids cargo run overhead if binary exists)
 CLIENT_BIN="$NET_MONOREPO/target/release/hyperlane-sealevel-client"
 
-# Keypair paths que o warp-route deploy espera encontrar
+# Keypair file paths expected by the warp-route deploy command
 PROG_KEYPAIR_FILE="$KEYS_DIR/hyperlane_sealevel_token-${NET_KEY}-keypair.json"
 BUFFER_KEYPAIR_FILE="$KEYS_DIR/hyperlane_sealevel_token-${NET_KEY}-buffer.json"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# RESUMO
+# CONFIGURATION SUMMARY
 # ─────────────────────────────────────────────────────────────────────────────
 log ""
 log "╔══════════════════════════════════════════════════════════════════════════╗"
-log "║  📋  CONFIGURAÇÃO: ${C}${TOKEN_KEY}${NC} → ${C}${NET_DISPLAY}${NC}"
+log "║  📋  CONFIGURATION: ${C}${TOKEN_KEY}${NC} → ${C}${NET_DISPLAY}${NC}"
 log "╚══════════════════════════════════════════════════════════════════════════╝"
-log "  Token:      ${TOKEN_NAME} (${TOKEN_SYMBOL}) | dec=${TOKEN_DEC}"
-log "  Rede:       ${NET_DISPLAY} | domain=${NET_DOMAIN} | env=${NET_ENV}"
+log "  Token:      ${TOKEN_NAME} (${TOKEN_SYMBOL}) | decimals=${TOKEN_DEC}"
+log "  Network:    ${NET_DISPLAY} | domain=${NET_DOMAIN} | env=${NET_ENV}"
 log "  ISM:        ${ISM_PROGRAM_ID}"
 log "  IGP prog:   ${IGP_PROGRAM_ID}"
 log "  IGP acct:   ${IGP_ACCOUNT}"
-log "  Mailbox:    ${MAILBOX:-NÃO DEFINIDO}"
+log "  Mailbox:    ${MAILBOX:-NOT SET}"
 log "  Keypair:    ${NET_KEYPAIR}"
 log "  Prog key:   ${PROG_KEYPAIR_FILE}"
 log "  Buffer key: ${BUFFER_KEYPAIR_FILE}"
-[ -n "$WARP_PROGRAM_ID" ] && log "  Program ID: ${G}${WARP_PROGRAM_ID}${NC} (será pulado o deploy)"
+[ -n "$WARP_PROGRAM_ID" ] && log "  Program ID: ${G}${WARP_PROGRAM_ID}${NC} (deploy will be skipped)"
 log ""
 
 if [ "$TERRA_WARP_DEPLOYED" != "true" ] || [ -z "$TERRA_WARP_ADDR" ] || [ "$TERRA_WARP_ADDR" = "null" ]; then
-    log_warn "Warp TC não deployado para '${TOKEN_KEY}' — enroll/set_route serão pulados"
+    log_warn "Terra Classic Warp not deployed for '${TOKEN_KEY}' — enroll/set_route will be skipped"
     export SKIP_ENROLL="${SKIP_ENROLL:-1}"
     export SKIP_TC_ROUTE="${SKIP_TC_ROUTE:-1}"
 fi
 
-echo -ne "  ${W}Confirmar e continuar? [S/n]: ${NC}"
-read -r CONFIRM 2>/dev/null || CONFIRM="s"
-[[ "${CONFIRM:-s}" =~ ^[sSyY]$ ]] || { log "  Cancelado."; exit 0; }
+echo -ne "  ${W}Confirm and continue? [Y/n]: ${NC}"
+read -r CONFIRM 2>/dev/null || CONFIRM="y"
+[[ "${CONFIRM:-y}" =~ ^[sSyYnN]$ ]] || CONFIRM="y"
+[[ "${CONFIRM:-y}" =~ ^[sS]$ ]] && CONFIRM="y"
+[[ "$CONFIRM" =~ ^[nN]$ ]] && { log "  Cancelled."; exit 0; }
 
 # ═════════════════════════════════════════════════════════════════════════════
-# STEP 1 — OBTER BINÁRIO
+# STEP 1 — GET BINARY (.so)
 # ═════════════════════════════════════════════════════════════════════════════
-log_sep "STEP 1 — OBTER BINÁRIO (.so)"
+log_sep "STEP 1 — GET BINARY (.so)"
 
 BINARY_FILE="$WARP_ROUTE_DIR/hyperlane_sealevel_token.so"
 
 if [ -n "${WARP_PROGRAM_ID:-}" ]; then
-    log_warn "WARP_PROGRAM_ID já definido — pulando obtenção de binário e deploy."
+    log_warn "WARP_PROGRAM_ID already set — skipping binary download and deploy."
     BINARY_FILE=""
 elif [ -f "$BINARY_FILE" ]; then
-    log_ok "Binário já existe: ${C}${BINARY_FILE}${NC}"
+    log_ok "Binary already exists: ${C}${BINARY_FILE}${NC}"
     BINARY_SZ=$(du -sh "$BINARY_FILE" | cut -f1)
-    log_info "Tamanho: ${BINARY_SZ}"
+    log_info "Size: ${BINARY_SZ}"
 else
-    # Fonte do binário
     SOURCE_PROGRAM="${SOURCE_PROGRAM_ID:-${DEFAULT_SOURCE_PROGRAM}}"
 
-    # Opção A: binário local compilado
+    # Option A: use locally compiled binary
     LOCAL_SO="$BUILT_SO_DIR/hyperlane_sealevel_token.so"
     if [ -f "$LOCAL_SO" ]; then
-        log_info "Binário local encontrado: ${LOCAL_SO}"
+        log_info "Local binary found: ${LOCAL_SO}"
         cp "$LOCAL_SO" "$BINARY_FILE"
-        log_ok "Usando binário local compilado."
+        log_ok "Using locally compiled binary."
     else
-        # Opção B: dump de programa existente na mainnet
-        log_info "Binário local não encontrado. Fazendo dump do programa ${SOURCE_PROGRAM}..."
-        log_info "Programa fonte (synthetic solanamainnet): ${C}${SOURCE_PROGRAM}${NC}"
+        # Option B: dump binary from an existing mainnet program
+        log_info "Local binary not found. Dumping from program ${SOURCE_PROGRAM}..."
+        log_info "Source program (synthetic solanamainnet): ${C}${SOURCE_PROGRAM}${NC}"
+        DUMP_RPC="${DUMP_RPC:-https://api.mainnet-beta.solana.com}"
+        log_info "Dump RPC: ${DUMP_RPC}"
         log ""
         set +e
         solana program dump "$SOURCE_PROGRAM" "$BINARY_FILE" \
-            --url "$NET_RPC" 2>&1 | tee -a "$LOG_FILE"
+            --url "$DUMP_RPC" 2>&1 | tee -a "$LOG_FILE"
         DUMP_EXIT=$?
         set -e
         if [ $DUMP_EXIT -ne 0 ] || [ ! -f "$BINARY_FILE" ]; then
-            log_err "Falha ao fazer dump do programa ${SOURCE_PROGRAM}"
-            log "  Verifique o RPC ou defina SOURCE_PROGRAM_ID com outro programa synthetic."
-            log "  Alternativa: compile o binário localmente:"
+            log_err "Failed to dump program ${SOURCE_PROGRAM}"
+            log "  Check the RPC or set SOURCE_PROGRAM_ID to another synthetic program."
+            log "  Alternative: compile the binary locally:"
             log "    cd $NET_MONOREPO && cargo build-sbf --manifest-path programs/token/Cargo.toml"
             log "    cp target/deploy/hyperlane_sealevel_token.so ${BINARY_FILE}"
             exit 1
         fi
         BINARY_SZ=$(du -sh "$BINARY_FILE" | cut -f1)
-        log_ok "Dump concluído: ${C}${BINARY_FILE}${NC} (${BINARY_SZ})"
-        log_info "Programa fonte usado: ${SOURCE_PROGRAM}"
+        log_ok "Dump complete: ${C}${BINARY_FILE}${NC} (${BINARY_SZ})"
+        log_info "Source program used: ${SOURCE_PROGRAM}"
     fi
 fi
 
 # ═════════════════════════════════════════════════════════════════════════════
-# STEP 2 — DEPLOY DO PROGRAMA (solana CLI direto)
+# STEP 2 — DEPLOY PROGRAM (solana CLI)
 # ═════════════════════════════════════════════════════════════════════════════
-log_sep "STEP 2 — DEPLOY DO PROGRAMA (solana program deploy)"
+log_sep "STEP 2 — DEPLOY PROGRAM (solana program deploy)"
 
 if [ -n "${WARP_PROGRAM_ID:-}" ]; then
-    log_warn "WARP_PROGRAM_ID=${WARP_PROGRAM_ID} — pulando deploy do binário."
+    log_warn "WARP_PROGRAM_ID=${WARP_PROGRAM_ID} — skipping binary deploy."
 else
-    # Gerar ou carregar keypair do programa
+    # Generate or load the program keypair
     if [ ! -f "$PROG_KEYPAIR_FILE" ]; then
-        log_info "Gerando keypair do programa..."
+        log_info "Generating program keypair..."
         solana-keygen new --no-passphrase --silent \
             --outfile "$PROG_KEYPAIR_FILE" 2>&1 | tee -a "$LOG_FILE"
-        log_ok "Keypair criado: ${PROG_KEYPAIR_FILE}"
+        log_ok "Keypair created: ${PROG_KEYPAIR_FILE}"
     else
-        log_info "Keypair do programa já existe: ${PROG_KEYPAIR_FILE}"
+        log_info "Program keypair already exists: ${PROG_KEYPAIR_FILE}"
     fi
 
     PROG_ID_FROM_KEY=$(keypair_to_pubkey "$PROG_KEYPAIR_FILE" 2>/dev/null || \
                        solana-keygen pubkey "$PROG_KEYPAIR_FILE" 2>/dev/null || echo "")
     if [ -z "$PROG_ID_FROM_KEY" ]; then
-        log_err "Não foi possível obter Program ID do keypair!"; exit 1
+        log_err "Could not derive Program ID from keypair!"; exit 1
     fi
-    log_info "Program ID (do keypair): ${G}${PROG_ID_FROM_KEY}${NC}"
+    log_info "Program ID (from keypair): ${G}${PROG_ID_FROM_KEY}${NC}"
 
-    # Verificar se programa já existe no chain
-    PROG_EXISTS=$(solana program show "$PROG_ID_FROM_KEY" --url "$NET_RPC" 2>/dev/null | grep -c "Program Id" || echo "0")
-    if [ "$PROG_EXISTS" -gt 0 ]; then
-        log_ok "Programa já existe no chain: ${PROG_ID_FROM_KEY}"
+    # Check if the program already exists on-chain
+    PROG_EXISTS=$(solana program show "$PROG_ID_FROM_KEY" --url "$NET_RPC" 2>/dev/null | grep -c "Program Id" 2>/dev/null || true)
+    PROG_EXISTS="${PROG_EXISTS//[^0-9]/}"
+    PROG_EXISTS="${PROG_EXISTS:-0}"
+    if [ "$PROG_EXISTS" -gt 0 ] 2>/dev/null; then
+        log_ok "Program already exists on-chain: ${PROG_ID_FROM_KEY}"
         WARP_PROGRAM_ID="$PROG_ID_FROM_KEY"
     else
-        # Verificar saldo
         BALANCE=$(solana balance "$NET_KEYPAIR" --url "$NET_RPC" 2>/dev/null | awk '{print $1}' || echo "0")
-        log_info "Saldo carteira: ${BALANCE} SOL"
+        log_info "Wallet balance: ${BALANCE} SOL"
         BINARY_SZ_BYTES=$(wc -c < "$BINARY_FILE" 2>/dev/null || echo "0")
         RENT_EST=$(python3 -c "print(f'~{($BINARY_SZ_BYTES * 0.00000348):.2f} SOL')" 2>/dev/null || echo "~2-5 SOL")
-        log_info "Custo estimado do upload do binário: ${RENT_EST}"
-        log_warn "Este é o custo inevitável de armazenar o programa na Solana."
+        log_info "Estimated binary upload cost: ${RENT_EST}"
+        log_warn "This SOL cost is unavoidable — it pays for on-chain program storage."
 
-        echo -ne "  ${W}Prosseguir com o deploy do binário? [S/n]: ${NC}"
-        read -r CONF_DEPLOY 2>/dev/null || CONF_DEPLOY="s"
-        [[ "${CONF_DEPLOY:-s}" =~ ^[sSyY]$ ]] || { log "  Cancelado."; exit 0; }
+        echo -ne "  ${W}Proceed with binary deploy? [Y/n]: ${NC}"
+        read -r CONF_DEPLOY 2>/dev/null || CONF_DEPLOY="y"
+        [[ "${CONF_DEPLOY:-y}" =~ ^[nN]$ ]] && { log "  Cancelled."; exit 0; }
 
-        log_info "Iniciando upload do binário para Solana..."
-        log_warn "Isso pode demorar alguns minutos (upload ~${BINARY_SZ_BYTES} bytes)..."
+        log_info "Uploading binary to Solana..."
+        log_warn "This may take several minutes (~${BINARY_SZ_BYTES} bytes)..."
         log ""
 
-        # Gerar buffer keypair se não existir
+        # Generate buffer keypair if it doesn't exist
         if [ ! -f "$BUFFER_KEYPAIR_FILE" ]; then
             solana-keygen new --no-passphrase --silent \
                 --outfile "$BUFFER_KEYPAIR_FILE" 2>&1 | tee -a "$LOG_FILE"
         else
-            log_info "Buffer keypair reutilizado: ${BUFFER_KEYPAIR_FILE}"
+            log_info "Reusing existing buffer keypair: ${BUFFER_KEYPAIR_FILE}"
         fi
 
         BUFFER_PUBKEY=$(solana-keygen pubkey "$BUFFER_KEYPAIR_FILE" 2>/dev/null || \
@@ -451,23 +457,22 @@ else
             --program-id "$PROG_KEYPAIR_FILE" \
             --buffer "$BUFFER_KEYPAIR_FILE" \
             --upgrade-authority "$NET_KEYPAIR" \
-            --use-rpc \
             2>&1 | tee -a "$LOG_FILE"
         DEPLOY_EXIT=$?
         set -e
 
         if [ $DEPLOY_EXIT -ne 0 ]; then
-            log_err "Deploy do programa falhou (exit $DEPLOY_EXIT)!"
-            log_warn "O buffer pode estar parcialmente financiado — execute novamente para retomar."
-            log "  Buffer key: ${BUFFER_KEYPAIR_FILE}"
-            log "  Buffer pubkey: ${BUFFER_PUBKEY:-N/A}"
-            log "  Para cancelar e recuperar o SOL do buffer:"
+            log_err "Program deploy failed (exit $DEPLOY_EXIT)!"
+            log_warn "The buffer may be partially funded — run again to resume."
+            log "  Buffer keypair: ${BUFFER_KEYPAIR_FILE}"
+            log "  Buffer pubkey:  ${BUFFER_PUBKEY:-N/A}"
+            log "  To cancel and recover SOL from the buffer:"
             log "    solana program close ${BUFFER_PUBKEY:-BUFFER_PUBKEY} --url ${NET_RPC} --keypair ${NET_KEYPAIR} --buffer"
             exit 1
         fi
 
         WARP_PROGRAM_ID="$PROG_ID_FROM_KEY"
-        log_ok "Programa deployado: ${G}${WARP_PROGRAM_ID}${NC}"
+        log_ok "Program deployed: ${G}${WARP_PROGRAM_ID}${NC}"
     fi
 
     save_state
@@ -475,211 +480,231 @@ fi
 
 log_ok "Program ID: ${G}${WARP_PROGRAM_ID}${NC}"
 
-# Converter para hex32
+# Convert Program ID to hex32 (required for Terra Classic set_route)
 if [ -z "${WARP_HEX:-}" ]; then
     WARP_HEX=$(b58_to_hex32 "$WARP_PROGRAM_ID")
-    [ -z "$WARP_HEX" ] && { log_err "Falha ao converter Program ID para hex32!"; exit 1; }
+    [ -z "$WARP_HEX" ] && { log_err "Failed to convert Program ID to hex32!"; exit 1; }
     save_state
 fi
 log_info "Program ID (hex32): 0x${WARP_HEX}"
 
-# Atualizar config com program_id
+# Update warp-sealevel-config.json with program_id and hex
 TMP=$(mktemp)
 jq ".networks.\"${NET_KEY}\".warp_tokens.\"${TOKEN_KEY}\".program_id = \"${WARP_PROGRAM_ID}\" |
     .networks.\"${NET_KEY}\".warp_tokens.\"${TOKEN_KEY}\".program_hex = \"0x${WARP_HEX}\"" \
     "$SOL_CONFIG" > "$TMP" && mv "$TMP" "$SOL_CONFIG"
-log_ok "warp-sealevel-config.json atualizado com program_id"
+log_ok "warp-sealevel-config.json updated with program_id"
 
 # ═════════════════════════════════════════════════════════════════════════════
-# STEP 3 — INIT DO TOKEN (warp-route deploy — só init, binário já existe)
+# STEP 3 — TOKEN INIT via jito-warp-init.js (MEV-safe)
 # ═════════════════════════════════════════════════════════════════════════════
-log_sep "STEP 3 — INIT DO TOKEN (warp-route deploy → init only)"
+#
+#  MEV PROTECTION:
+#  jito-warp-init.js sends warp_init + InitializeMint2 in a SINGLE atomic
+#  transaction, eliminating any window where an MEV bot could steal the
+#  uninitialized mint PDA between two separate transactions.
+#
+#  Set SKIP_INIT=1 to skip if the token storage already exists.
+#
+log_sep "STEP 3 — TOKEN INIT (jito-warp-init.js — MEV-safe)"
 
 if [ -n "${SKIP_INIT:-}" ]; then
-    log_warn "SKIP_INIT definido — pulando init."
+    log_warn "SKIP_INIT set — skipping token init."
 else
     if [ -z "$MAILBOX" ] || [ "$MAILBOX" = "null" ]; then
-        log_err "Mailbox Solana não encontrado! Configure em warp-sealevel-config.json → .networks.${NET_KEY}.mailbox"
+        log_err "Mailbox not found! Set it in warp-sealevel-config.json → .networks.${NET_KEY}.mailbox"
         exit 1
     fi
 
-    # Cria token-config.json que o warp-route deploy precisa
-    TOKEN_CONFIG="$WARP_ROUTE_DIR/token-config.json"
-    META_NAME="$TOKEN_SYMBOL"
-    META_SYM="$TOKEN_SYMBOL"
+    JITO_SCRIPT="$SCRIPT_DIR/jito-warp-init.js"
+    if [ ! -f "$JITO_SCRIPT" ]; then
+        log_err "jito-warp-init.js not found at: $JITO_SCRIPT"
+        exit 1
+    fi
 
-    # Tenta baixar metadata
-    if [ -n "$SOL_META_URI" ] && [ "$SOL_META_URI" != "null" ]; then
-        META_TMP=$(mktemp /tmp/sol-meta-XXXXXX.json)
-        HTTP_CODE=$(curl -s -o "$META_TMP" -w "%{http_code}" --max-time 10 "$SOL_META_URI" 2>/dev/null || echo "000")
-        if [ "$HTTP_CODE" = "200" ] && [ -s "$META_TMP" ]; then
-            META_NAME=$(jq -r '.name   // ""' "$META_TMP" 2>/dev/null | tr -d '\r\n')
-            META_SYM=$(jq -r  '.symbol // ""' "$META_TMP" 2>/dev/null | tr -d '\r\n')
-            log_ok "Metadata: name='${META_NAME}' symbol='${META_SYM}'"
+    # Priority fee tip (default: 0.005 SOL = 5000000 lamports)
+    JITO_TIP="${JITO_TIP_LAMPORTS:-5000000}"
+    log_info "Priority fee: $(python3 -c "print(f'{${JITO_TIP}/1e9:.4f} SOL')" 2>/dev/null || echo "${JITO_TIP} lamports")"
+
+    # Retry loop with increasing tip if init fails
+    JITO_MAX_RETRIES=3
+    JITO_RETRY=0
+    JITO_SUCCESS=0
+
+    while [ $JITO_RETRY -lt $JITO_MAX_RETRIES ]; do
+        log_info "Attempt $((JITO_RETRY+1)) of ${JITO_MAX_RETRIES} — tip = ${JITO_TIP} lamports"
+        log ""
+
+        JITO_TMP=$(mktemp)
+        set +e
+        NET_KEY="$NET_KEY" \
+        TOKEN_KEY="$TOKEN_KEY" \
+        NET_RPC="$NET_RPC" \
+        KEYPAIR_PATH="$NET_KEYPAIR" \
+        WARP_PROGRAM_ID="$WARP_PROGRAM_ID" \
+        MAILBOX="$MAILBOX" \
+        IGP_PROGRAM_ID="$IGP_PROGRAM_ID" \
+        IGP_ACCOUNT="$IGP_ACCOUNT" \
+        DECIMALS="${SOL_TOK_DEC:-6}" \
+        TOKEN_NAME="${TOKEN_NAME}" \
+        TOKEN_SYMBOL="${TOKEN_SYMBOL}" \
+        TOKEN_URI="${SOL_META_URI:-}" \
+        JITO_TIP_LAMPORTS="$JITO_TIP" \
+        ATA_PAYER_FUNDING="50000000" \
+            node "$JITO_SCRIPT" "$NET_KEY" "$TOKEN_KEY" 2>&1 \
+            | tee -a "$LOG_FILE" "$JITO_TMP"
+        JITO_EXIT=$?
+        JITO_OUT=$(cat "$JITO_TMP"); rm -f "$JITO_TMP"
+        set -e
+
+        # Exit code 2 = MEV bot won, retry with doubled tip
+        if [ $JITO_EXIT -eq 2 ]; then
+            JITO_TIP=$(python3 -c "print(int(${JITO_TIP} * 2))" 2>/dev/null || echo "$((JITO_TIP * 2))")
+            log_warn "MEV bot won! Doubling tip to ${JITO_TIP} lamports and retrying..."
+            JITO_RETRY=$((JITO_RETRY+1))
+            sleep 5
+            continue
         fi
-        rm -f "$META_TMP"
+
+        if [ $JITO_EXIT -eq 0 ] && echo "$JITO_OUT" | grep -q "JITO_INIT_OK=1"; then
+            JITO_SUCCESS=1
+            _MINT_FROM_JITO=$(echo "$JITO_OUT" | grep "^MINT_ADDRESS=" | cut -d= -f2 | tr -d '[:space:]' || echo "")
+            [ -n "$_MINT_FROM_JITO" ] && MINT_ADDRESS="$_MINT_FROM_JITO"
+            log_ok "Init confirmed! Mint: ${G}${MINT_ADDRESS:-N/A}${NC}"
+            break
+        fi
+
+        log_err "jito-warp-init.js failed (exit $JITO_EXIT)"
+        echo "$JITO_OUT" | tail -10 | tee -a "$LOG_FILE"
+        JITO_RETRY=$((JITO_RETRY+1))
+        if [ $JITO_RETRY -lt $JITO_MAX_RETRIES ]; then
+            log_warn "Retrying in 10s..."
+            sleep 10
+        fi
+    done
+
+    if [ $JITO_SUCCESS -eq 0 ]; then
+        log_err "Token init failed after ${JITO_MAX_RETRIES} attempts!"
+        log ""
+        log "  Recovery options:"
+        log "  1. Close program and reclaim SOL: ${Y}./close-warp-program.sh${NC}"
+        log "  2. Retry with higher tip: ${Y}export JITO_TIP_LAMPORTS=20000000${NC}"
+        log "  3. Try again during off-peak hours (fewer MEV bots)"
+        exit 1
     fi
-    [ -z "$META_NAME" ] && META_NAME="$TOKEN_NAME"
-    [ -z "$META_SYM"  ] && META_SYM="$TOKEN_SYMBOL"
 
-    # Gera token-config.json
-    _BASE=$(jq -n \
-        --arg net  "${NET_KEY}" \
-        --arg type "${SOL_TYPE:-synthetic}" \
-        --arg name "${META_NAME}" \
-        --arg sym  "${META_SYM}" \
-        --argjson dec "${SOL_TOK_DEC:-6}" \
-        --arg igp  "${IGP_ACCOUNT}" \
-        '{($net): {"type":$type,"name":$name,"symbol":$sym,"decimals":$dec,"totalSupply":"0","interchainGasPaymaster":$igp}}')
-
-    # Inclui URI somente se acessível
-    if [ "${HTTP_CODE:-000}" = "200" ]; then
-        TOKEN_CONFIG_JSON=$(echo "$_BASE" | jq --arg net "${NET_KEY}" --arg uri "${SOL_META_URI}" '.[$net].uri = $uri')
-    else
-        TOKEN_CONFIG_JSON="$_BASE"
-        log_warn "URI omitida do token-config (não acessível) — metadata será adicionada depois."
-    fi
-    echo "$TOKEN_CONFIG_JSON" > "$TOKEN_CONFIG"
-    log_ok "token-config.json criado: ${TOKEN_CONFIG}"
-
-    log_info "Chamando warp-route deploy (detecta programa existente → executa APENAS init)..."
-    log_info "Mailbox: ${MAILBOX}"
-    log ""
-
-    cd "$CLIENT_DIR"
-    INIT_TMP=$(mktemp)
-    set +e
-    cargo run --release -- \
-        -k "$NET_KEYPAIR" \
-        -u "$NET_RPC" \
-        warp-route deploy \
-        --warp-route-name "$TOKEN_KEY" \
-        --environment "$NET_ENV" \
-        --environments-dir "$ENVIRONMENTS_DIR" \
-        --token-config-file "$TOKEN_CONFIG" \
-        --built-so-dir "$BUILT_SO_DIR" \
-        --registry "$HOME/.hyperlane/registry" \
-        --ata-payer-funding-amount 5000000 2>&1 \
-        | grep -v "^warning:" | grep -v "^note:" \
-        | tee -a "$LOG_FILE" "$INIT_TMP"
-    INIT_EXIT=$?
-    cd "$SCRIPT_DIR"
-    INIT_OUT=$(cat "$INIT_TMP"); rm -f "$INIT_TMP"
-    set -e
-
-    if echo "$INIT_OUT" | grep -qiE "already deployed|skipping init|already exists"; then
-        log_ok "Programa já inicializado (idempotente) ✅"
-    elif [ $INIT_EXIT -eq 0 ]; then
-        log_ok "Token inicializado com sucesso!"
-    else
-        log_warn "warp-route deploy retornou exit $INIT_EXIT — verifique o log."
-        log "  Pode ser que o init já tenha sido feito. Prosseguindo com configuração..."
+    # Update config with mint_address (jito-warp-init.js also does this, but ensure it here)
+    if [ -n "${MINT_ADDRESS:-}" ]; then
+        TMP=$(mktemp)
+        jq ".networks.\"${NET_KEY}\".warp_tokens.\"${TOKEN_KEY}\".mint_address = \"${MINT_ADDRESS}\" |
+            .networks.\"${NET_KEY}\".warp_tokens.\"${TOKEN_KEY}\".deployed = true" \
+            "$SOL_CONFIG" > "$TMP" && mv "$TMP" "$SOL_CONFIG"
+        log_ok "warp-sealevel-config.json updated: mint_address=${MINT_ADDRESS}"
+        save_state
     fi
 fi
 
+# ── Helper: run the pre-compiled sealevel client binary ─────────────────────
+run_client() {
+    if [ -x "$CLIENT_BIN" ]; then
+        "$CLIENT_BIN" "$@"
+    else
+        cd "$CLIENT_DIR"
+        cargo run --release --quiet -- "$@"
+        cd "$SCRIPT_DIR"
+    fi
+}
+
 # ═════════════════════════════════════════════════════════════════════════════
-# STEP 4 — CONFIGURAR ISM
+# STEP 4 — CONFIGURE ISM (Interchain Security Module)
 # ═════════════════════════════════════════════════════════════════════════════
-log_sep "STEP 4 — CONFIGURAR ISM"
+log_sep "STEP 4 — CONFIGURE ISM (Interchain Security Module)"
 
 if [ -n "${SKIP_ISM:-}" ]; then
-    log_warn "SKIP_ISM — pulando."
+    log_warn "SKIP_ISM set — skipping."
 else
-    run_client() {
-        if [ -x "$CLIENT_BIN" ]; then
-            "$CLIENT_BIN" "$@"
-        else
-            cd "$CLIENT_DIR"
-            cargo run --release --quiet -- "$@"
-            cd "$SCRIPT_DIR"
-        fi
-    }
-
     set +e
     TMP=$(mktemp)
-    timeout 180 run_client \
+    run_client \
         -k "$NET_KEYPAIR" -u "$NET_RPC" \
         token set-interchain-security-module \
         --program-id "$WARP_PROGRAM_ID" \
         --ism "$ISM_PROGRAM_ID" 2>&1 \
         | grep -v "^warning:" | grep -v "^note:" | grep -v "^Compiling" \
         | tee -a "$LOG_FILE" "$TMP"
-    ISM_EXIT=$?
+    ISM_EXIT=${PIPESTATUS[0]}
     ISM_OUT=$(cat "$TMP"); rm -f "$TMP"
     set -e
 
     if [ $ISM_EXIT -eq 0 ]; then
-        log_ok "ISM configurado: ${ISM_PROGRAM_ID}"
+        log_ok "ISM configured: ${ISM_PROGRAM_ID}"
     elif echo "$ISM_OUT" | grep -qiE "already|same"; then
-        log_ok "ISM já configurado."
+        log_ok "ISM already configured."
     else
-        log_warn "Erro ao configurar ISM (exit $ISM_EXIT). Manual:"
-        log "  cd $CLIENT_DIR && cargo run --release -- -k $NET_KEYPAIR -u $NET_RPC token set-interchain-security-module --program-id $WARP_PROGRAM_ID --ism $ISM_PROGRAM_ID"
+        log_warn "ISM configuration failed (exit $ISM_EXIT). Run manually:"
+        log "  $CLIENT_BIN -k $NET_KEYPAIR -u $NET_RPC token set-interchain-security-module --program-id $WARP_PROGRAM_ID --ism $ISM_PROGRAM_ID"
     fi
 fi
 
 # ═════════════════════════════════════════════════════════════════════════════
-# STEP 5 — CONFIGURAR IGP
+# STEP 5 — CONFIGURE IGP (Interchain Gas Paymaster)
 # ═════════════════════════════════════════════════════════════════════════════
-log_sep "STEP 5 — CONFIGURAR IGP"
+log_sep "STEP 5 — CONFIGURE IGP (Interchain Gas Paymaster)"
 
 if [ -n "${SKIP_IGP:-}" ]; then
-    log_warn "SKIP_IGP — pulando."
+    log_warn "SKIP_IGP set — skipping."
 else
     set +e
     TMP=$(mktemp)
-    timeout 180 run_client \
+    run_client \
         -k "$NET_KEYPAIR" -u "$NET_RPC" \
         token igp \
         --program-id "$WARP_PROGRAM_ID" \
-        set \
-        "$IGP_PROGRAM_ID" \
-        igp \
-        "$IGP_ACCOUNT" 2>&1 \
+        set "$IGP_PROGRAM_ID" igp "$IGP_ACCOUNT" 2>&1 \
         | grep -v "^warning:" | grep -v "^note:" | grep -v "^Compiling" \
         | tee -a "$LOG_FILE" "$TMP"
-    IGP_EXIT=$?
+    IGP_EXIT=${PIPESTATUS[0]}
     IGP_OUT=$(cat "$TMP"); rm -f "$TMP"
     set -e
 
     if [ $IGP_EXIT -eq 0 ]; then
-        log_ok "IGP configurado: ${IGP_PROGRAM_ID} / ${IGP_ACCOUNT}"
+        log_ok "IGP configured: ${IGP_PROGRAM_ID} / ${IGP_ACCOUNT}"
     elif echo "$IGP_OUT" | grep -qiE "already|same"; then
-        log_ok "IGP já configurado."
+        log_ok "IGP already configured."
     else
-        log_warn "Erro ao configurar IGP (exit $IGP_EXIT). Manual:"
-        log "  cd $CLIENT_DIR && cargo run --release -- -k $NET_KEYPAIR -u $NET_RPC token igp --program-id $WARP_PROGRAM_ID set $IGP_PROGRAM_ID igp $IGP_ACCOUNT"
+        log_warn "IGP configuration failed (exit $IGP_EXIT). Run manually:"
+        log "  $CLIENT_BIN -k $NET_KEYPAIR -u $NET_RPC token igp --program-id $WARP_PROGRAM_ID set $IGP_PROGRAM_ID igp $IGP_ACCOUNT"
     fi
 fi
 
 # ═════════════════════════════════════════════════════════════════════════════
-# STEP 6 — DESTINATION GAS (Terra Classic)
+# STEP 6 — CONFIGURE DESTINATION GAS (Terra Classic)
 # ═════════════════════════════════════════════════════════════════════════════
-log_sep "STEP 6 — DESTINATION GAS (Terra Classic domain ${TERRA_DOMAIN})"
+log_sep "STEP 6 — CONFIGURE DESTINATION GAS (Terra Classic domain ${TERRA_DOMAIN})"
 
 if [ -n "${SKIP_GAS:-}" ]; then
-    log_warn "SKIP_GAS — pulando."
+    log_warn "SKIP_GAS set — skipping."
 else
     set +e
     TMP=$(mktemp)
-    timeout 180 run_client \
+    run_client \
         -k "$NET_KEYPAIR" -u "$NET_RPC" \
         token set-destination-gas \
         --program-id "$WARP_PROGRAM_ID" \
         "$TERRA_DOMAIN" "$DEST_GAS" 2>&1 \
         | grep -v "^warning:" | grep -v "^note:" | grep -v "^Compiling" \
         | tee -a "$LOG_FILE" "$TMP"
-    GAS_EXIT=$?
+    GAS_EXIT=${PIPESTATUS[0]}
     GAS_OUT=$(cat "$TMP"); rm -f "$TMP"
     set -e
 
     if [ $GAS_EXIT -eq 0 ]; then
-        log_ok "Destination gas: domain=${TERRA_DOMAIN} gas=${DEST_GAS}"
+        log_ok "Destination gas configured: domain=${TERRA_DOMAIN} gas=${DEST_GAS}"
     elif echo "$GAS_OUT" | grep -qiE "already|same"; then
-        log_ok "Destination gas já configurado."
+        log_ok "Destination gas already configured."
     else
-        log_warn "Erro ao configurar destination gas (exit $GAS_EXIT). Manual:"
-        log "  cd $CLIENT_DIR && cargo run --release -- -k $NET_KEYPAIR -u $NET_RPC token set-destination-gas --program-id $WARP_PROGRAM_ID $TERRA_DOMAIN $DEST_GAS"
+        log_warn "Destination gas configuration failed (exit $GAS_EXIT). Run manually:"
+        log "  $CLIENT_BIN -k $NET_KEYPAIR -u $NET_RPC token set-destination-gas --program-id $WARP_PROGRAM_ID $TERRA_DOMAIN $DEST_GAS"
     fi
 fi
 
@@ -689,51 +714,51 @@ fi
 log_sep "STEP 7 — ENROLL REMOTE ROUTER (Solana → Terra Classic)"
 
 if [ -n "${SKIP_ENROLL:-}" ]; then
-    log_warn "SKIP_ENROLL — pulando."
+    log_warn "SKIP_ENROLL set — skipping."
 elif [ -z "$TERRA_WARP_ADDR" ] || [ "$TERRA_WARP_ADDR" = "null" ]; then
-    log_warn "Warp TC não deployado — pulando enroll."
+    log_warn "Terra Classic Warp not deployed — skipping enroll."
 else
     TC_HEX="${TERRA_WARP_HEX#0x}"
     set +e
     TMP=$(mktemp)
-    timeout 180 run_client \
+    run_client \
         -k "$NET_KEYPAIR" -u "$NET_RPC" \
         token enroll-remote-router \
         --program-id "$WARP_PROGRAM_ID" \
         "$TERRA_DOMAIN" "0x${TC_HEX}" 2>&1 \
         | grep -v "^warning:" | grep -v "^note:" | grep -v "^Compiling" \
         | tee -a "$LOG_FILE" "$TMP"
-    ENR_EXIT=$?
+    ENR_EXIT=${PIPESTATUS[0]}
     ENR_OUT=$(cat "$TMP"); rm -f "$TMP"
     set -e
 
     if [ $ENR_EXIT -eq 0 ]; then
         log_ok "Remote Router enrolled: Terra Classic (domain ${TERRA_DOMAIN})"
     elif echo "$ENR_OUT" | grep -qiE "already|exists"; then
-        log_ok "Remote Router já enrolled."
+        log_ok "Remote Router already enrolled."
     else
-        log_warn "Erro ao enroll (exit $ENR_EXIT). Manual:"
-        log "  cd $CLIENT_DIR && cargo run --release -- -k $NET_KEYPAIR -u $NET_RPC token enroll-remote-router --program-id $WARP_PROGRAM_ID $TERRA_DOMAIN 0x${TC_HEX}"
+        log_warn "Enroll failed (exit $ENR_EXIT). Run manually:"
+        log "  $CLIENT_BIN -k $NET_KEYPAIR -u $NET_RPC token enroll-remote-router --program-id $WARP_PROGRAM_ID $TERRA_DOMAIN 0x${TC_HEX}"
     fi
 fi
 
 # ═════════════════════════════════════════════════════════════════════════════
-# STEP 8 — SET ROUTE TERRA CLASSIC (Terra Classic → Solana)
+# STEP 8 — SET ROUTE ON TERRA CLASSIC (Terra Classic → Solana)
 # ═════════════════════════════════════════════════════════════════════════════
-log_sep "STEP 8 — SET ROUTE TERRA CLASSIC (Terra Classic → Solana)"
+log_sep "STEP 8 — SET ROUTE ON TERRA CLASSIC (Terra Classic → Solana)"
 
 if [ -n "${SKIP_TC_ROUTE:-}" ]; then
-    log_warn "SKIP_TC_ROUTE — pulando."
+    log_warn "SKIP_TC_ROUTE set — skipping."
 elif [ -z "$TERRA_WARP_ADDR" ] || [ "$TERRA_WARP_ADDR" = "null" ]; then
-    log_warn "Warp TC não deployado — pulando set_route."
+    log_warn "Terra Classic Warp not deployed — skipping set_route."
 elif [ -z "${TERRA_PRIVATE_KEY:-}" ]; then
-    log_warn "TERRA_PRIVATE_KEY não definida — pulando set_route TC."
-    log "  Execute: export TERRA_PRIVATE_KEY='hex_key'"
-    log "  Depois:  export WARP_PROGRAM_ID='${WARP_PROGRAM_ID}' SKIP_ENROLL=1 && ./deploy-warp-solana-buffer.sh"
+    log_warn "TERRA_PRIVATE_KEY not set — skipping Terra Classic set_route."
+    log "  Run: export TERRA_PRIVATE_KEY='your_hex_key'"
+    log "  Then: export WARP_PROGRAM_ID='${WARP_PROGRAM_ID}' SKIP_ENROLL=1 && ./deploy-warp-solana-buffer.sh"
 else
     TERRA_PRIV_CLEAN="${TERRA_PRIVATE_KEY#0x}"
-    log_info "Warp TC: ${TERRA_WARP_ADDR}"
-    log_info "Domain Solana: ${NET_DOMAIN}"
+    log_info "Terra Classic Warp: ${TERRA_WARP_ADDR}"
+    log_info "Solana domain: ${NET_DOMAIN}"
     log_info "Solana hex32: ${WARP_HEX}"
 
     _NODE_TMP=$(mktemp /tmp/set-route-sol-XXXXXX.js)
@@ -766,7 +791,7 @@ async function main() {
             const ep = solHex.replace(/^0x/i,'').toLowerCase();
             if (en === ep) { console.log('STATUS=already_set'); console.log('EXISTING='+ex.route); return; }
         }
-    } catch(e) { /* rota não existe ainda */ }
+    } catch(e) { /* route does not exist yet */ }
 
     const result = await client.execute(
         account.address, warpAddr,
@@ -794,24 +819,24 @@ NODEJS
     SR_ERR=$(echo    "$SR_RESULT" | grep "^ERR="    | cut -d= -f2- || echo "")
 
     case "$SR_STATUS" in
-        ok)           log_ok "set_route executado! TC → Solana ligados."
+        ok)           log_ok "set_route executed! Terra Classic → Solana linked."
                       log "   TX: ${B}https://finder.hexxagon.io/${TERRA_CHAIN_ID}/tx/${SR_TX}${NC}" ;;
         already_set)  EXISTING=$(echo "$SR_RESULT" | grep "^EXISTING=" | cut -d= -f2 || echo "")
-                      log_ok "Rota já configurada na TC (${EXISTING:-already set})." ;;
-        error)        log_warn "set_route falhou: ${SR_ERR}"
+                      log_ok "Route already configured on Terra Classic (${EXISTING:-already set})." ;;
+        error)        log_warn "set_route failed: ${SR_ERR}"
                       log "  Manual: terrad tx wasm execute \"${TERRA_WARP_ADDR}\" '{\"router\":{\"set_route\":{\"set\":{\"domain\":${NET_DOMAIN},\"route\":\"${WARP_HEX}\"}}}}' --from <KEY> --chain-id ${TERRA_CHAIN_ID} --node ${TERRA_RPC} --gas auto --gas-adjustment 1.5 --fees 12000000uluna --yes" ;;
-        *)            log_warn "Resultado inesperado (exit=$NODE_EXIT)."
+        *)            log_warn "Unexpected result (exit=$NODE_EXIT)."
                       [ -n "$SR_RESULT" ] && echo "$SR_RESULT" | head -5 | tee -a "$LOG_FILE" ;;
     esac
 fi
 
 # ═════════════════════════════════════════════════════════════════════════════
-# STEP 9 — TRANSFER OWNERSHIP + QUERY MINT
+# STEP 9 — QUERY WARP STATE + TRANSFER OWNERSHIP
 # ═════════════════════════════════════════════════════════════════════════════
-log_sep "STEP 9 — QUERY WARP + MINT ADDRESS"
+log_sep "STEP 9 — QUERY WARP STATE + MINT ADDRESS"
 
 set +e
-QUERY_OUT=$(timeout 60 run_client \
+QUERY_OUT=$(run_client \
     -k "$NET_KEYPAIR" -u "$NET_RPC" \
     token query --program-id "$WARP_PROGRAM_ID" synthetic 2>&1 \
     | grep -v "^warning:" | grep -v "^note:" || echo "")
@@ -826,29 +851,29 @@ if [ -n "$QUERY_OUT" ]; then
         jq ".networks.\"${NET_KEY}\".warp_tokens.\"${TOKEN_KEY}\".mint_address = \"${MINT_ADDRESS}\" |
             .networks.\"${NET_KEY}\".warp_tokens.\"${TOKEN_KEY}\".deployed = true" \
             "$SOL_CONFIG" > "$TMP" && mv "$TMP" "$SOL_CONFIG"
-        log_ok "warp-sealevel-config.json atualizado (deployed=true, mint_address)"
+        log_ok "warp-sealevel-config.json updated (deployed=true, mint_address)"
         save_state
     fi
 fi
 
 if [ -n "$SOL_OWNER" ] && [ "$SOL_OWNER" != "null" ]; then
-    log_info "Transferindo ownership para: $SOL_OWNER"
+    log_info "Transferring ownership to: $SOL_OWNER"
     set +e
-    timeout 120 run_client \
+    run_client \
         -k "$NET_KEYPAIR" -u "$NET_RPC" \
         token transfer-ownership \
         --program-id "$WARP_PROGRAM_ID" \
         "$SOL_OWNER" 2>&1 \
         | grep -v "^warning:" | grep -v "^note:" | grep -v "^Compiling" \
         | tee -a "$LOG_FILE"
-    OWN_EXIT=$?
+    OWN_EXIT=${PIPESTATUS[0]}
     set -e
-    [ $OWN_EXIT -eq 0 ] && log_ok "Ownership transferida para: $SOL_OWNER" \
-                         || log_warn "Erro ao transferir ownership (pode já estar correto)."
+    [ $OWN_EXIT -eq 0 ] && log_ok "Ownership transferred to: $SOL_OWNER" \
+                         || log_warn "Ownership transfer failed (may already be correct)."
 fi
 
 # ═════════════════════════════════════════════════════════════════════════════
-# RELATÓRIO FINAL
+# FINAL REPORT
 # ═════════════════════════════════════════════════════════════════════════════
 NET_UPPER=$(echo "$NET_KEY" | tr '[:lower:]' '[:upper:]')
 TOK_UPPER=$(echo "$TOKEN_KEY" | tr '[:lower:]' '[:upper:]')
@@ -856,11 +881,11 @@ REPORT="$LOG_DIR/WARP-${NET_UPPER}-${TOK_UPPER}-BUFFER.txt"
 
 cat > "$REPORT" <<TXT
 ═══════════════════════════════════════════════════════════
-  WARP SOLANA (BUFFER DEPLOY): ${TOKEN_SYMBOL} on ${NET_DISPLAY}
+  WARP ROUTE SOLANA: ${TOKEN_SYMBOL} on ${NET_DISPLAY}
   Generated: $(date '+%Y-%m-%d %H:%M:%S')
 ═══════════════════════════════════════════════════════════
 
-[PROGRAMA SOLANA]
+[SOLANA PROGRAM]
 Network:          ${NET_DISPLAY} (domain: ${NET_DOMAIN})
 Token:            ${TOKEN_NAME} (${TOKEN_SYMBOL})
 Program ID (b58): ${WARP_PROGRAM_ID}
@@ -875,28 +900,31 @@ Owner:            ${SOL_OWNER:-keypair}
 RPC:              ${NET_RPC}
 Explorer:         ${NET_EXPLORER}
 
-[WARP TERRA CLASSIC]
+[TERRA CLASSIC WARP]
 Address:   ${TERRA_WARP_ADDR:-N/A}
 Hex:       ${TERRA_WARP_HEX:-N/A}
 Domain:    ${TERRA_DOMAIN}
 Chain ID:  ${TERRA_CHAIN_ID}
 
-[VERIFICAÇÃO MANUAL]
-# Query Solana:
-cargo run --release -- -k ${NET_KEYPAIR} -u ${NET_RPC} token query --program-id ${WARP_PROGRAM_ID} synthetic
+[MANUAL VERIFICATION]
+# Query Solana warp state:
+${CLIENT_BIN} -k ${NET_KEYPAIR} -u ${NET_RPC} token query --program-id ${WARP_PROGRAM_ID} synthetic
 
-# Route TC:
+# Query Terra Classic route:
 terrad query wasm contract-state smart ${TERRA_WARP_ADDR:-TC_WARP} '{"router":{"get_route":{"domain":${NET_DOMAIN}}}}' --node ${TERRA_RPC}
 
-# Buffer no chain (se deploy pendente):
-solana program show --url ${NET_RPC} --programs --keypair ${NET_KEYPAIR} | grep Program
+# List on-chain programs (check for orphaned buffers):
+solana program show --url ${NET_RPC} --programs --keypair ${NET_KEYPAIR}
+
+# Close program and recover SOL:
+solana program close ${WARP_PROGRAM_ID} --bypass-warning --keypair ${NET_KEYPAIR} --url ${NET_RPC}
 TXT
 
-log_ok "Relatório salvo: ${C}${REPORT}${NC}"
+log_ok "Report saved: ${C}${REPORT}${NC}"
 
 log ""
 log "╔══════════════════════════════════════════════════════════════════════════╗"
-log "║          ✅  WARP SOLANA (BUFFER) CONFIGURADO!                          ║"
+log "║          ✅  WARP ROUTE SOLANA DEPLOYED SUCCESSFULLY!                   ║"
 log "╚══════════════════════════════════════════════════════════════════════════╝"
 log ""
 log "  ${G}Program ID:${NC}  ${WARP_PROGRAM_ID}"
@@ -909,13 +937,13 @@ log ""
 if [ -z "${SKIP_ENROLL:-}" ]; then
     log "  ✅ Solana → Terra Classic (enroll, domain ${TERRA_DOMAIN})"
 else
-    log "  ⚠️  Solana → Terra Classic: pendente"
+    log "  ⚠️  Solana → Terra Classic: pending"
 fi
 if [ -z "${SKIP_TC_ROUTE:-}" ] && [ -n "${TERRA_PRIVATE_KEY:-}" ]; then
     log "  ✅ Terra Classic → Solana (set_route, domain ${NET_DOMAIN})"
 else
-    log "  ⚠️  Terra Classic → Solana: pendente"
+    log "  ⚠️  Terra Classic → Solana: pending (export TERRA_PRIVATE_KEY=... and rerun)"
 fi
 log ""
-log "${B}📄 Relatório: ${REPORT}${NC}"
-log "${B}📋 Log:       ${LOG_FILE}${NC}"
+log "${B}📄 Report: ${REPORT}${NC}"
+log "${B}📋 Log:    ${LOG_FILE}${NC}"

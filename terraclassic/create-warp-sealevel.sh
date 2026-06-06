@@ -231,21 +231,29 @@ for TK in "${TOKEN_KEYS[@]}"; do
     TK_WARP_TC=$(evm_cfg     ".terra_classic.tokens.${TK}.terra_warp.warp_address")
 
     # Check token across ALL enabled Solana networks
-    SOL_EXISTS=""; SOL_DEPLOYED="false"; SOL_PID=""
+    SOL_EXISTS=""; SOL_DEPLOYED_NETS=(); SOL_PID=""
     for _NK in $(jq -r '.networks | to_entries[] | select(.value.enabled==true) | .key' "$SOL_CONFIG" 2>/dev/null); do
         _d=$(sol_cfg ".networks.${_NK}.warp_tokens.${TK}.deployed" 2>/dev/null || echo "")
         _p=$(sol_cfg ".networks.${_NK}.warp_tokens.${TK}.program_id" 2>/dev/null || echo "")
         _t=$(sol_cfg ".networks.${_NK}.warp_tokens.${TK}.type" 2>/dev/null || echo "")
         [ -n "$_t" ] && SOL_EXISTS="$_t"
-        [ "$_d" = "true" ] && [ -n "$_p" ] && SOL_DEPLOYED="true" && SOL_PID="$_p"
+        if [ "$_d" = "true" ] && [ -n "$_p" ] && [ "$_p" != "null" ]; then
+            _SHORT="${_NK#solana}"; [ -z "$_SHORT" ] && _SHORT="$_NK"
+            SOL_DEPLOYED_NETS+=("$_SHORT")
+            SOL_PID="$_p"
+        fi
     done
 
     TOKEN_MENU+=("$TK")
 
     TAG_TC="${C}[terra: ${TK_TYPE}]${NC}"
     [ "$TK_DEPLOYED_TC"  = "true" ] && TAG_TC_DEP="${G}[warp TC ok]${NC}"  || TAG_TC_DEP="${Y}[warp TC pending]${NC}"
-    [ "$SOL_DEPLOYED" = "true" ] && [ -n "$SOL_PID" ] \
-        && TAG_SOL="${G}[solana: deployed]${NC}" || TAG_SOL="${B}[solana: new deploy]${NC}"
+    if [ ${#SOL_DEPLOYED_NETS[@]} -gt 0 ]; then
+        _NETS_STR=$(IFS=', '; echo "${SOL_DEPLOYED_NETS[*]}")
+        TAG_SOL="${G}[solana: ${_NETS_STR}]${NC}"
+    else
+        TAG_SOL="${B}[solana: new deploy]${NC}"
+    fi
 
     log "   ${W}[$i]${NC}  ${C}${TK}${NC} — ${TK_NAME:-N/A} (${TK_SYM:-?}) ${TAG_TC} ${TAG_TC_DEP} ${TAG_SOL}"
     if [ -n "$TK_WARP_TC" ] && [ "$TK_WARP_TC" != "null" ]; then
@@ -338,6 +346,29 @@ NET_ENV=$(sol_cfg     "${N}.environment")
 NET_DOMAIN=$(sol_cfg  "${N}.domain")
 NET_RPC=$(sol_cfg     "${N}.rpc")
 NET_EXPLORER=$(sol_cfg "${N}.explorer")
+
+# ── Fallback automático de RPC (testa o principal, usa fallback se cair) ──
+_rpc_ok() {
+    curl -s --max-time 6 -X POST "$1" \
+        -H "Content-Type: application/json" \
+        -d '{"jsonrpc":"2.0","id":1,"method":"getHealth"}' 2>/dev/null \
+        | grep -q '"result":"ok"'
+}
+if ! _rpc_ok "$NET_RPC"; then
+    log_warn "RPC principal indisponível: $NET_RPC — tentando fallbacks..."
+    mapfile -t _FALLBACKS < <(jq -r "${N}.rpc_fallbacks[]? // empty" "$SOL_CONFIG" 2>/dev/null)
+    for _FB in "${_FALLBACKS[@]}"; do
+        if _rpc_ok "$_FB"; then
+            log_ok "Usando RPC fallback: ${C}${_FB}${NC}"
+            NET_RPC="$_FB"
+            break
+        fi
+        log "  ❌ ${_FB}"
+    done
+    if ! _rpc_ok "$NET_RPC"; then
+        log_warn "Nenhum RPC disponível agora. Continuando com: $NET_RPC"
+    fi
+fi
 NET_KEYPAIR=$(sol_cfg "${N}.keypair" | sed "s|^~|$HOME|")
 NET_MONOREPO=$(sol_cfg "${N}.monorepo_dir" | sed "s|^~|$HOME|")
 ISM_PROGRAM_ID=$(sol_cfg "${N}.ism.program_id")
@@ -354,6 +385,11 @@ SOL_META_URI=$(sol_cfg     "${N}.warp_tokens.${TOKEN_KEY}.metadata_uri")
 SOL_TOK_DEC=$(sol_cfg      "${N}.warp_tokens.${TOKEN_KEY}.decimals")
 SOL_OWNER=$(sol_cfg        "${N}.warp_tokens.${TOKEN_KEY}.owner")
 SOL_TYPE=$(sol_cfg         "${N}.warp_tokens.${TOKEN_KEY}.type")
+# Normalizar valores null do jq para vazio (permite defaults funcionarem)
+[ "$SOL_TYPE"     = "null" ] && SOL_TYPE=""
+[ "$SOL_TOK_DEC"  = "null" ] && SOL_TOK_DEC=""
+[ "$SOL_OWNER"    = "null" ] && SOL_OWNER=""
+[ "$SOL_META_URI" = "null" ] && SOL_META_URI=""
 
 log_ok "Network selected: ${C}${NET_KEY}${NC} — ${NET_DISPLAY} (domain: ${NET_DOMAIN})"
 
@@ -387,6 +423,7 @@ CLIENT_DIR="$NET_MONOREPO/client"
 ENVIRONMENTS_DIR="$NET_MONOREPO/environments"
 BUILT_SO_DIR="$NET_MONOREPO/target/deploy"
 REGISTRY_DIR="$HOME/.hyperlane/registry"
+SEALEVEL_BIN="$NET_MONOREPO/target/release/hyperlane-sealevel-client"
 
 if [ ! -d "$CLIENT_DIR" ]; then
     log_err "Rust client not found: $CLIENT_DIR"; exit 1
@@ -394,9 +431,20 @@ fi
 
 if [ ! -f "$BUILT_SO_DIR/hyperlane_sealevel_token.so" ]; then
     log_err "Solana program not compiled: $BUILT_SO_DIR/hyperlane_sealevel_token.so"
-    log "  Compile with: cd $NET_MONOREPO && cargo build --release"
+    log "  Compile with: cd $NET_MONOREPO && cargo build-sbf (from programs/hyperlane-sealevel-token)"
     exit 1
 fi
+
+# Wrapper: usa binário compilado se existir, senão cargo run
+run_sealevel() {
+    if [ -f "$SEALEVEL_BIN" ]; then
+        "$SEALEVEL_BIN" "$@"
+    else
+        cd "$CLIENT_DIR"
+        cargo run --release -- "$@"
+        cd "$SCRIPT_DIR"
+    fi
+}
 
 WARP_ROUTE_DIR="$ENVIRONMENTS_DIR/${NET_ENV}/warp-routes/${TOKEN_KEY}"
 mkdir -p "$WARP_ROUTE_DIR/keys"
@@ -488,8 +536,14 @@ else
     if [ "$CURL_CODE" = "200" ] && [ -s "$META_TMP" ]; then
         META_NAME=$(jq -r '.name   // ""' "$META_TMP" 2>/dev/null | tr -d '\r\n')
         META_SYM=$(jq -r  '.symbol // ""' "$META_TMP" 2>/dev/null | tr -d '\r\n')
+        META_IMG=$(jq -r  '.image  // ""' "$META_TMP" 2>/dev/null | tr -d '\r\n')
         rm -f "$META_TMP"
         log_ok "Metadata downloaded: name='${META_NAME}' symbol='${META_SYM}'"
+        # Rust client validates image URL via HTTP — if image is empty/relative, skip URI
+        if [[ ! "$META_IMG" =~ ^https?:// ]]; then
+            log_warn "Metadata image URL empty/invalid ('${META_IMG}') — URI will be omitted from token-config."
+            CURL_CODE="no_image"
+        fi
     else
         rm -f "$META_TMP"
         # URI not accessible → generate automatically from warp-evm-config.json
@@ -527,6 +581,15 @@ METAJSON
     fi
     log_info "Metadata: name='${META_NAME}' symbol='${META_SYM}'"
 
+    # Valida HTTP status da imagem — Rust client panics se imagem retornar não-200
+    if [[ "$META_IMG" =~ ^https?:// ]]; then
+        IMG_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 8 "$META_IMG" 2>/dev/null || echo "000")
+        if [ "$IMG_CODE" != "200" ]; then
+            log_warn "Imagem da metadata retornou HTTP $IMG_CODE ('${META_IMG}') — URI será omitida."
+            CURL_CODE="bad_image"
+        fi
+    fi
+
     # Create token-config.json via jq (ensures valid JSON and "uri" only when accessible)
     TOKEN_CONFIG="$WARP_ROUTE_DIR/token-config.json"
     _BASE_JSON=$(jq -n \
@@ -556,17 +619,27 @@ METAJSON
     echo "$TOKEN_CONFIG_JSON" > "$TOKEN_CONFIG"
     log_ok "token-config.json created: $TOKEN_CONFIG"
 
-    # Warning about compilation time
-    log ""
-    log_warn "cargo run --release can take 5-10 min on first compilation."
-    log_info "Compilation in progress — please wait..."
-    log ""
+    mkdir -p "$WARP_ROUTE_DIR/keys"
 
-    # Deploy
-    cd "$CLIENT_DIR"
+    # Resolve binário do cliente
+    if [ -f "$SEALEVEL_BIN" ]; then
+        _SEALEVEL_CMD=("$SEALEVEL_BIN")
+        _IN_CLIENT_DIR=false
+        log_info "Usando binário pré-compilado: $SEALEVEL_BIN"
+    else
+        cd "$CLIENT_DIR"
+        _SEALEVEL_CMD=(cargo run --release --)
+        _IN_CLIENT_DIR=true
+        log_warn "cargo run --release can take 5-10 min on first compilation."
+        log_info "Compilation in progress — please wait..."
+    fi
+
+    # ── warp-route deploy: fluxo único igual ao devnet/testnet ────────────────
+    # Sem pipe grep (causava buffering/travamento). Output vai direto para o
+    # log e terminal. Com Helius o upload não trava mais.
     DEPLOY_TMP=$(mktemp)
     set +e
-    cargo run --release -- \
+    "${_SEALEVEL_CMD[@]}" \
         -k "$NET_KEYPAIR" \
         -u "$NET_RPC" \
         warp-route deploy \
@@ -577,22 +650,36 @@ METAJSON
         --built-so-dir "$BUILT_SO_DIR" \
         --registry "$REGISTRY_DIR" \
         --ata-payer-funding-amount 5000000 2>&1 \
-        | grep -v "^warning:" | grep -v "^note:" \
         | tee -a "$LOG_FILE" "$DEPLOY_TMP"
     DEPLOY_EXIT=$?
-    cd "$SCRIPT_DIR"
+    $_IN_CLIENT_DIR && cd "$SCRIPT_DIR"
     set -e
 
     DEPLOY_OUT=$(cat "$DEPLOY_TMP"); rm -f "$DEPLOY_TMP"
 
     if [ $DEPLOY_EXIT -ne 0 ]; then
-        KNOWN=$(echo "$DEPLOY_OUT" | grep -iE "already|exists|initialized" || echo "")
-        if [ -z "$KNOWN" ]; then
-            log_err "warp-route deploy falhou (exit $DEPLOY_EXIT)!"
-            log "${Y}Verifique o log: $LOG_FILE${NC}"
+        if echo "$DEPLOY_OUT" | grep -q "insufficient funds"; then
+            NEED=$(echo "$DEPLOY_OUT" | grep -oE "spend \([0-9.]+ SOL\)" | head -1)
+            log_err "Saldo insuficiente! Necessário ${NEED:-~2.5 SOL}."
+            CURRENT=$(solana balance "$NET_KEYPAIR" --url "$NET_RPC" 2>/dev/null || echo "?")
+            log "  Saldo atual: ${CURRENT}"
+            log "  O buffer keypair foi preservado em: ${WARP_ROUTE_DIR}/keys/"
             exit 1
         fi
-        log_warn "warp-route deploy terminou com aviso (já inicializado?) — continuando."
+        if echo "$DEPLOY_OUT" | grep -qE "already deployed|Warp route token already exists"; then
+            log_ok "Programa já deployado — init executado."
+        else
+            log_err "warp-route deploy falhou (exit $DEPLOY_EXIT)!"
+            log "${Y}Último output:${NC}"
+            echo "$DEPLOY_OUT" | tail -10 | tee -a "$LOG_FILE"
+            _BUFFER_KP="$WARP_ROUTE_DIR/keys/hyperlane_sealevel_token-${NET_KEY}-buffer.json"
+            if [ -f "$_BUFFER_KP" ]; then
+                _BUF_PK=$(solana-keygen pubkey "$_BUFFER_KP" 2>/dev/null || echo "")
+                [ -n "$_BUF_PK" ] && log "${Y}Para recuperar SOL do buffer: solana program close ${_BUF_PK} --keypair ${NET_KEYPAIR} --url ${NET_RPC} --bypass-warning${NC}"
+            fi
+            log "${Y}Log completo: $LOG_FILE${NC}"
+            exit 1
+        fi
     else
         log_ok "warp-route deploy completed!"
     fi
@@ -659,10 +746,9 @@ else
     log_info "ISM Program ID: ${ISM_PROGRAM_ID}"
     log_info "Warp Program ID: ${WARP_PROGRAM_ID}"
 
-    cd "$CLIENT_DIR"
     ISM_TMP=$(mktemp)
     set +e
-    timeout 180 cargo run --release -- \
+    run_sealevel \
         -k "$NET_KEYPAIR" \
         -u "$NET_RPC" \
         token set-interchain-security-module \
@@ -671,7 +757,6 @@ else
         | grep -v "^warning:" | grep -v "^note:" | grep -v "^Compiling" \
         | tee -a "$LOG_FILE" "$ISM_TMP"
     ISM_EXIT=$?
-    cd "$SCRIPT_DIR"
     ISM_OUT=$(cat "$ISM_TMP"); rm -f "$ISM_TMP"
     set -e
 
@@ -699,10 +784,9 @@ else
     log_info "IGP Program ID: ${IGP_PROGRAM_ID}"
     log_info "IGP Account:    ${IGP_ACCOUNT}"
 
-    cd "$CLIENT_DIR"
     IGP_TMP=$(mktemp)
     set +e
-    timeout 180 cargo run --release -- \
+    run_sealevel \
         -k "$NET_KEYPAIR" \
         -u "$NET_RPC" \
         token igp \
@@ -714,7 +798,6 @@ else
         | grep -v "^warning:" | grep -v "^note:" | grep -v "^Compiling" \
         | tee -a "$LOG_FILE" "$IGP_TMP"
     IGP_EXIT=$?
-    cd "$SCRIPT_DIR"
     IGP_OUT=$(cat "$IGP_TMP"); rm -f "$IGP_TMP"
     set -e
 
@@ -742,10 +825,9 @@ else
     log_info "Destination gas: ${DEST_GAS} for domain ${TERRA_DOMAIN}"
     log_warn "Without destination gas → transfers will fail with 'InvalidArgument'"
 
-    cd "$CLIENT_DIR"
     GAS_TMP=$(mktemp)
     set +e
-    timeout 180 cargo run --release -- \
+    run_sealevel \
         -k "$NET_KEYPAIR" \
         -u "$NET_RPC" \
         token set-destination-gas \
@@ -755,7 +837,6 @@ else
         | grep -v "^warning:" | grep -v "^note:" | grep -v "^Compiling" \
         | tee -a "$LOG_FILE" "$GAS_TMP"
     GAS_EXIT=$?
-    cd "$SCRIPT_DIR"
     GAS_OUT=$(cat "$GAS_TMP"); rm -f "$GAS_TMP"
     set -e
 
@@ -787,10 +868,9 @@ else
     log "  Terra Classic domain: ${TERRA_DOMAIN}"
     log "  Terra Classic Warp (hex): 0x${TERRA_HEX_CLEAN}"
 
-    cd "$CLIENT_DIR"
     ENROLL_TMP=$(mktemp)
     set +e
-    timeout 180 cargo run --release -- \
+    run_sealevel \
         -k "$NET_KEYPAIR" \
         -u "$NET_RPC" \
         token enroll-remote-router \
@@ -800,7 +880,6 @@ else
         | grep -v "^warning:" | grep -v "^note:" | grep -v "^Compiling" \
         | tee -a "$LOG_FILE" "$ENROLL_TMP"
     ENROLL_EXIT=$?
-    cd "$SCRIPT_DIR"
     ENROLL_OUT=$(cat "$ENROLL_TMP"); rm -f "$ENROLL_TMP"
     set -e
 
@@ -947,10 +1026,9 @@ fi
 # ═════════════════════════════════════════════════════════════════════════════
 log_sep "STEP 7 — QUERY WARP (Mint Address + Verification)"
 
-cd "$CLIENT_DIR"
 QUERY_TMP=$(mktemp)
 set +e
-timeout 120 cargo run --release --quiet -- \
+run_sealevel \
     -k "$NET_KEYPAIR" \
     -u "$NET_RPC" \
     token query \
@@ -959,7 +1037,6 @@ timeout 120 cargo run --release --quiet -- \
     | grep -v "^warning:" | grep -v "^note:" \
     | tee -a "$LOG_FILE" "$QUERY_TMP"
 QUERY_EXIT=$?
-cd "$SCRIPT_DIR"
 QUERY_OUT=$(cat "$QUERY_TMP"); rm -f "$QUERY_TMP"
 set -e
 
@@ -983,9 +1060,8 @@ fi
 # Transfer ownership (if owner configured and different from keypair)
 if [ -n "$SOL_OWNER" ] && [ "$SOL_OWNER" != "null" ]; then
     log_info "Transferring ownership to: $SOL_OWNER"
-    cd "$CLIENT_DIR"
     set +e
-    timeout 120 cargo run --release -- \
+    run_sealevel \
         -k "$NET_KEYPAIR" \
         -u "$NET_RPC" \
         token transfer-ownership \
@@ -994,7 +1070,6 @@ if [ -n "$SOL_OWNER" ] && [ "$SOL_OWNER" != "null" ]; then
         | grep -v "^warning:" | grep -v "^note:" | grep -v "^Compiling" \
         | tee -a "$LOG_FILE"
     OWN_EXIT=$?
-    cd "$SCRIPT_DIR"
     set -e
     if [ $OWN_EXIT -eq 0 ]; then
         log_ok "Ownership transferred to: $SOL_OWNER"
@@ -1013,7 +1088,7 @@ log_sep "STEP 8 — FINAL VERIFICATION"
 log_info "Checking remote routers on Warp Solana..."
 cd "$CLIENT_DIR"
 set +e
-VER_SOL=$(timeout 60 cargo run --release --quiet -- \
+VER_SOL=$(run_sealevel \
     -k "$NET_KEYPAIR" \
     -u "$NET_RPC" \
     token query \
@@ -1022,7 +1097,6 @@ VER_SOL=$(timeout 60 cargo run --release --quiet -- \
     | grep -v "^warning:" | grep -v "^note:" \
     | grep -iE "remote_router|ism|igp|destination_gas" | head -10 || echo "")
 set -e
-cd "$SCRIPT_DIR"
 
 if [ -n "$VER_SOL" ]; then
     log_ok "Warp Solana state:"
