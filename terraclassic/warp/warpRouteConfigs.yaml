@@ -2,6 +2,81 @@
 # This is the correct format that should be in the remote registry
 # URL: https://raw.githubusercontent.com/igorv43/hyperlane-registry/main/deployments/warp_routes/warpRouteConfigs.yaml
 
+# ═══════════════════════════════════════════════════════════════════
+#  MAINNET ROUTES
+# ═══════════════════════════════════════════════════════════════════
+
+IGORFAKE/terraclassic-bsc-ethereum-solanamainnet:
+  tokens:
+    - addressOrDenom: "terra1m5ktcghalv0tlj0zzx2kt6u8adnuslwd449ml55uam57s0eclyssv634a4"
+      chainName: "terraclassic"
+      standard: "CwHypCollateral"
+      collateralAddressOrDenom: "terra1lpkaaqjaq8zfwktge3vy0zg46nxxsynsge2wxa7addpweu2w6gmsy3lhkr"
+      connections:
+        - token: "ethereum|bsc|0x3605d8946fC6f5a75D89D92173100F59743b5318"
+        - token: "ethereum|ethereum|0xA687a4C4Ca49795999b36fDC8A18D1ddD63EdfB5"
+        - token: "sealevel|solanamainnet|Hs4FrEgigJaabS5HtdkzceFdCPNmPhntWbbdWBJcXyCn"
+      decimals: 6
+      logoURI: ""
+      name: "IGORFAKE"
+      symbol: "IGORFAKE"
+    - addressOrDenom: "0x3605d8946fC6f5a75D89D92173100F59743b5318"
+      chainName: "bsc"
+      standard: "EvmHypSynthetic"
+      connections:
+        - token: "cosmos|terraclassic|terra1m5ktcghalv0tlj0zzx2kt6u8adnuslwd449ml55uam57s0eclyssv634a4"
+      decimals: 6
+      logoURI: ""
+      name: "IGORFAKE"
+      symbol: "IGORFAKE"
+    - addressOrDenom: "0xA687a4C4Ca49795999b36fDC8A18D1ddD63EdfB5"
+      chainName: "ethereum"
+      standard: "EvmHypSynthetic"
+      connections:
+        - token: "cosmos|terraclassic|terra1m5ktcghalv0tlj0zzx2kt6u8adnuslwd449ml55uam57s0eclyssv634a4"
+      decimals: 6
+      logoURI: ""
+      name: "IGORFAKE"
+      symbol: "IGORFAKE"
+    - addressOrDenom: "Hs4FrEgigJaabS5HtdkzceFdCPNmPhntWbbdWBJcXyCn"
+      chainName: "solanamainnet"
+      standard: "SealevelHypSynthetic"
+      collateralAddressOrDenom: "5s6DL6pYGxLNXNf1U915BLzLxNkRjnWCzqyzEfXuYDQT"
+      connections:
+        - token: "cosmos|terraclassic|terra1m5ktcghalv0tlj0zzx2kt6u8adnuslwd449ml55uam57s0eclyssv634a4"
+      decimals: 6
+      logoURI: ""
+      name: "IGORFAKE"
+      symbol: "IGORFAKE"
+  options:
+    interchainFeeConstants:
+      - origin: "terraclassic"
+        destination: "bsc"
+        amount: 1780832150
+        addressOrDenom: "uluna"
+      - origin: "terraclassic"
+        destination: "ethereum"
+        amount: 1780832150
+        addressOrDenom: "uluna"
+      - origin: "terraclassic"
+        destination: "solanamainnet"
+        amount: 1780832150
+        addressOrDenom: "uluna"
+    localFeeConstants:
+      - origin: "terraclassic"
+        destination: "bsc"
+        amount: 383215
+      - origin: "terraclassic"
+        destination: "ethereum"
+        amount: 383215
+      - origin: "terraclassic"
+        destination: "solanamainnet"
+        amount: 383215
+
+# ═══════════════════════════════════════════════════════════════════
+#  TESTNET ROUTES
+# ═══════════════════════════════════════════════════════════════════
+
 LUNC/terraclassictestnet-bsctestnet-sepolia-solanatestnet:
   tokens:
     - addressOrDenom: "terra1zlm0h2xu6rhnjchn29hxnpvr74uxxqetar9y75zcehyx2mqezg9slj09ml"
