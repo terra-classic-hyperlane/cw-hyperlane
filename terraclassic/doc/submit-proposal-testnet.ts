@@ -366,7 +366,7 @@ const EXEC_MSGS: ExecuteMsg[] = [
 // 6. MONETIZATION: Charge fee of 0.283215 LUNC per message via Hook Fee
 //
 // The system will be ready to send and receive cross-chain messages between:
-// - Terra Classic Testnet (domain 1325)
+// - Terra Classic Testnet (domain 13253)
 // - Sepolia Testnet (domain 11155111)
 // - BSC Testnet (domain 97)
 // - Solana Testnet (domain 1399811150)

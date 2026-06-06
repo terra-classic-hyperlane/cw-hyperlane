@@ -1402,7 +1402,7 @@ Addresses of all active contracts in this project, for quick reference and manua
 
 ---
 
-### Terra Classic (chain rebel-2 / domain 1325)
+### Terra Classic (chain rebel-2 / domain 13253)
 
 | Item | Value |
 |---|---|
@@ -1543,4 +1543,4 @@ console.log('chainId:', meta.chainId, '| domainId:', meta.domainId || meta.chain
 | Polygon | 137 | 137 |
 | Arbitrum | 42161 | 42161 |
 | Optimism | 10 | 10 |
-| **Terra Classic** | rebel-2 | **1325** |
+| **Terra Classic** | rebel-2 | **13253** |
