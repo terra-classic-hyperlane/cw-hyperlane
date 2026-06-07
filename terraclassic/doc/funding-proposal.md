@@ -1,6 +1,6 @@
 # Funding Proposal — Hyperlane Warp Routes Deployment on Solana Mainnet
 
-> **Author:** Igor Veras (`terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k`)  
+> **Author:** Igor Veras (`terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n`)  
 > **Date:** 2026-06-07  
 > **Category:** Infrastructure / Interoperability  
 > **Status:** Awaiting community approval
