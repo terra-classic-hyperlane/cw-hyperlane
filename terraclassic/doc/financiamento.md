@@ -264,13 +264,19 @@ Terra Classic (LUNC/USTC)          Solana Mainnet
 
 ### 5.2 Conversão para LUNC
 
+> ✏️ *Editado em 2026-06-08 — valor original em SOL mantido acima para referência técnica; valor de envio corrigido para LUNC conforme solicitação da comunidade.*
+
+~~A proposta original solicitava o envio direto de **9.08 SOL**.~~
+
 A comunidade enviará **LUNC** diretamente para minha carteira. O valor foi calculado utilizando **$70/SOL** como referência conservadora, dado que o SOL apresenta alta volatilidade e a proposta pode levar dias para ser aprovada.
 
 | Referência | Valor |
 |-----------|-------|
 | Preço SOL utilizado (conservador) | $70.00 USD |
+| ~~Preço LUNC original (publicação)~~ | — |
 | Preço LUNC em 2026-06-08 | $0.00007006 USD |
 | Total em USD (9.08 SOL × $70) | $635.60 USD |
+| ~~Total original~~ | ~~9.08 SOL~~ |
 | **Total solicitado em LUNC** | **≈ 9,072,794 LUNC** |
 
 > **Sobre a volatilidade:** O preço do SOL em 2026-06-08 era de $66.87 USD. Foi utilizado $70/SOL para cobrir eventual alta antes da aprovação. No dia da compra do SOL publicarei o TX da transação. **Caso sobre LUNC**, o valor será enviado diretamente de volta à comunidade — **não será convertido, será devolvido como LUNC**.
