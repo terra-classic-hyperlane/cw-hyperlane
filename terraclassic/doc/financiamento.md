@@ -3,7 +3,16 @@
 > **Autor:** Igor Veras (`terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n`)  
 > **Data:** 2026-06-07  
 > **Categoria:** Infraestrutura / Interoperabilidade  
+> **Tipo:** 🏛️ **Proposta de Saque do Community Pool (CP)** — requer aprovação via governança on-chain  
 > **Status:** Aguardando aprovação da comunidade
+
+---
+
+> ⚠️ **ATENÇÃO — Tipo de Proposta**
+>
+> Esta é uma **proposta de saque do Community Pool (CP)** da Terra Classic.  
+> **Não se trata de uma doação voluntária** e **não é uma coleta entre membros da comunidade**.  
+> O valor de **≈ 9,072,794 LUNC** será sacado diretamente do fundo comunitário (Community Pool), mediante **aprovação pela governança on-chain** — ou seja, a proposta precisa ser submetida na blockchain da Terra Classic e aprovada por votação dos validadores e detentores de LUNC.
 
 ---
 

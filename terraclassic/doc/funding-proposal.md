@@ -3,7 +3,16 @@
 > **Author:** Igor Veras (`terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n`)  
 > **Date:** 2026-06-07  
 > **Category:** Infrastructure / Interoperability  
+> **Type:** 🏛️ **Community Pool (CP) Spend Proposal** — requires on-chain governance approval  
 > **Status:** Awaiting community approval
+
+---
+
+> ⚠️ **IMPORTANT — Proposal Type**
+>
+> This is a **Community Pool (CP) spend proposal** on Terra Classic.  
+> **This is not a voluntary donation** and **not a crowdfund among community members**.  
+> The amount of **≈ 9,072,794 LUNC** will be withdrawn directly from the Community Pool, subject to **on-chain governance approval** — meaning this proposal must be submitted on the Terra Classic blockchain and approved by validators and LUNC holders through a governance vote.
 
 ---
 
