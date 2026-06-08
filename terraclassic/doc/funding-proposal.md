@@ -260,9 +260,22 @@ Terra Classic (LUNC/USTC)          Solana Mainnet
 | Oracle + PDA accounts | 0.06 | Init + configurations |
 | Safety buffer | 0.50 | Fees, retries and contingencies |
 | Contingency reserve | 1.00 | Unexpected costs, SOL price fluctuation |
-| **Total requested** | **9.08 SOL** | |
+| **Total in SOL** | **9.08 SOL** | |
 
-### 6.2 Destination of Funds
+### 6.2 Conversion to LUNC
+
+The community will send **LUNC** directly to my wallet. The amount was calculated using **$70/SOL** as a conservative reference, given SOL's high volatility and the time the proposal may take to be approved.
+
+| Reference | Value |
+|-----------|-------|
+| SOL price used (conservative) | $70.00 USD |
+| LUNC price on 2026-06-08 | $0.00007006 USD |
+| Total in USD (9.08 SOL × $70) | $635.60 USD |
+| **Total requested in LUNC** | **≈ 9,072,794 LUNC** |
+
+> **On volatility:** SOL was trading at $66.87 USD on 2026-06-08. The $70/SOL rate was used to cover a potential price increase before approval. On the day of the SOL purchase I will publish the transaction hash. **If any LUNC remains**, it will be sent directly back to the community — **it will not be converted, it will be returned as LUNC**.
+
+### 6.3 Destination of Funds
 
 Funds should be sent in **LUNC** to the Terra Classic wallet:
 
@@ -270,9 +283,7 @@ Funds should be sent in **LUNC** to the Terra Classic wallet:
 terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp
 ```
 
-The LUNC received will be converted to SOL and used exclusively for program deployment. The conversion will be documented with transaction hashes for full accountability.
-
-The total amount requested is **9.08 SOL**, covering the full deployment cost. Any unused SOL will be returned in full to the community.
+The LUNC received will be converted to SOL on the day of purchase and used exclusively for program deployment. The conversion will be documented with the transaction hash for full accountability. Any remaining LUNC will be returned directly to the community.
 
 ---
 

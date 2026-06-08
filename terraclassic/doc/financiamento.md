@@ -260,9 +260,22 @@ Terra Classic (LUNC/USTC)          Solana Mainnet
 | Oracle + contas PDAs | 0.06 | Init + configurações |
 | Buffer de segurança | 0.50 | Fees, retentativas e imprevistos |
 | Reserva para eventualidades | 1.00 | Imprevistos, flutuação de preço do SOL |
-| **Total solicitado** | **9.08 SOL** | |
+| **Total em SOL** | **9.08 SOL** | |
 
-### 5.2 Destino dos Recursos
+### 5.2 Conversão para LUNC
+
+A comunidade enviará **LUNC** diretamente para minha carteira. O valor foi calculado utilizando **$70/SOL** como referência conservadora, dado que o SOL apresenta alta volatilidade e a proposta pode levar dias para ser aprovada.
+
+| Referência | Valor |
+|-----------|-------|
+| Preço SOL utilizado (conservador) | $70.00 USD |
+| Preço LUNC em 2026-06-08 | $0.00007006 USD |
+| Total em USD (9.08 SOL × $70) | $635.60 USD |
+| **Total solicitado em LUNC** | **≈ 9,072,794 LUNC** |
+
+> **Sobre a volatilidade:** O preço do SOL em 2026-06-08 era de $66.87 USD. Foi utilizado $70/SOL para cobrir eventual alta antes da aprovação. No dia da compra do SOL publicarei o TX da transação. **Caso sobre LUNC**, o valor será enviado diretamente de volta à comunidade — **não será convertido, será devolvido como LUNC**.
+
+### 5.3 Destino dos Recursos
 
 Os recursos deverão ser enviados em **LUNC** para a carteira Terra Classic:
 
@@ -270,9 +283,7 @@ Os recursos deverão ser enviados em **LUNC** para a carteira Terra Classic:
 terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp
 ```
 
-O LUNC recebido será convertido para SOL e utilizado exclusivamente no deploy dos programas. A conversão será documentada com os hashes das transações para prestação de contas completa.
-
-O valor total solicitado é de **9.08 SOL**, correspondendo ao custo integral do deploy. Qualquer SOL não utilizado ao final será devolvido integralmente à comunidade.
+O LUNC recebido será convertido para SOL no dia da compra e utilizado exclusivamente no deploy dos programas. A conversão será documentada com o hash da transação para prestação de contas completa. Qualquer LUNC não utilizado será devolvido diretamente à comunidade.
 
 ---
 
