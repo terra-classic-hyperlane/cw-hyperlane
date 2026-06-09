@@ -657,9 +657,9 @@ terrad tx gov submit-proposal proposal_mainnet.json \
 
 | Domain | Chain | exchange_rate | gas_price | Fee (300k gas) | Configured |
 |---|---|---|---|---|---|
-| 1 | Ethereum | 37,611 | 10000000000 (10 gwei) | ~113 LUNC ($0.0077) | ✅ 2026-06-09 |
-| 56 | BSC mainnet | 110,531 | 3000000000 (3 gwei) | ~99 LUNC ($0.0068) | ✅ 2026-06-09 |
-| 1399811149 | Solana | 38,300,155,301,425 | 1 (lamport) | ~11 LUNC ($0.0008) | ✅ 2026-06-09 |
+| 1 | Ethereum | 376 | 10000000000 (10 gwei) | ~113 LUNC ($0.0077) | ✅ 2026-06-09 |
+| 56 | BSC mainnet | 1,098 | 3000000000 (3 gwei) | ~99 LUNC ($0.0068) | ✅ 2026-06-09 |
+| 1399811149 | Solana | 383,001,553,014 | 1 (lamport) | ~11 LUNC ($0.0008) | ✅ 2026-06-09 |
 
 Prices used: LUNC=$0.00006782, ETH=$1803.18, BNB=$617.38, SOL=$70.83
 
@@ -766,7 +766,7 @@ Example (BSC mainnet — 2026-06-09):
 
 **Solana uses a different model** — fees are in compute units × lamports:
 - `gas_price = 1` (1 lamport per compute unit, minimum Solana fee model)
-- `exchange_rate = (LUNC_USD / SOL_USD) × 1e15`
+- `exchange_rate = (LUNC_USD / SOL_USD) × 1e13   ← Solana usa 1e13 no cw-hyperlane`
 
 ### Quick update — `update-igp-oracle.sh`
 

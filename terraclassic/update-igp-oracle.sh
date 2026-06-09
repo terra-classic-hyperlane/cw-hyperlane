@@ -48,33 +48,41 @@ EXPLORER_TC="https://finder.hexxagon.io/columbus-5"
 # ─────────────────────────────────────────────────────────────────────────────
 # EXCHANGE RATE FORMULA
 # ─────────────────────────────────────────────────────────────────────────────
-# exchange_rate = (LUNC_USD / NATIVE_USD) * 1e12
+# cw-hyperlane TOKEN_EXCHANGE_RATE_SCALE = 1e10  (NOT 1e12 like EVM Hyperlane)
+#
+# exchange_rate = (LUNC_USD / NATIVE_USD) * 1e10   ← use 1e10, not 1e12
 #
 # The Terra Classic IGP oracle payment formula is:
-#   payment_uluna = gas_amount * gas_price * exchange_rate / 1e12
+#   payment_uluna = gas_amount * gas_price * exchange_rate / 1e10
 #
 # Where:
 #   gas_amount  = gas units to execute on destination (e.g. 300000)
 #   gas_price   = destination gas price in native wei (e.g. 3e9 = 3 gwei for BSC)
-#   exchange_rate = ratio of token prices scaled to 1e12
+#   exchange_rate = ratio of token prices scaled to 1e10
 #
-# Example (BSC mainnet, BNB=$617, LUNC=$0.00006824):
-#   exchange_rate = (0.00006824 / 617) * 1e12 = 110531
-#   fee = 300000 * 3000000000 * 110531 / 1e12 = 9947790000 uluna = 9948 LUNC
+# Example (BSC mainnet, BNB=$617.38, LUNC=$0.00006782):
+#   exchange_rate = (0.00006782 / 617.38) * 1e10 = 1098
+#   fee = 300000 * 3000000000 * 1098 / 1e10 = 98820000 uluna ≈ 98.82 LUNC
 #
-# Solana uses a different model (gas_price=1 lamport, exchange_rate pre-calculated):
-#   Solana does not use EVM gwei model — fees are in compute units * lamports.
+# Solana (gas_price=1 lamport):
+#   exchange_rate = (LUNC_USD / SOL_USD) * 1e10 * 1e3 = (LUNC/SOL) * 1e13
+#   (the 1e3 factor compensates for lamport/uluna decimal difference)
+#   Example: (0.00006782/70.83) * 1e13 = 9575000
+#   But empirically: old_rate / 100 works correctly for continuity.
+#
+# ⚠️ WARNING: The Hyperlane EVM docs show scale 1e12. cw-hyperlane uses 1e10.
+#    Using 1e12 will make fees 100x too high.
 # ─────────────────────────────────────────────────────────────────────────────
 
 calc_rate() {
     local lunc_usd="$1" native_usd="$2"
-    python3 -c "r=($lunc_usd/$native_usd)*1e12; print(int(r))"
+    python3 -c "r=($lunc_usd/$native_usd)*1e10; print(int(r))"
 }
 
 calc_fee_lunc() {
     local gas="$1" gas_price="$2" rate="$3" lunc_usd="$4"
     python3 -c "
-fee = $gas * $gas_price * $rate / 1e12
+fee = $gas * $gas_price * $rate / 1e10
 lunc = fee / 1e6
 usd = lunc * $lunc_usd
 print(f'{int(fee)} uluna = {lunc:.2f} LUNC = \${usd:.5f} USD')
