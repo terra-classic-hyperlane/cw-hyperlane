@@ -32,14 +32,14 @@ SOL_CFG="$SCRIPT_DIR/warp-sealevel-config.json"
 TC_RPC="https://rpc.terra-classic.hexxagon.io"
 TC_LCD="https://lcd.terra-classic.hexxagon.io"
 TC_CHAIN_ID="columbus-5"
-TC_IGP="terra1f6n8asv4ecqjjhvf57cprgcjwzd4y2mncpp6gcc95gd22mljnrcs3gcgkk"
+TC_IGP="terra1taunhg629rssf3g939nqr0h594q5mssrzdj5lkx2hygmxmh72ghqeqqnvz"
 
 # Override with config values if it exists
 if command -v jq &>/dev/null && [ -f "$EVM_CFG" ]; then
     TC_RPC=$(jq -r '.terra_classic.rpc      // "https://rpc.terra-classic.hexxagon.io"' "$EVM_CFG")
     TC_LCD=$(jq -r '.terra_classic.lcd      // "https://lcd.terra-classic.hexxagon.io"' "$EVM_CFG")
     TC_CHAIN_ID=$(jq -r '.terra_classic.chain_id // "columbus-5"' "$EVM_CFG")
-    TC_IGP=$(jq -r '.terra_classic.igp      // "terra1f6n8asv4ecqjjhvf57cprgcjwzd4y2mncpp6gcc95gd22mljnrcs3gcgkk"' "$EVM_CFG")
+    TC_IGP=$(jq -r '.terra_classic.igp      // "terra1taunhg629rssf3g939nqr0h594q5mssrzdj5lkx2hygmxmh72ghqeqqnvz"' "$EVM_CFG")
 fi
 
 # ─── Banner ───────────────────────────────────────────────────────────────────

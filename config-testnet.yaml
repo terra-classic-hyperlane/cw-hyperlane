@@ -11,7 +11,7 @@ networks:
     gas:
       price: '28.325'
       denom: 'uluna'
-    domain: 13253  # terra-classic testnet (rebel-2)
+    domain: 1325  # terra-classic testnet (rebel-2)
 
 
 # Networks that already have hyperlane deployments

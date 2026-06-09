@@ -6,18 +6,18 @@
 #
 #  WHY this script exists:
 #    The shared ISM (LwNfVY...) on mainnet3 has no entry for Terra Classic
-#    domain 1325 and is owned by a different keypair.  The shared IGP also
-#    lacks an oracle for domain 1325.  This script creates owned replacements.
+#    domain 132556 and is owned by a different keypair.  The shared IGP also
+#    lacks an oracle for domain 132556.  This script creates owned replacements.
 #
 #  STEPS:
 #    1. Dump ISM binary from existing program and deploy a new one
 #    2. Init the new ISM (creates access-control PDA, owner = keypair)
-#    3. Set validators + threshold for domain 1325
+#    3. Set validators + threshold for domain 132556
 #    4. Create a custom environment dir so the client can manage the IGP
 #    5. Init a new IGP account under the existing IGP program
 #    6. Init an overhead-IGP account wrapping the base IGP account
-#    7. Set gas oracle for domain 1325 (Terra Classic / LUNC)
-#    8. Set destination gas overhead for domain 1325
+#    7. Set gas oracle for domain 132556 (Terra Classic / LUNC)
+#    8. Set destination gas overhead for domain 132556
 #    9. Update warp route: new ISM + new IGP
 #   10. Update warp-sealevel-config.json with new addresses
 #
@@ -69,7 +69,7 @@ sol_cfg()  { jq -r "$1" "$SOL_CONFIG" 2>/dev/null || echo ""; }
 # ─────────────────────────────────────────────────────────────────────────────
 # FIXED CONSTANTS
 # ─────────────────────────────────────────────────────────────────────────────
-TERRA_DOMAIN=1325
+TERRA_DOMAIN=132556
 VALIDATOR_ADDR="0x71b2b8c36a0c76b74be92eb7915e26a69b3b03eb"
 VALIDATOR_THRESHOLD=1
 
@@ -306,7 +306,7 @@ else
 fi
 
 # ═════════════════════════════════════════════════════════════════════════════
-# STEP 3 — SET VALIDATORS + THRESHOLD FOR DOMAIN 1325
+# STEP 3 — SET VALIDATORS + THRESHOLD FOR DOMAIN 132556
 # ═════════════════════════════════════════════════════════════════════════════
 log_sep "STEP 3 — SET VALIDATORS FOR DOMAIN $TERRA_DOMAIN (Terra Classic)"
 
@@ -436,7 +436,7 @@ fi
 log_ok "IGP account to use: ${G}${NEW_IGP_ACCT:-NOT SET}${NC}"
 
 # ═════════════════════════════════════════════════════════════════════════════
-# STEP 6 — SET GAS ORACLE FOR DOMAIN 1325 (Terra Classic)
+# STEP 6 — SET GAS ORACLE FOR DOMAIN 132556 (Terra Classic)
 # ═════════════════════════════════════════════════════════════════════════════
 log_sep "STEP 6 — SET GAS ORACLE FOR DOMAIN $TERRA_DOMAIN (Terra Classic)"
 
@@ -589,7 +589,7 @@ log "║  ✅  ISM + IGP + ORACLE SETUP COMPLETE                                
 log "╚══════════════════════════════════════════════════════════════════════════╝"
 log ""
 log "  ${G}New ISM:${NC}         $NEW_ISM"
-log "  ${G}  Domain 1325:${NC}   validator=$VALIDATOR_ADDR  threshold=$VALIDATOR_THRESHOLD"
+log "  ${G}  Domain 132556:${NC}   validator=$VALIDATOR_ADDR  threshold=$VALIDATOR_THRESHOLD"
 [ -n "$NEW_IGP_ACCT" ] && \
 log "  ${G}New IGP acct:${NC}    $NEW_IGP_ACCT"
 log "  ${G}  Oracle:${NC}        domain=$TERRA_DOMAIN  gas_price=$ORACLE_GAS_PRICE  decimals=$ORACLE_TOKEN_DECIMALS"

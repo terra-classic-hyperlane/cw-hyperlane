@@ -215,7 +215,7 @@ Terra Classic → Sepolia:
   (configured by this script via router.set_route)
 
 Sepolia → Terra Classic:
-  Sepolia Warp contract knows domain 1325 uses address terra16ql6l...
+  Sepolia Warp contract knows domain 132556 uses address terra16ql6l...
   (configured by create-warp-evm.sh in Step 7 via enrollRemoteRouter)
 ```
 
@@ -224,7 +224,7 @@ Sepolia → Terra Classic:
 ```bash
 RPC="https://ethereum-sepolia-rpc.publicnode.com"
 
-# Sepolia side: routers(1325) should be the hex of the Terra Classic Warp
+# Sepolia side: routers(132556) should be the hex of the Terra Classic Warp
 cast call 0xbF43aA4878f5Ad0fcAC12Cd3A835DD3506981048 \
   "routers(uint32)(bytes32)" 1325 --rpc-url $RPC
 # Expected: 0xd03fafd53ce350f49ba3c6ebcb1bee7cbbf453f261ec8d5ce9f36c55ab3e26a1
@@ -373,7 +373,7 @@ curl -s "https://rpc.terra-classic.hexxagon.dev/status" | jq '.result.sync_info.
 
 **Possible causes:**
 
-1. **The EVM side is not configured** — check `routers(1325)` on the Sepolia Warp:
+1. **The EVM side is not configured** — check `routers(132556)` on the Sepolia Warp:
    ```bash
    cast call $WARP_EVM "routers(uint32)(bytes32)" 1325 \
      --rpc-url https://ethereum-sepolia-rpc.publicnode.com

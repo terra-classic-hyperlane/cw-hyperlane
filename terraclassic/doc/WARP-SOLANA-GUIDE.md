@@ -164,7 +164,7 @@ Contains Terra Classic chain configuration and per-token Terra Classic warp cont
 ```json
 {
   "terra_classic": {
-    "domain": 1325,
+    "domain": 132556,
     "chain_id": "columbus-5",
     "rpc": "https://rpc.terra-classic.hexxagon.io",
     "tokens": {
@@ -191,7 +191,7 @@ Contains Terra Classic chain configuration and per-token Terra Classic warp cont
 
 | Field | Description |
 |-------|-------------|
-| `terra_classic.domain` | Hyperlane domain ID for Terra Classic (1325) |
+| `terra_classic.domain` | Hyperlane domain ID for Terra Classic (132556) |
 | `terra_classic.chain_id` | Terra Classic chain ID (`columbus-5`) |
 | `terra_classic.rpc` | Terra Classic RPC endpoint |
 | `tokens.<key>.terra_warp.deployed` | `true` if the Terra Classic warp contract is deployed |
@@ -498,7 +498,7 @@ $CLIENT -k $KEY -u $RPC token set-interchain-security-module \
 $CLIENT -k $KEY -u $RPC token igp \
   --program-id $PID set BhNcatUDC2D5JTyeaqrdSukiVFsEHK7e3hVmKMztwefv igp AkeHBbE5JkwVppujCQQ6WuxsVsJtruBAjUo6fDCFp6fF
 
-# Destination gas (Terra Classic domain = 1325)
+# Destination gas (Terra Classic domain = 132556)
 $CLIENT -k $KEY -u $RPC token set-destination-gas \
   --program-id $PID 1325 3000000
 

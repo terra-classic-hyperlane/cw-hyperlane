@@ -52,15 +52,15 @@ Os 13 contratos do core Hyperlane foram deployados na Terra Classic Mainnet (col
 
 | # | Contrato | Função | Endereço |
 |---|----------|--------|----------|
-| 1 | Mailbox | Hub central de mensagens cross-chain | `terra1qeutmjcnwmhmumv4xlzrqmva0m4usdw6lt7mayk7wfw7gftsv6wq2xnxh5` |
+| 1 | Mailbox | Hub central de mensagens cross-chain | `terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9` |
 | 2 | Validator Announce | Registro público dos validators | `terra1jg7904q2305f8qm6ph8jz95uez7undc57wd4dgaf9mvfxcw5j9wq3zdn8c` |
-| 3 | ISM Multisig — Ethereum | Valida mensagens recebidas da rede ETH (domain 1) | `terra16axf5f8pqjz3kap0hmrwhatav2q8yrngn6f9vrzx0ralypzxw47s9tml5u` |
-| 4 | ISM Multisig — BSC | Valida mensagens recebidas da rede BSC (domain 56) | `terra16hqg4napp3vypdvyymzd3sdsc3uewhyctxjng79j67lku27a5r7q4z8lnt` |
-| 5 | ISM Multisig — Solana | Valida mensagens recebidas da rede Solana (domain 1399811149) | `terra180s622shslcldkrl93ksaddhnfvvclejvgt70xsz8flphwzc3fcqkn7m09` |
-| 6 | ISM Routing | Roteia mensagens para o ISM correto por origem | `terra1gd3re2pmv34ruwlmmhq80qtp6xqt8htgjqdvsj6clzh0wef6s7mqt6p5ka` |
-| 7 | Hook Merkle | Gera prova criptográfica de cada mensagem enviada | `terra1edwd2rhpzhl73uyqf24cc8zp0j5leuc72m7dxtmgfcgvpypj6afsryacf5` |
-| 8 | IGP | Cobra e gerencia o gas para execução no destino | `terra1f6n8asv4ecqjjhvf57cprgcjwzd4y2mncpp6gcc95gd22mljnrcs3gcgkk` |
-| 9 | IGP Oracle | Fornece cotação LUNC/ETH/BNB/SOL para cálculo de fees | `terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2` |
+| 3 | ISM Multisig — Ethereum | Valida mensagens recebidas da rede ETH (domain 1) | `terra187rzjc3dznfxqtqqrwh796e5q4khmvp5av8mka6zhp98zjfk2z2qneldar` |
+| 4 | ISM Multisig — BSC | Valida mensagens recebidas da rede BSC (domain 56) | `terra1nqj7qlnt2sty0dgnu3ss5z4u6wr7hjfea7cn6wpwjt2uymts8ucsmuj9xw` |
+| 5 | ISM Multisig — Solana | Valida mensagens recebidas da rede Solana (domain 1399811149) | `terra10s3p36tjek8amhlc4krxpzln6g8n0qy9jq82wyda434l3rv89wfsucl50t` |
+| 6 | ISM Routing | Roteia mensagens para o ISM correto por origem | `terra1uhzzvt9x3u8hjnkp695hklexx2uywjvfqv454d93ds92sgtpwk7qrpxdg0` |
+| 7 | Hook Merkle | Gera prova criptográfica de cada mensagem enviada | `terra183lq6yqp8km3p34cxgk6k3u78uy4plqahey6rne7n9gy98delr9qyp0n2p` |
+| 8 | IGP | Cobra e gerencia o gas para execução no destino | `terra1taunhg629rssf3g939nqr0h594q5mssrzdj5lkx2hygmxmh72ghqeqqnvz` |
+| 9 | IGP Oracle | Fornece cotação LUNC/ETH/BNB/SOL para cálculo de fees | `terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d` |
 | 10 | Hook Aggregate #1 | Agrega Hook Merkle + IGP (fluxo padrão) | `terra1vtxef5jzax9uaktygay7nnl48akxekt94yg6ak4xa7unawp3du2qevkgde` |
 | 11 | Hook Pausable | Permite pausar emergencialmente o envio de mensagens | `terra162q4qzmdy5rutkpkxwqw5xlw0vdjg8c7gw0njnk6ma2s8j52arhsgv3u29` |
 | 12 | Hook Fee | Cobra taxa fixa por mensagem enviada | `terra1w8923j0nfvahxcsllqqslwqc0wj22673tf25exwx2vm8dag2a86sk2mdv0` |

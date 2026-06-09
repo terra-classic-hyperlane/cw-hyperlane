@@ -268,11 +268,14 @@ terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n
 
 ## 3️⃣ Contract Instantiation
 
-### Script: `CustomInstantiateWasm-mainnet.ts`
+### Script: `CustomInstantiateWasm-mainnet-v2.ts`
 
-This script instantiates **all 13 contracts** AND performs the post-instantiation configuration (mailbox hooks + IGP oracle) in a single run.
+> **v2 — 2026-06-09:** Re-deployed with **domainId 132556** (replaces 1325 which conflicted with testnet).
+> Original deploy (2026-06-03, domain 1325) is preserved in `CustomInstantiateWasm-mainnet.ts` for reference.
 
-**File location:** `terraclassic/CustomInstantiateWasm-mainnet.ts`
+This script instantiates **all 13 contracts** AND performs the post-instantiation configuration (ISM validators + mailbox hooks + IGP oracle) in a single run.
+
+**File location:** `terraclassic/CustomInstantiateWasm-mainnet-v2.ts`
 
 > **Important:** Always run from the **project root** (`/home/lunc/tc-cw-hyperlane`).
 
@@ -280,7 +283,7 @@ This script instantiates **all 13 contracts** AND performs the post-instantiatio
 
 ```bash
 cd /home/lunc/tc-cw-hyperlane
-PRIVATE_KEY="0xYOUR_HEX_KEY" yarn tsx terraclassic/CustomInstantiateWasm-mainnet.ts
+PRIVATE_KEY="0xYOUR_HEX_KEY" yarn tsx terraclassic/CustomInstantiateWasm-mainnet-v2.ts
 ```
 
 #### What the script does (17 steps)
@@ -293,11 +296,6 @@ PRIVATE_KEY="0xYOUR_HEX_KEY" yarn tsx terraclassic/CustomInstantiateWasm-mainnet
 | 16 | Configure IGP Oracle — gas rates for domains 1/56/1399811149 | Users pay correct LUNC fee |
 
 > All 17 steps run automatically in a single execution. The system is fully ready afterwards.
-
-> ⚠️ **Lesson learned (2026-06-04):** The original instantiation only ran steps 1–13. Steps 14–16
-> were missing, causing: (1) `transfer_remote` to fail with `default_hook not set`, and (2) messages
-> from BSC → TC to get stuck because ISM validators were not configured. Both bugs were discovered
-> during testing and are now fixed in the script.
 
 #### Environment Variables
 
@@ -316,13 +314,13 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 ```json
 {
   "hrp": "terra",
-  "domain": 1325,
+  "domain": 132556,
   "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp"
 }
 ```
 
-**Code ID:** `11371`  
-**Instantiated Address:** ``terra1qeutmjcnwmhmumv4xlzrqmva0m4usdw6lt7mayk7wfw7gftsv6wq2xnxh5``
+**Code ID:** `11371`
+**Instantiated Address:** `terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9`
 
 ---
 
@@ -331,12 +329,12 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 ```json
 {
   "hrp": "terra",
-  "mailbox": "<MAILBOX_ADDRESS>"
+  "mailbox": "terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9"
 }
 ```
 
-**Code ID:** `11372`  
-**Instantiated Address:** ``terra1jg7904q2305f8qm6ph8jz95uez7undc57wd4dgaf9mvfxcw5j9wq3zdn8c``
+**Code ID:** `11372`
+**Instantiated Address:** `terra1gtnmdevekgxpvzej3wfy20e2n335gm3muwj6geduxxa86j3x70cq00asmy`
 
 ---
 
@@ -346,7 +344,7 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 { "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp" }
 ```
 
-**Code ID:** `11374`  
+**Code ID:** `11374`
 **Validators (official mainnet — 6 of 9):**
 - `03c842db86a6a3e524d4a6615390c1ea8e2b9541` — Abacus Works
 - `94438a7de38d4548ae54df5c6010c4ebc5239eae` — DSRV
@@ -358,7 +356,7 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 - `29d783efb698f9a2d3045ef4314af1f5674f52c5` — Substance Labs
 - `36a669703ad0e11a0382b098574903d2084be22c` — Enigma
 
-**Instantiated Address:** ``terra16axf5f8pqjz3kap0hmrwhatav2q8yrngn6f9vrzx0ralypzxw47s9tml5u``
+**Instantiated Address:** `terra187rzjc3dznfxqtqqrwh796e5q4khmvp5av8mka6zhp98zjfk2z2qneldar`
 
 ---
 
@@ -368,7 +366,7 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 { "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp" }
 ```
 
-**Code ID:** `11374`  
+**Code ID:** `11374`
 **Validators (official mainnet — 4 of 6):**
 - `570af9b7b36568c8877eebba6c6727aa9dab7268` — Abacus Works
 - `5450447aee7b544c462c9352bef7cad049b0c2dc` — Zee Prime
@@ -377,7 +375,7 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 - `c67789546a7a983bf06453425231ab71c119153f` — Luganodes
 - `2d74f6edfd08261c927ddb6cb37af57ab89f0eff` — Enigma
 
-**Instantiated Address:** ``terra16hqg4napp3vypdvyymzd3sdsc3uewhyctxjng79j67lku27a5r7q4z8lnt``
+**Instantiated Address:** `terra1nqj7qlnt2sty0dgnu3ss5z4u6wr7hjfea7cn6wpwjt2uymts8ucsmuj9xw`
 
 ---
 
@@ -387,7 +385,7 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 { "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp" }
 ```
 
-**Code ID:** `11374`  
+**Code ID:** `11374`
 **Validators (official mainnet — 3 of 5):**
 - `28464752829b3ea59a497fca0bdff575c534c3ff` — Abacus Works
 - `2b7514a2f77bd86bbf093fe6bb67d8611f51c659` — Luganodes
@@ -395,7 +393,7 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 - `4f977a59fdc2d9e39f6d780a84d5b4add1495a36` — Mitosis
 - `5450447aee7b544c462c9352bef7cad049b0c2dc` — Zee Prime
 
-**Instantiated Address:** ``terra180s622shslcldkrl93ksaddhnfvvclejvgt70xsz8flphwzc3fcqkn7m09``
+**Instantiated Address:** `terra10s3p36tjek8amhlc4krxpzln6g8n0qy9jq82wyda434l3rv89wfsucl50t`
 
 ---
 
@@ -405,26 +403,26 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 {
   "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
   "isms": [
-    { "domain": 1,          "address": "terra16axf5f8pqjz3kap0hmrwhatav2q8yrngn6f9vrzx0ralypzxw47s9tml5u" },
-    { "domain": 56,         "address": "terra16hqg4napp3vypdvyymzd3sdsc3uewhyctxjng79j67lku27a5r7q4z8lnt" },
-    { "domain": 1399811149, "address": "terra180s622shslcldkrl93ksaddhnfvvclejvgt70xsz8flphwzc3fcqkn7m09" }
+    { "domain": 1,          "address": "terra187rzjc3dznfxqtqqrwh796e5q4khmvp5av8mka6zhp98zjfk2z2qneldar" },
+    { "domain": 56,         "address": "terra1nqj7qlnt2sty0dgnu3ss5z4u6wr7hjfea7cn6wpwjt2uymts8ucsmuj9xw" },
+    { "domain": 1399811149, "address": "terra10s3p36tjek8amhlc4krxpzln6g8n0qy9jq82wyda434l3rv89wfsucl50t" }
   ]
 }
 ```
 
-**Code ID:** `11376`  
-**Instantiated Address:** ``terra1gd3re2pmv34ruwlmmhq80qtp6xqt8htgjqdvsj6clzh0wef6s7mqt6p5ka``
+**Code ID:** `11376`
+**Instantiated Address:** `terra1uhzzvt9x3u8hjnkp695hklexx2uywjvfqv454d93ds92sgtpwk7qrpxdg0`
 
 ---
 
 #### 7. 🌳 HOOK MERKLE
 
 ```json
-{ "mailbox": "<MAILBOX_ADDRESS>" }
+{ "mailbox": "terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9" }
 ```
 
-**Code ID:** `11380`  
-**Instantiated Address:** ``terra1edwd2rhpzhl73uyqf24cc8zp0j5leuc72m7dxtmgfcgvpypj6afsryacf5``
+**Code ID:** `11380`
+**Instantiated Address:** `terra183lq6yqp8km3p34cxgk6k3u78uy4plqahey6rne7n9gy98delr9qyp0n2p`
 
 ---
 
@@ -440,8 +438,8 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 }
 ```
 
-**Code ID:** `11377`  
-**Instantiated Address:** ``terra1f6n8asv4ecqjjhvf57cprgcjwzd4y2mncpp6gcc95gd22mljnrcs3gcgkk``
+**Code ID:** `11377`
+**Instantiated Address:** `terra1taunhg629rssf3g939nqr0h594q5mssrzdj5lkx2hygmxmh72ghqeqqnvz`
 
 ---
 
@@ -451,10 +449,10 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 { "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp" }
 ```
 
-**Code ID:** `11388`  
-**Instantiated Address:** ``terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2``
+**Code ID:** `11388`
+**Instantiated Address:** `terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d`
 
-> Gas prices and exchange rates for domains 1 (ETH), 56 (BSC), and 1399811149 (Solana) will be configured via governance after deployment.
+> Gas prices configured automatically by the script (domains 1/56/1399811149).
 
 ---
 
@@ -467,8 +465,8 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 }
 ```
 
-**Code ID:** `11378`  
-**Instantiated Address:** ``terra1vtxef5jzax9uaktygay7nnl48akxekt94yg6ak4xa7unawp3du2qevkgde``
+**Code ID:** `11378`
+**Instantiated Address:** `terra1026v947k2jn58t09ppw003xujj92vp3lxv0fg3xk8ccz42r8d2sqvnmvel`
 
 ---
 
@@ -478,8 +476,8 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 { "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp", "paused": false }
 ```
 
-**Code ID:** `11381`  
-**Instantiated Address:** ``terra162q4qzmdy5rutkpkxwqw5xlw0vdjg8c7gw0njnk6ma2s8j52arhsgv3u29``
+**Code ID:** `11381`
+**Instantiated Address:** `terra1x8s9qtw9355pfckywkns4e8f9zyfjaf8w5e5s8vh28ph5gzwwlks9tjcnf`
 
 ---
 
@@ -492,8 +490,8 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 }
 ```
 
-**Code ID:** `11379`  
-**Instantiated Address:** ``terra1w8923j0nfvahxcsllqqslwqc0wj22673tf25exwx2vm8dag2a86sk2mdv0``
+**Code ID:** `11379`
+**Instantiated Address:** `terra1sud5xyknr93wmxem6kxdfd0vxcju47wuh7zdm5uecavrm36w669sp7j8ag`
 
 ---
 
@@ -506,14 +504,14 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 }
 ```
 
-**Code ID:** `11378`  
-**Instantiated Address:** ``terra1n5wfxj38y5ejkh9kkz4ud7t6gqqshzhhhcu97j2j0kfa4359za8sdsqexu``
+**Code ID:** `11378`
+**Instantiated Address:** `terra1xmdd7yhu3qdlfhrcku8srfvtday6efymj54gqz0daxsmn8pvqygq0nxq04`
 
 ---
 
 #### 14. ⚙️ MAILBOX CONFIGURATION
 
-After instantiation, configure via governance proposal:
+After instantiation, configured automatically by the script:
 - **Default ISM**: ISM Routing address
 - **Default Hook**: Hook Aggregate #1 (Merkle + IGP)
 - **Required Hook**: Hook Aggregate #2 (Pausable + Fee)
@@ -567,13 +565,9 @@ terrad tx gov submit-proposal proposal_mainnet.json \
   --gas auto --gas-adjustment 1.5 --gas-prices 28.5uluna -y
 ```
 
-> **Note on current state (2026-06-04):** Messages 4–8 (IGP oracle + Mailbox hooks) were already
-> executed directly by the owner. The critical pending items are **Messages 1–3** (ISM validators),
-> which are required for EVM/Solana → Terra Classic inbound messages to be validated.
-
 ### Governance Proposal Messages (8 total)
 
-#### MESSAGE 1: ISM Multisig Validators — Ethereum (Domain 1) ✅ *configured 2026-06-04*
+#### MESSAGE 1: ISM Multisig Validators — Ethereum (Domain 1) ✅ *configured 2026-06-09*
 
 ```json
 {
@@ -599,7 +593,7 @@ terrad tx gov submit-proposal proposal_mainnet.json \
 
 ---
 
-#### MESSAGE 2: ISM Multisig Validators — BSC (Domain 56) ✅ *configured 2026-06-04*
+#### MESSAGE 2: ISM Multisig Validators — BSC (Domain 56) ✅ *configured 2026-06-09*
 
 ```json
 {
@@ -620,7 +614,7 @@ terrad tx gov submit-proposal proposal_mainnet.json \
 
 ---
 
-#### MESSAGE 3: ISM Multisig Validators — Solana (Domain 1399811149) ✅ *configured 2026-06-04*
+#### MESSAGE 3: ISM Multisig Validators — Solana (Domain 1399811149) ✅ *configured 2026-06-09*
 
 ```json
 {
@@ -659,13 +653,13 @@ terrad tx gov submit-proposal proposal_mainnet.json \
 > Formula: `token_exchange_rate = (LUNC_USD / NATIVE_USD) * 1e12`
 > - Solana uses `gas_price=1` (lamport model) with `exchange_rate = (LUNC_USD / SOL_USD) * 1e15`
 
-**Current configured values (2026-06-04):**
+**Current configured values (2026-06-09):**
 
 | Domain | Chain | exchange_rate | gas_price | Fee (300k gas) | Configured |
 |---|---|---|---|---|---|
-| 1 | Ethereum | 37,611 | 10000000000 (10 gwei) | ~113 LUNC ($0.0077) | ✅ 2026-06-04 |
-| 56 | BSC mainnet | 110,531 | 3000000000 (3 gwei) | ~99 LUNC ($0.0068) | ✅ 2026-06-04 |
-| 1399811149 | Solana | 38,300,155,301,425 | 1 (lamport) | ~11 LUNC ($0.0008) | ✅ 2026-06-04 |
+| 1 | Ethereum | 37,611 | 10000000000 (10 gwei) | ~113 LUNC ($0.0077) | ✅ 2026-06-09 |
+| 56 | BSC mainnet | 110,531 | 3000000000 (3 gwei) | ~99 LUNC ($0.0068) | ✅ 2026-06-09 |
+| 1399811149 | Solana | 38,300,155,301,425 | 1 (lamport) | ~11 LUNC ($0.0008) | ✅ 2026-06-09 |
 
 Prices used: LUNC=$0.00006782, ETH=$1803.18, BNB=$617.38, SOL=$70.83
 
@@ -678,9 +672,9 @@ Prices used: LUNC=$0.00006782, ETH=$1803.18, BNB=$617.38, SOL=$70.83
   "router": {
     "set_routes": {
       "set": [
-        { "domain": 1,          "route": "terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2" },
-        { "domain": 56,         "route": "terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2" },
-        { "domain": 1399811149, "route": "terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2" }
+        { "domain": 1,          "route": "terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d" },
+        { "domain": 56,         "route": "terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d" },
+        { "domain": 1399811149, "route": "terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d" }
       ]
     }
   }
@@ -689,28 +683,28 @@ Prices used: LUNC=$0.00006782, ETH=$1803.18, BNB=$617.38, SOL=$70.83
 
 ---
 
-#### MESSAGE 6: Set Default ISM in Mailbox ✅ *already configured 2026-06-04*
+#### MESSAGE 6: Set Default ISM in Mailbox ✅ *already configured 2026-06-09*
 
 ```json
-{ "set_default_ism": { "ism": "terra1gd3re2pmv34ruwlmmhq80qtp6xqt8htgjqdvsj6clzh0wef6s7mqt6p5ka" } }
+{ "set_default_ism": { "ism": "terra1uhzzvt9x3u8hjnkp695hklexx2uywjvfqv454d93ds92sgtpwk7qrpxdg0" } }
 ```
 
 ---
 
-#### MESSAGE 7: Set Default Hook in Mailbox ✅ *already configured 2026-06-04*
+#### MESSAGE 7: Set Default Hook in Mailbox ✅ *already configured 2026-06-09*
 
 ```json
-{ "set_default_hook": { "hook": "terra1vtxef5jzax9uaktygay7nnl48akxekt94yg6ak4xa7unawp3du2qevkgde" } }
+{ "set_default_hook": { "hook": "terra1026v947k2jn58t09ppw003xujj92vp3lxv0fg3xk8ccz42r8d2sqvnmvel" } }
 ```
 
 > Without this message, `transfer_remote` fails with `panicked at state.rs: default_hook not set`.
 
 ---
 
-#### MESSAGE 8: Set Required Hook in Mailbox ✅ *already configured 2026-06-04*
+#### MESSAGE 8: Set Required Hook in Mailbox ✅ *already configured 2026-06-09*
 
 ```json
-{ "set_required_hook": { "hook": "terra1n5wfxj38y5ejkh9kkz4ud7t6gqqshzhhhcu97j2j0kfa4359za8sdsqexu" } }
+{ "set_required_hook": { "hook": "terra1xmdd7yhu3qdlfhrcku8srfvtday6efymj54gqz0daxsmn8pvqygq0nxq04" } }
 ```
 
 > The required hook charges **0.283215 LUNC** per outbound message (protocol fee).
@@ -764,7 +758,7 @@ Where:
   gas_price_dest = destination gas price in wei (e.g. 3,000,000,000 = 3 gwei for BSC)
   exchange_rate  = (LUNC_USD / NATIVE_USD) × 1e12
 
-Example (BSC mainnet — 2026-06-04):
+Example (BSC mainnet — 2026-06-09):
   LUNC = $0.00006824, BNB = $617.38
   exchange_rate = (0.00006824 / 617.38) × 1e12 = 110,531
   fee = 300,000 × 3,000,000,000 × 110,531 / 1e12 = 9,948 LUNC ≈ $0.68
@@ -794,88 +788,11 @@ DOMAINS="1,56,1399811149" ./update-igp-oracle.sh
 # → generates log/oracle-update-proposal-TIMESTAMP.json
 ```
 
-### Manual update via Node.js (without the script)
-
-```javascript
-// Set oracle data for ETH mainnet (domain 1)
-// LUNC=$0.00006824, ETH=$3500 → exchange_rate = (0.00006824/3500)*1e12 = 19491
-const result = await client.execute(senderAddress, ORACLE, {
-    set_remote_gas_data_configs: {
-        configs: [
-            { remote_domain: 1,          token_exchange_rate: "19491",   gas_price: "10000000000" },
-            { remote_domain: 56,         token_exchange_rate: "110531",  gas_price: "3000000000"  },
-            { remote_domain: 1399811149, token_exchange_rate: "454933",  gas_price: "1"           }
-        ]
-    }
-}, 'auto', 'update IGP oracle');
-
-// Link domains to oracle in IGP contract
-await client.execute(senderAddress, IGP, {
-    router: {
-        set_routes: {
-            set: [
-                { domain: 1,          route: ORACLE },
-                { domain: 56,         route: ORACLE },
-                { domain: 1399811149, route: ORACLE }
-            ]
-        }
-    }
-}, 'auto', 'set IGP routes');
-```
-
-### Verify oracle state
-
-```bash
-# Query via Node.js
-node -e "
-const path=require('path'), nm=path.join('/home/lunc/tc-cw-hyperlane','node_modules');
-const {CosmWasmClient}=require(path.join(nm,'@cosmjs/cosmwasm-stargate'));
-(async()=>{
-    const c=await CosmWasmClient.connect('https://rpc.terra-classic.hexxagon.io');
-    const oracle='terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2';
-    for (const d of [1,56,1399811149]) {
-        try {
-            const r=await c.queryContractSmart(oracle,{oracle:{get_exchange_rate_and_gas_price:{dest_domain:d}}});
-            console.log('domain '+d+':', r);
-        } catch(e) { console.log('domain '+d+': NOT CONFIGURED'); }
-    }
-})();" 2>/dev/null
-
-# Simulate fee for 300k gas on BSC mainnet
-node -e "
-const path=require('path'), nm=path.join('/home/lunc/tc-cw-hyperlane','node_modules');
-const {CosmWasmClient}=require(path.join(nm,'@cosmjs/cosmwasm-stargate'));
-(async()=>{
-    const c=await CosmWasmClient.connect('https://rpc.terra-classic.hexxagon.io');
-    const igp='terra1f6n8asv4ecqjjhvf57cprgcjwzd4y2mncpp6gcc95gd22mljnrcs3gcgkk';
-    const r=await c.queryContractSmart(igp,{igp:{quote_gas_payment:{dest_domain:56,gas_amount:'300000'}}});
-    const lunc=r.gas_needed/1e6;
-    console.log('Fee (300k gas, BSC):', r.gas_needed, 'uluna =', lunc.toFixed(2), 'LUNC');
-})();" 2>/dev/null
-```
-
-### Governance proposal for oracle update
-
-When ownership is transferred to governance (`terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n`), use the governance mode:
-
-```bash
-MODE=governance LUNC_USD=0.0001 ETH_USD=3500 BNB_USD=650 SOL_USD=160 \
-  DOMAINS="1,56,1399811149" ./update-igp-oracle.sh
-```
-
-Then submit the generated JSON:
-```bash
-terrad tx gov submit-proposal log/oracle-update-proposal-TIMESTAMP.json \
-  --from YOUR_KEY --chain-id columbus-5 \
-  --node https://rpc.terra-classic.hexxagon.io:443 \
-  --gas auto --gas-adjustment 1.5 --gas-prices 28.5uluna -y
-```
-
 ### Exchange rate reference table
 
 | Date | LUNC | ETH | BNB | SOL | rate_ETH | rate_BSC | rate_SOL |
 |---|---|---|---|---|---|---|---|
-| 2026-06-04 | $0.00006782 | $1803.18 | $617.38 | $70.83 | 37,611 | 110,531 | 38,300,155,301,425 |
+| 2026-06-09 | $0.00006782 | $1803.18 | $617.38 | $70.83 | 37,611 | 110,531 | 38,300,155,301,425 |
 | _next update_ | | | | | | | |
 
 > Update this table after each oracle configuration change.
@@ -891,38 +808,48 @@ After the proposal passes, verify all configurations:
 LCD="https://lcd.terra-classic.hexxagon.io"
 
 # ISM Multisig ETH — validators (domain 1)
-terrad query wasm contract-state smart terra16axf5f8pqjz3kap0hmrwhatav2q8yrngn6f9vrzx0ralypzxw47s9tml5u \
+terrad query wasm contract-state smart terra187rzjc3dznfxqtqqrwh796e5q4khmvp5av8mka6zhp98zjfk2z2qneldar \
   '{"multisig_ism":{"enrolled_validators":{"domain":1}}}' \
   --node https://rpc.terra-classic.hexxagon.io:443 --chain-id columbus-5
 
 # ISM Multisig BSC — validators (domain 56)
-terrad query wasm contract-state smart terra16hqg4napp3vypdvyymzd3sdsc3uewhyctxjng79j67lku27a5r7q4z8lnt \
+terrad query wasm contract-state smart terra1nqj7qlnt2sty0dgnu3ss5z4u6wr7hjfea7cn6wpwjt2uymts8ucsmuj9xw \
   '{"multisig_ism":{"enrolled_validators":{"domain":56}}}' \
   --node https://rpc.terra-classic.hexxagon.io:443 --chain-id columbus-5
 
 # ISM Multisig Solana — validators (domain 1399811149)
-terrad query wasm contract-state smart terra180s622shslcldkrl93ksaddhnfvvclejvgt70xsz8flphwzc3fcqkn7m09 \
+terrad query wasm contract-state smart terra10s3p36tjek8amhlc4krxpzln6g8n0qy9jq82wyda434l3rv89wfsucl50t \
   '{"multisig_ism":{"enrolled_validators":{"domain":1399811149}}}' \
   --node https://rpc.terra-classic.hexxagon.io:443 --chain-id columbus-5
 
 # IGP Oracle — gas price BSC
-terrad query wasm contract-state smart terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2 \
+terrad query wasm contract-state smart terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d \
   '{"oracle":{"get_exchange_rate_and_gas_price":{"dest_domain":56}}}' \
   --node https://rpc.terra-classic.hexxagon.io:443 --chain-id columbus-5
 
+# Mailbox — local domain (must return 132556)
+terrad query wasm contract-state smart terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9 \
+  '{"mailbox":{"local_domain":{}}}' \
+  --node https://rpc.terra-classic.hexxagon.io:443 --chain-id columbus-5
+
 # Mailbox — default ISM
-terrad query wasm contract-state smart terra1qeutmjcnwmhmumv4xlzrqmva0m4usdw6lt7mayk7wfw7gftsv6wq2xnxh5 \
+terrad query wasm contract-state smart terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9 \
   '{"mailbox":{"default_ism":{}}}' \
   --node https://rpc.terra-classic.hexxagon.io:443 --chain-id columbus-5
 
 # Mailbox — default hook
-terrad query wasm contract-state smart terra1qeutmjcnwmhmumv4xlzrqmva0m4usdw6lt7mayk7wfw7gftsv6wq2xnxh5 \
+terrad query wasm contract-state smart terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9 \
   '{"mailbox":{"default_hook":{}}}' \
   --node https://rpc.terra-classic.hexxagon.io:443 --chain-id columbus-5
 
 # Mailbox — required hook
-terrad query wasm contract-state smart terra1qeutmjcnwmhmumv4xlzrqmva0m4usdw6lt7mayk7wfw7gftsv6wq2xnxh5 \
+terrad query wasm contract-state smart terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9 \
   '{"mailbox":{"required_hook":{}}}' \
+  --node https://rpc.terra-classic.hexxagon.io:443 --chain-id columbus-5
+
+# Mailbox — nonce (messages dispatched)
+terrad query wasm contract-state smart terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9 \
+  '{"mailbox":{"nonce":{}}}' \
   --node https://rpc.terra-classic.hexxagon.io:443 --chain-id columbus-5
 ```
 
@@ -930,49 +857,51 @@ terrad query wasm contract-state smart terra1qeutmjcnwmhmumv4xlzrqmva0m4usdw6lt7
 
 ## 7️⃣ Contract Addresses and Hexed
 
-> **Status:** ✅ Instantiated on 2026-06-03 — columbus-5 mainnet
+> **Status:** ✅ v2 Instantiated on 2026-06-09 — columbus-5 mainnet — **domain 132556**
 
 | Contract | Address (Bech32) | Hexed (32 bytes) |
 |----------|-----------------|------------------|
-| **Mailbox** | `terra1qeutmjcnwmhmumv4xlzrqmva0m4usdw6lt7mayk7wfw7gftsv6wq2xnxh5` | `0x0678bdcb1376efbe6d9537c4306d9d7eebc835dafafdbe92de725de42570669c` |
-| **Validator Announce** | `terra1jg7904q2305f8qm6ph8jz95uez7undc57wd4dgaf9mvfxcw5j9wq3zdn8c` | `0x923c57d40a8be893837a0dcf21169cc8bdc9b714f39b56a3a92ed89361d4915c` |
-| **ISM Multisig ETH** | `terra16axf5f8pqjz3kap0hmrwhatav2q8yrngn6f9vrzx0ralypzxw47s9tml5u` | `0xd74c9a24e104851b742fbec6ebf57d6280720e689e92560c4678fbf20446757d` |
-| **ISM Multisig BSC** | `terra16hqg4napp3vypdvyymzd3sdsc3uewhyctxjng79j67lku27a5r7q4z8lnt` | `0xd5c08acfa10c5840b58426c4d8c1b0c479975c9859a53478b2d7bf6e2bdda0fc` |
-| **ISM Multisig Solana** | `terra180s622shslcldkrl93ksaddhnfvvclejvgt70xsz8flphwzc3fcqkn7m09` | `0x3be1a52a1787f1f6d87f2c6d0eb5b79a58cc7f326217e79a023a7e1bb8588a70` |
-| **ISM Routing** | `terra1gd3re2pmv34ruwlmmhq80qtp6xqt8htgjqdvsj6clzh0wef6s7mqt6p5ka` | `0x43623ca83b646a3e3bfbddc0778161d180b3dd68901ac84b58f8aef7653a87b6` |
-| **Hook Merkle** | `terra1edwd2rhpzhl73uyqf24cc8zp0j5leuc72m7dxtmgfcgvpypj6afsryacf5` | `0xcb5cd50ee115ffe8f0804aab8c1c417ca9fcf31e56fcd32f684e10c09032d753` |
-| **IGP** | `terra1f6n8asv4ecqjjhvf57cprgcjwzd4y2mncpp6gcc95gd22mljnrcs3gcgkk` | `0x4ea67ec195ce01295d89a7b011a312709b522b73c043a46305a21aa56ff298f1` |
-| **IGP Oracle** | `terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2` | `0xa90354b2462fffc841a4f22e1e451010da91bc1165220c12bfb185053b146cd0` |
-| **Hook Aggregate 1 (default)** | `terra1vtxef5jzax9uaktygay7nnl48akxekt94yg6ak4xa7unawp3du2qevkgde` | `0x62cd94d242e98bced9644749e9cff53f6c6cd965a911aedaa6efb93eb8316f14` |
-| **Hook Pausable** | `terra162q4qzmdy5rutkpkxwqw5xlw0vdjg8c7gw0njnk6ma2s8j52arhsgv3u29` | `0xd281500b6d2507c5d8363380ea1bee7b1b241f1e439f394edadf5503ca8ae8ef` |
-| **Hook Fee** | `terra1w8923j0nfvahxcsllqqslwqc0wj22673tf25exwx2vm8dag2a86sk2mdv0` | `0x71caa8c9f34b3b73621ff8010fb8187ba4a56bd15a554c99c6533676f50ae9f5` |
-| **Hook Aggregate 2 (required)** | `terra1n5wfxj38y5ejkh9kkz4ud7t6gqqshzhhhcu97j2j0kfa4359za8sdsqexu` | `0x9d1c934a2725332b5cb6b0abc6f97a40010b8af7be385f49527d93dac685174f` |
+| **Mailbox** | `terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9` | `0x4b911a4e9984913279a709a623f2120ba0c0a3967acd026b1301894398a96fed` |
+| **Validator Announce** | `terra1gtnmdevekgxpvzej3wfy20e2n335gm3muwj6geduxxa86j3x70cq00asmy` | `0x42e7b6e599b20c160b328b92453f2a9c63446e3be3a5a465bc31ba7d4a26f3f0` |
+| **ISM Multisig ETH** | `terra187rzjc3dznfxqtqqrwh796e5q4khmvp5av8mka6zhp98zjfk2z2qneldar` | `0x3f8629622d14d2602c001bafe2eb34056d7db034eb0fbb7742b84a7149365094` |
+| **ISM Multisig BSC** | `terra1nqj7qlnt2sty0dgnu3ss5z4u6wr7hjfea7cn6wpwjt2uymts8ucsmuj9xw` | `0x9825e07e6b541647b513e4610a0abcd387ebc939efb13d382e92d5c26d703f31` |
+| **ISM Multisig Solana** | `terra10s3p36tjek8amhlc4krxpzln6g8n0qy9jq82wyda434l3rv89wfsucl50t` | `0x7c2218e972cd8fdddff8ad86608bf3d20f378085900ea711bdac6bf88d872b93` |
+| **ISM Routing** | `terra1uhzzvt9x3u8hjnkp695hklexx2uywjvfqv454d93ds92sgtpwk7qrpxdg0` | `0xe5c4262ca68f0f794ec1d1697b7f2632b8474989032b4ab4b16c0aa8216175bc` |
+| **Hook Merkle** | `terra183lq6yqp8km3p34cxgk6k3u78uy4plqahey6rne7n9gy98delr9qyp0n2p` | `0x3c7e0d10013db710c6b8322dab479e3f0950fc1dbe49a1cf3e9950429db9f8ca` |
+| **IGP** | `terra1taunhg629rssf3g939nqr0h594q5mssrzdj5lkx2hygmxmh72ghqeqqnvz` | `0x5f793ba34a28e104c505896601bef42d414dc20313654fd8cab911b36efe522e` |
+| **IGP Oracle** | `terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d` | `0x91cc240ade63614e0861fee7f9d5981692a7d165eada44fc8110c758e1b4cdfd` |
+| **Hook Aggregate 1 (default)** | `terra1026v947k2jn58t09ppw003xujj92vp3lxv0fg3xk8ccz42r8d2sqvnmvel` | `0x7ab4c2d7d654a743ade5085cf7c4dc948aa6063f331e9444d63e302aa8676aa0` |
+| **Hook Pausable** | `terra1x8s9qtw9355pfckywkns4e8f9zyfjaf8w5e5s8vh28ph5gzwwlks9tjcnf` | `0x31e0502dc58d2814e2c475a70ae4e928889975277533481d9751c37a204e77ed` |
+| **Hook Fee** | `terra1sud5xyknr93wmxem6kxdfd0vxcju47wuh7zdm5uecavrm36w669sp7j8ag` | `0x871b4312d31962ed9b3bd58cd4b5ec3625caf9dcbf84ddd399c7583dc74ed68b` |
+| **Hook Aggregate 2 (required)** | `terra1xmdd7yhu3qdlfhrcku8srfvtday6efymj54gqz0daxsmn8pvqygq0nxq04` | `0x36dadf12fc881bf4dc78b70f01a58b6f49aca49b952a8009ede9a1b99c2c0110` |
 
-### For Relayer
+### For Relayer / Agent Config
 
 ```yaml
-mailbox: "0x0678bdcb1376efbe6d9537c4306d9d7eebc835dafafdbe92de725de42570669c"
-validatorAnnounce: "0x923c57d40a8be893837a0dcf21169cc8bdc9b714f39b56a3a92ed89361d4915c"
-merkleTreeHook: "0xcb5cd50ee115ffe8f0804aab8c1c417ca9fcf31e56fcd32f684e10c09032d753"
+mailbox: "0x4b911a4e9984913279a709a623f2120ba0c0a3967acd026b1301894398a96fed"
+validatorAnnounce: "0x42e7b6e599b20c160b328b92453f2a9c63446e3be3a5a465bc31ba7d4a26f3f0"
+merkleTreeHook: "0x3c7e0d10013db710c6b8322dab479e3f0950fc1dbe49a1cf3e9950429db9f8ca"
+interchainGasPaymaster: "0x5f793ba34a28e104c505896601bef42d414dc20313654fd8cab911b36efe522e"
+domainId: 132556
 ```
 
 ### Complete JSON
 
 ```json
 {
-  "hpl_mailbox": "terra1qeutmjcnwmhmumv4xlzrqmva0m4usdw6lt7mayk7wfw7gftsv6wq2xnxh5",
-  "hpl_validator_announce": "terra1jg7904q2305f8qm6ph8jz95uez7undc57wd4dgaf9mvfxcw5j9wq3zdn8c",
-  "hpl_ism_multisig_eth": "terra16axf5f8pqjz3kap0hmrwhatav2q8yrngn6f9vrzx0ralypzxw47s9tml5u",
-  "hpl_ism_multisig_bsc": "terra16hqg4napp3vypdvyymzd3sdsc3uewhyctxjng79j67lku27a5r7q4z8lnt",
-  "hpl_ism_multisig_sol": "terra180s622shslcldkrl93ksaddhnfvvclejvgt70xsz8flphwzc3fcqkn7m09",
-  "hpl_ism_routing": "terra1gd3re2pmv34ruwlmmhq80qtp6xqt8htgjqdvsj6clzh0wef6s7mqt6p5ka",
-  "hpl_hook_merkle": "terra1edwd2rhpzhl73uyqf24cc8zp0j5leuc72m7dxtmgfcgvpypj6afsryacf5",
-  "hpl_igp": "terra1f6n8asv4ecqjjhvf57cprgcjwzd4y2mncpp6gcc95gd22mljnrcs3gcgkk",
-  "hpl_igp_oracle": "terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2",
-  "hpl_hook_aggregate_default": "terra1vtxef5jzax9uaktygay7nnl48akxekt94yg6ak4xa7unawp3du2qevkgde",
-  "hpl_hook_pausable": "terra162q4qzmdy5rutkpkxwqw5xlw0vdjg8c7gw0njnk6ma2s8j52arhsgv3u29",
-  "hpl_hook_fee": "terra1w8923j0nfvahxcsllqqslwqc0wj22673tf25exwx2vm8dag2a86sk2mdv0",
-  "hpl_hook_aggregate_required": "terra1n5wfxj38y5ejkh9kkz4ud7t6gqqshzhhhcu97j2j0kfa4359za8sdsqexu"
+  "hpl_mailbox": "terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9",
+  "hpl_validator_announce": "terra1gtnmdevekgxpvzej3wfy20e2n335gm3muwj6geduxxa86j3x70cq00asmy",
+  "hpl_ism_multisig_eth": "terra187rzjc3dznfxqtqqrwh796e5q4khmvp5av8mka6zhp98zjfk2z2qneldar",
+  "hpl_ism_multisig_bsc": "terra1nqj7qlnt2sty0dgnu3ss5z4u6wr7hjfea7cn6wpwjt2uymts8ucsmuj9xw",
+  "hpl_ism_multisig_sol": "terra10s3p36tjek8amhlc4krxpzln6g8n0qy9jq82wyda434l3rv89wfsucl50t",
+  "hpl_ism_routing": "terra1uhzzvt9x3u8hjnkp695hklexx2uywjvfqv454d93ds92sgtpwk7qrpxdg0",
+  "hpl_hook_merkle": "terra183lq6yqp8km3p34cxgk6k3u78uy4plqahey6rne7n9gy98delr9qyp0n2p",
+  "hpl_igp": "terra1taunhg629rssf3g939nqr0h594q5mssrzdj5lkx2hygmxmh72ghqeqqnvz",
+  "hpl_igp_oracle": "terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d",
+  "hpl_hook_aggregate_default": "terra1026v947k2jn58t09ppw003xujj92vp3lxv0fg3xk8ccz42r8d2sqvnmvel",
+  "hpl_hook_pausable": "terra1x8s9qtw9355pfckywkns4e8f9zyfjaf8w5e5s8vh28ph5gzwwlks9tjcnf",
+  "hpl_hook_fee": "terra1sud5xyknr93wmxem6kxdfd0vxcju47wuh7zdm5uecavrm36w669sp7j8ag",
+  "hpl_hook_aggregate_required": "terra1xmdd7yhu3qdlfhrcku8srfvtday6efymj54gqz0daxsmn8pvqygq0nxq04"
 }
 ```
 
@@ -1024,53 +953,54 @@ https://rpc.terraclassic.community
 
 ## ✅ Deployment Checklist
 
-### Upload (✅ Completed)
+### Upload (✅ Completed — 2026-06-03)
 - [x] Contracts uploaded — code IDs 11371–11390
 - [x] SHA-256 hashes verified
 - [x] TX hashes recorded
 
-### Instantiation (✅ Complete — 2026-06-03)
-- [x] Run `CustomInstantiateWasm-mainnet.ts`
-- [x] Save all contract addresses
-- [x] Address table filled in section 6
+### Instantiation v2 (✅ Complete — 2026-06-09) — domain 132556
+- [x] Run `CustomInstantiateWasm-mainnet-v2.ts`
 - [x] All 13 contracts instantiated successfully
+- [x] Address table filled (section 7)
 
 ### Ownership Transfer
 - [ ] Transfer ownership to governance — see [`TRANSFER-OWNERSHIP-TO-GOVERNANCE.md`](./TRANSFER-OWNERSHIP-TO-GOVERNANCE.md)
 
-### IGP Oracle Configuration
-- [x] Domain 1 (Ethereum): exchange_rate=37611, gas_price=10gwei — **2026-06-04**
-- [x] Domain 56 (BSC mainnet): exchange_rate=110531, gas_price=3gwei — **2026-06-04**
-- [x] Domain 1399811149 (Solana): exchange_rate=38300155301425, gas_price=1 — **2026-06-04**
+### IGP Oracle Configuration ✅ (2026-06-09)
+- [x] Domain 1 (Ethereum): exchange_rate=37611, gas_price=10gwei
+- [x] Domain 56 (BSC mainnet): exchange_rate=110531, gas_price=3gwei
+- [x] Domain 1399811149 (Solana): exchange_rate=38300155301425, gas_price=1
 
-### Mailbox Configuration ✅ (done directly 2026-06-04)
+### Mailbox Configuration ✅ (2026-06-09)
 - [x] `set_default_ism`   → ISM Routing
 - [x] `set_default_hook`  → Hook Agg [Merkle + IGP]
 - [x] `set_required_hook` → Hook Agg [Pausable + Fee (0.283215 LUNC)]
 
-### ISM Validators ✅ (configured directly 2026-06-04)
-- [x] ISM Multisig ETH (domain 1): 9 validators, threshold 6 — TX `FAFDD936...`
-- [x] ISM Multisig BSC (domain 56): 6 validators, threshold 4 — TX `E52FB934...`
-- [x] ISM Multisig SOL (domain 1399811149): 5 validators, threshold 3 — TX `D6366E30...`
+### ISM Validators ✅ (2026-06-09)
+- [x] ISM Multisig ETH (domain 1): 9 validators, threshold 6 — TX `2308D53B...`
+- [x] ISM Multisig BSC (domain 56): 6 validators, threshold 4 — TX `B04D610A...`
+- [x] ISM Multisig SOL (domain 1399811149): 5 validators, threshold 3 — TX `9C053296...`
 
-### Configuration via Governance (optional — for re-applying after ownership transfer)
+### Configuration via Governance (for re-applying after ownership transfer)
 - [ ] Run `yarn tsx terraclassic/submit-proposal-mainnet.ts` — generates `proposal_mainnet.json`
 - [ ] Submit and vote when needed after transferring ownership to governance module
 
 ### Post-Deployment
-- [ ] Configure relayer with hexed contract addresses
-- [ ] Configure validators (announce on ValidatorAnnounce per chain)
-- [ ] Test cross-chain message sending (ZTT → BSC mainnet first)
+- [ ] Update relayer agent-config with new addresses ✅ (done — hyperlane-agent/agent-config.json)
+- [ ] Update EVM/Solana warp route configs for new domain 132556
+- [ ] Re-deploy warp routes (new mailbox address)
+- [ ] Test cross-chain message sending
 - [ ] Document final addresses for auditing
 
 ---
 
-**Last updated:** 2026-06-04
+**Last updated:** 2026-06-09
 **Contract Version:** v0.0.7-rc0
 **Chain:** Terra Classic Mainnet (columbus-5)
+**Domain ID:** 132556 (v2 — replaces 1325 which conflicted with testnet)
 **RPC:** https://rpc.terra-classic.hexxagon.io
 **LCD:** https://lcd.terra-classic.hexxagon.io
 **Governance Module:** `terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n`
 **Supported Chains:** Ethereum (Domain 1), BSC (Domain 56), Solana (Domain 1399811149)
 **Upload Status:** ✅ 20 contracts uploaded (code IDs 11371–11390)
-**Instantiation Status:** ✅ Complete — 2026-06-03
+**Instantiation Status:** ✅ Complete v2 — 2026-06-09

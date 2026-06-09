@@ -221,7 +221,7 @@ print(raw.hex().zfill(64))
 ### Query gas fee manually
 
 ```bash
-# Sepolia → Terra Classic (domain 1325)
+# Sepolia → Terra Classic (domain 132556)
 cast call 0xbF43aA4878f5Ad0fcAC12Cd3A835DD3506981048 \
     "quoteGasPayment(uint32)(uint256)" 1325 \
     --rpc-url https://ethereum-sepolia-rpc.publicnode.com
@@ -518,7 +518,7 @@ TRANSFER REMOTE — SEPOLIA → Terra Classic
 Date           : Thu Mar 12 15:30:00 UTC 2026
 Token          : XPTO / XPTO
 Source         : SEPOLIA  (evm, domain 11155111)
-Destination    : Terra Classic  (domain 1325)
+Destination    : Terra Classic  (domain 132556)
 Recipient TC   : terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k
 Recipient b32  : 0000000000000000000000003fc7ee49a59c1041d4a58bc21ef657eb443c8bbb
 Amount         : 1000000

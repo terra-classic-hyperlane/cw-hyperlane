@@ -145,7 +145,7 @@ This is stored on the **warp route program** (not the IGP).
 - Optimizing gas costs (reducing the amount if messages consistently use less)
 
 **Input:**
-- Domain ID (Terra Classic = `1325`)
+- Domain ID (Terra Classic = 132556)
 - Gas amount (e.g., `3000000` = 3 million gas units)
 
 **Typical value:** `3000000` for Terra Classic
@@ -167,7 +167,7 @@ This is configured on the **IGP program** directly, not on the warp route.
 - Messages are being over- or under-charged
 
 **Inputs:**
-- Remote domain (Terra Classic = `1325`)
+- Remote domain (Terra Classic = 132556)
 - Token exchange rate (integer, e.g., `1000000000000000000` = 1.0 in 18-decimal format)
 - Gas price (in the remote chain's native token, e.g., `28325000000` for Terra Classic)
 - Token decimals (18 for LUNC, 9 for SOL)
@@ -198,7 +198,7 @@ message to a specific domain. Only applies when using an **Overhead IGP**.
 - Terra Classic executions consistently run over/under the oracle estimate
 
 **Inputs:**
-- Remote domain (Terra Classic = `1325`)
+- Remote domain (Terra Classic = 132556)
 - Gas overhead amount (e.g., `200000`)
 
 **Note:** This also uses the environments directory system in the monorepo.
@@ -216,7 +216,7 @@ warp program. This is the Solana → Terra Classic directional link.
 - Initial setup if enroll was skipped during deploy
 
 **Inputs:**
-- Remote domain (Terra Classic = `1325`)
+- Remote domain (Terra Classic = 132556)
 - Remote router address in hex (0x format), e.g.:
   `0xdd2cbc22fdfb1ebfc9e2119565eb87eb67c87dcdad4bbfd29ceee9e83f38f921`
 
@@ -268,7 +268,7 @@ $CLIENT -k $KEY -u $RPC igp query \
 ```bash
 $CLIENT -k $KEY -u $RPC multisig-ism-message-id query \
   --program-id LwNfVYMDzAe5dCJgA5CipTZcT34Eyf74zLr81K91jxk \
-  --domains 1325
+  --domains 132556
 ```
 
 ### Update ISM
@@ -308,7 +308,7 @@ $CLIENT -k $KEY -u $RPC igp gas-oracle-config \
   --environment $ENV \
   --environments-dir $ENV_DIR \
   --chain-name solanamainnet \
-  --remote-domain 1325 \
+  --remote-domain 13255656 \
   set \
   --token-exchange-rate 1000000000000000000 \
   --gas-price 28325000000 \
@@ -321,7 +321,7 @@ $CLIENT -k $KEY -u $RPC igp destination-gas-overhead \
   --environment $ENV \
   --environments-dir $ENV_DIR \
   --chain-name solanamainnet \
-  --remote-domain 1325 \
+  --remote-domain 13255656 \
   set \
   --gas-overhead 200000
 ```
@@ -386,7 +386,7 @@ use `multisig-ism-message-id set-validators-and-threshold` directly on the ISM p
 ```bash
 $CLIENT -k $KEY -u $RPC multisig-ism-message-id set-validators-and-threshold \
   --program-id LwNfVYMDzAe5dCJgA5CipTZcT34Eyf74zLr81K91jxk \
-  --domain 1325 \
+  --domain 132556 \
   --validators <VALIDATOR_PUBKEY_1>,<VALIDATOR_PUBKEY_2> \
   --threshold 1
 ```

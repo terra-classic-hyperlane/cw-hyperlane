@@ -38,8 +38,8 @@ LOG_FILE="$LOG_DIR/transfer-remote-to-terra.log"
 EVM_CFG="$SCRIPT_DIR/warp-evm-config.json"
 SOL_CFG="$SCRIPT_DIR/warp-sealevel-config.json"
 
-# Terra Classic constants (testnet rebel-2 = 13253 | mainnet columbus-5 = 1325)
-TC_DOMAIN=13253
+# Terra Classic constants (testnet rebel-2 = 1325 | mainnet columbus-5 = 1325)
+TC_DOMAIN=1325
 SEALEVEL_CLIENT="/home/lunc/hyperlane-monorepo/rust/sealevel/target/debug/hyperlane-sealevel-client"
 
 # ─── Banner ───────────────────────────────────────────────────────────────────

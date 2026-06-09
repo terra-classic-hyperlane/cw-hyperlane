@@ -68,7 +68,7 @@ hpl_warp_cw20 / hpl_warp_native               HypERC20 (synthetic)
   └─ locks/releases collateral                  └─ mints/burns synthetic
 
 hpl_mailbox (dispatch/process)                Mailbox (dispatch/process)
-  └─ domain 1325                                └─ domain 56
+  └─ domain 132556                               └─ domain 56
 
 hpl_hook_aggregate                            AggregationHook
   ├─ hpl_hook_merkle                            ├─ MerkleTreeHook (validator signs)
@@ -103,7 +103,7 @@ Terra Classic side (payment in LUNC):        EVM side (payment in BNB/ETH):
 hpl_igp_oracle (CosmWasm)                    TerraClassicOracle.sol (Solidity)
   └─ owner: terra1run9...                      └─ owner: 0x8f085bAD...
   └─ set_remote_gas_data_configs               └─ setRemoteGasData()
-  └─ domains: 1 (ETH), 56 (BSC), SOL           └─ domain: 1325 (Terra Classic)
+  └─ domains: 1 (ETH), 56 (BSC), SOL           └─ domain: 132556 (Terra Classic)
 
 Used when: sending TC → EVM/Solana            Used when: sending EVM → TC
 User pays: LUNC for EVM gas                  User pays: BNB/ETH for TC gas
@@ -162,7 +162,7 @@ Prices used: LUNC=$0.00006782, ETH=$1803.18, BNB=$617.38, SOL=$70.83
 
 ### Why a custom oracle is needed
 
-The official Hyperlane `StorageGasOracle` on each EVM chain is owned by Hyperlane and only has gas data for officially supported chains. Terra Classic (domain 1325) is **not** in Hyperlane's official supported list, so the official oracle returns `(0, 0)` for domain 1325 — meaning `quoteDispatch` returns zero, breaking gas payment.
+The official Hyperlane `StorageGasOracle` on each EVM chain is owned by Hyperlane and only has gas data for officially supported chains. Terra Classic (domain 132556) is **not** in Hyperlane's official supported list, so the official oracle returns `(0, 0)` for domain 132556 — meaning `quoteDispatch` returns zero, breaking gas payment.
 
 ### Solution: TerraClassicOracle.sol
 
@@ -203,7 +203,7 @@ When BNB or LUNC price changes significantly, update the oracle:
 
 cast send 0xYOUR_ORACLE_ADDRESS \
   "setRemoteGasData(uint32,uint128,uint128)" \
-  1325 NEW_EXCHANGE_RATE NEW_GAS_PRICE \
+  132556 NEW_EXCHANGE_RATE NEW_GAS_PRICE \
   --rpc-url https://bsc.publicnode.com \
   --private-key $ETH_PRIVATE_KEY --legacy
 ```
@@ -243,24 +243,24 @@ cast call $IGP "quoteDispatch(bytes,bytes)(uint256)" \
 
 ## 4. Deployed Contracts Reference
 
-### Terra Classic Mainnet — columbus-5 (domain 1325)
+### Terra Classic Mainnet — columbus-5 (domain 132556)
 
-Deployed 2026-06-03 via `CustomInstantiateWasm-mainnet.ts`.
+Deployed 2026-06-09 via `CustomInstantiateWasm-mainnet-v2.ts` (v2 — domain 132556 replaces 1325).
 
 | Contract | Address |
 |---|---|
-| **Mailbox** | `terra1qeutmjcnwmhmumv4xlzrqmva0m4usdw6lt7mayk7wfw7gftsv6wq2xnxh5` |
-| **Validator Announce** | `terra1jg7904q2305f8qm6ph8jz95uez7undc57wd4dgaf9mvfxcw5j9wq3zdn8c` |
-| **ISM Routing** | `terra1gd3re2pmv34ruwlmmhq80qtp6xqt8htgjqdvsj6clzh0wef6s7mqt6p5ka` |
-| ISM Multisig ETH | `terra16axf5f8pqjz3kap0hmrwhatav2q8yrngn6f9vrzx0ralypzxw47s9tml5u` |
-| ISM Multisig BSC | `terra16hqg4napp3vypdvyymzd3sdsc3uewhyctxjng79j67lku27a5r7q4z8lnt` |
-| ISM Multisig SOL | `terra180s622shslcldkrl93ksaddhnfvvclejvgt70xsz8flphwzc3fcqkn7m09` |
-| **Hook Merkle** | `terra1edwd2rhpzhl73uyqf24cc8zp0j5leuc72m7dxtmgfcgvpypj6afsryacf5` |
-| **IGP** | `terra1f6n8asv4ecqjjhvf57cprgcjwzd4y2mncpp6gcc95gd22mljnrcs3gcgkk` |
-| IGP Oracle | `terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2` |
-| Hook Agg Default | `terra1vtxef5jzax9uaktygay7nnl48akxekt94yg6ak4xa7unawp3du2qevkgde` |
-| Hook Pausable | `terra162q4qzmdy5rutkpkxwqw5xlw0vdjg8c7gw0njnk6ma2s8j52arhsgv3u29` |
-| Hook Fee | `terra1w8923j0nfvahxcsllqqslwqc0wj22673tf25exwx2vm8dag2a86sk2mdv0` |
+| **Mailbox** | `terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9` |
+| **Validator Announce** | `terra1gtnmdevekgxpvzej3wfy20e2n335gm3muwj6geduxxa86j3x70cq00asmy` |
+| **ISM Routing** | `terra1uhzzvt9x3u8hjnkp695hklexx2uywjvfqv454d93ds92sgtpwk7qrpxdg0` |
+| ISM Multisig ETH | `terra187rzjc3dznfxqtqqrwh796e5q4khmvp5av8mka6zhp98zjfk2z2qneldar` |
+| ISM Multisig BSC | `terra1nqj7qlnt2sty0dgnu3ss5z4u6wr7hjfea7cn6wpwjt2uymts8ucsmuj9xw` |
+| ISM Multisig SOL | `terra10s3p36tjek8amhlc4krxpzln6g8n0qy9jq82wyda434l3rv89wfsucl50t` |
+| **Hook Merkle** | `terra183lq6yqp8km3p34cxgk6k3u78uy4plqahey6rne7n9gy98delr9qyp0n2p` |
+| **IGP** | `terra1taunhg629rssf3g939nqr0h594q5mssrzdj5lkx2hygmxmh72ghqeqqnvz` |
+| IGP Oracle | `terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d` |
+| Hook Agg Default | `terra1026v947k2jn58t09ppw003xujj92vp3lxv0fg3xk8ccz42r8d2sqvnmvel` |
+| Hook Pausable | `terra1x8s9qtw9355pfckywkns4e8f9zyfjaf8w5e5s8vh28ph5gzwwlks9tjcnf` |
+| Hook Fee | `terra1sud5xyknr93wmxem6kxdfd0vxcju47wuh7zdm5uecavrm36w669sp7j8ag` |
 
 **Warp contracts (columbus-5):**
 
@@ -578,8 +578,8 @@ const p=require('path'),nm=p.join('/home/lunc/tc-cw-hyperlane','node_modules');
 const {CosmWasmClient}=require(p.join(nm,'@cosmjs/cosmwasm-stargate'));
 (async()=>{
   const c=await CosmWasmClient.connect('https://rpc.terra-classic.hexxagon.io');
-  const mb='terra1qeutmjcnwmhmumv4xlzrqmva0m4usdw6lt7mayk7wfw7gftsv6wq2xnxh5';
-  const oracle='terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2';
+  const mb='terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9';
+  const oracle='terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d';
   // Mailbox
   const ism=await c.queryContractSmart(mb,{mailbox:{default_ism:{}}});
   const hook=await c.queryContractSmart(mb,{mailbox:{default_hook:{}}});
@@ -614,7 +614,7 @@ const {CosmWasmClient}=require(p.join(nm,'@cosmjs/cosmwasm-stargate'));
 |---|---|---|
 | `mailbox contract not yet deployed` | `context/terraclassic.json` has empty `deployments` | Fill `deployments.core.mailbox` with the deployed Mailbox address |
 | `setRemoteGasData failed (not owner)` | Official EVM oracle is owned by Hyperlane | Script auto-deploys `TerraClassicOracle.sol` and updates IGP — check Step 4 output |
-| `destination not supported` (EVM→TC) | EVM IGP oracle returned (0,0) for domain 1325 | Run Step 4 again with `ORACLE_ADDRESS` env; or redeploy with `export ORACLE_ADDRESS=0x...` |
+| `destination not supported` (EVM→TC) | EVM IGP oracle returned (0,0) for domain 132556 | Run Step 4 again with `ORACLE_ADDRESS` env; or redeploy with `export ORACLE_ADDRESS=0x...` |
 | TC IGP fee query returns 0 or fails | TC IGP oracle not configured for destination domain | Run `./update-igp-oracle.sh` to configure the domain |
 | `fee is too low` / transfer stuck | TC IGP oracle exchange_rate is stale (prices changed) | Run `./update-igp-oracle.sh` to recalculate with current prices |
 | `route not found` | Terra Classic Warp has no route for the EVM domain | Run `./enroll-terra-router.sh` |
@@ -640,7 +640,7 @@ const p=require('path'),nm=p.join('/home/lunc/tc-cw-hyperlane','node_modules');
 const {CosmWasmClient}=require(p.join(nm,'@cosmjs/cosmwasm-stargate'));
 (async()=>{
   const c=await CosmWasmClient.connect('https://rpc.terra-classic.hexxagon.io');
-  const oracle='terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2';
+  const oracle='terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d';
   for(const d of [1,56,1399811149]){
     try{const r=await c.queryContractSmart(oracle,{oracle:{get_exchange_rate_and_gas_price:{dest_domain:d}}});
         console.log('domain '+d+':',r);}
@@ -666,7 +666,7 @@ ORACLE="0xYOUR_ORACLE"
 IGP="0xYOUR_IGP"
 
 # 1. Oracle returns correct rates
-cast call $ORACLE "getExchangeRateAndGasPrice(uint32)(uint128,uint128)" 1325 --rpc-url $RPC
+cast call $ORACLE "getExchangeRateAndGasPrice(uint32)(uint128,uint128)" 132556 --rpc-url $RPC
 # Expected: (9047190, 10000000000) or your configured values — NOT (0, 0)
 
 # 2. IGP points to your oracle
@@ -688,7 +688,7 @@ cast call $IGP "hookType()(uint8)" --rpc-url $RPC
 ```bash
 cast send $ORACLE \
   "setRemoteGasData(uint32,uint128,uint128)" \
-  1325 NEW_EXCHANGE_RATE NEW_GAS_PRICE \
+  132556 NEW_EXCHANGE_RATE NEW_GAS_PRICE \
   --rpc-url https://bsc.publicnode.com \
   --private-key $ETH_PRIVATE_KEY --legacy
 ```

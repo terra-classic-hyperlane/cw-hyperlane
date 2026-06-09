@@ -38,17 +38,18 @@ FROM_KEY="${TERRA_KEY_NAME:-validator-key}"   # terrad keyring name
 GOVERNANCE="terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n"
 ADMIN_WALLET="${ADMIN_WALLET:-terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze}"
 
-# ── Contract addresses (from context/terraclassic.json) ────────────────────────
-MAILBOX="terra1s4jwfe0tcaztpfsct5wzj02esxyjy7e7lhkcwn5dp04yvly82rwsvzyqmm"
-ISM_ROUTING="terra1na6ljyf4m5x2u7llfvvxxe2nyq0t8628qyk0vnwu4ttpq86tt0cse47t68"
-ISM_MULTI_SOL="terra18gh7nl0tk047ykrvy0a8z2lhv0rvl65wu95texyawrj879qenysq02p98f"
-ISM_MULTI_BSC="terra1ksq6cekt0as2f9vv5txld90s854y4pkr2k0jn5p83vqpa5zzzfysuavxr0"
-HOOK_AGG_DEFAULT="terra18shx4zhfehscggs9upspl489qd7yg29vdasvrerytppt3am92mnsj5365s"
-IGP="terra1mcaqgr7kqs9xr3q6w0e9f2ekrj6sehwcep9shtss6u8pdz2rsw5qzrew7r"
-IGP_ORACLE="terra1yew4y2ekzhkwuuz07yt7qufqxxejxhmnr7apehkqk7e8jdw8ffqqs8zhds"
-HOOK_AGG_REQUIRED="terra16veqgkz2yzvgmhyw8rn5k8fue4wysey077zmexevv7hm6ud4my0q8g3krq"
-HOOK_PAUSABLE="terra12qw82wwutq6hpswfgqfkcjdr0z4fqg4wus9np0uhxdngfwy6lf7s2xsq7d"
-HOOK_FEE="terra1g8yzt275smsneyp8qrejc2v99dutt6yhfa8x4yylprh4x9vep7gsxuq2q8"
+# ── Contract addresses — v2 re-deploy 2026-06-09, domain 132556 ───────────────
+MAILBOX="terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9"
+ISM_ROUTING="terra1uhzzvt9x3u8hjnkp695hklexx2uywjvfqv454d93ds92sgtpwk7qrpxdg0"
+ISM_MULTI_ETH="terra187rzjc3dznfxqtqqrwh796e5q4khmvp5av8mka6zhp98zjfk2z2qneldar"
+ISM_MULTI_BSC="terra1nqj7qlnt2sty0dgnu3ss5z4u6wr7hjfea7cn6wpwjt2uymts8ucsmuj9xw"
+ISM_MULTI_SOL="terra10s3p36tjek8amhlc4krxpzln6g8n0qy9jq82wyda434l3rv89wfsucl50t"
+HOOK_AGG_DEFAULT="terra1026v947k2jn58t09ppw003xujj92vp3lxv0fg3xk8ccz42r8d2sqvnmvel"
+IGP="terra1taunhg629rssf3g939nqr0h594q5mssrzdj5lkx2hygmxmh72ghqeqqnvz"
+IGP_ORACLE="terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d"
+HOOK_AGG_REQUIRED="terra1xmdd7yhu3qdlfhrcku8srfvtday6efymj54gqz0daxsmn8pvqygq0nxq04"
+HOOK_PAUSABLE="terra1x8s9qtw9355pfckywkns4e8f9zyfjaf8w5e5s8vh28ph5gzwwlks9tjcnf"
+HOOK_FEE="terra1sud5xyknr93wmxem6kxdfd0vxcju47wuh7zdm5uecavrm36w669sp7j8ag"
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 TERRAD="terrad"

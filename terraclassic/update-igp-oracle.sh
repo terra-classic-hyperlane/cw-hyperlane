@@ -40,8 +40,8 @@ done
 RPC="https://rpc.terra-classic.hexxagon.io"
 LCD="https://lcd.terra-classic.hexxagon.io"
 CHAIN_ID="columbus-5"
-ORACLE="terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2"
-IGP="terra1f6n8asv4ecqjjhvf57cprgcjwzd4y2mncpp6gcc95gd22mljnrcs3gcgkk"
+ORACLE="terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d"
+IGP="terra1taunhg629rssf3g939nqr0h594q5mssrzdj5lkx2hygmxmh72ghqeqqnvz"
 GOV_MODULE="terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n"
 EXPLORER_TC="https://finder.hexxagon.io/columbus-5"
 

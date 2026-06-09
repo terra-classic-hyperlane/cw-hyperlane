@@ -336,7 +336,7 @@ Relevant structure for Sealevel:
 ```json
 {
   "terra_classic": {
-    "domain": 1325,
+    "domain": 132556,
     "chain_id": "rebel-2",
     "rpc": "https://rpc.terra-classic.hexxagon.dev",
     "lcd": "https://terra-classic-lcd.publicnode.com",
@@ -657,7 +657,7 @@ environments/testnet/warp-routes/TOKEN/program-ids.json
   -u https://api.testnet.solana.com \
   multisig-ism-message-id enroll-validators \
   --program-id 5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh \
-  --domains 1325 \
+  --domains 132556 \
   --validators 0xTERRA_VALIDATOR_ADDRESS \
   --threshold 1
 ```
@@ -673,7 +673,7 @@ environments/testnet/warp-routes/TOKEN/program-ids.json
   -u https://api.testnet.solana.com \
   igp set-destination-gas-amount \
   --program-id 5p7Hii6CJL4xGBYYTGEQmH9LnUSZteFJUu9AVLDExZX2 \
-  --destination-domain 1325 \
+  --destination-domain 13255656 \
   --gas-amount 3000000
 ```
 
@@ -685,7 +685,7 @@ environments/testnet/warp-routes/TOKEN/program-ids.json
   -u https://api.testnet.solana.com \
   warp-route enroll-remote-router \
   --program-id PROGRAM_ID_DO_WARP_SOLANA \
-  --destination-domain 1325 \
+  --destination-domain 13255656 \
   --router 0xTERRA_WARP_HEX_32BYTES
 ```
 
@@ -794,7 +794,7 @@ cd /home/lunc/hyperlane-monorepo/rust/sealevel
   -u https://api.testnet.solana.com \
   multisig-ism-message-id query \
   --program-id 5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh \
-  --domains 1325
+  --domains 132556
 ```
 
 **Expected output:** Threshold = 1, registered validator = Terra Classic validator address.
@@ -863,7 +863,7 @@ cat ~/.hyperlane/registry/chains/solanatestnet/addresses.yaml
 
 | Network | Domain ID |
 |------|-----------|
-| Terra Classic (rebel-2) | `1325` |
+| Terra Classic (rebel-2) | `132556` |
 | Solana Testnet | `1399811150` |
 | Solana Mainnet | `1399811149` |
 | Sepolia | `11155111` |
@@ -1125,7 +1125,7 @@ cd /home/lunc/hyperlane-monorepo/rust/sealevel
   -u https://api.testnet.solana.com \
   multisig-ism-message-id query \
   --program-id 5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh \
-  --domains 1325
+  --domains 132556
 ```
 
 Expected output: `threshold: 1`, validator = Terra Classic validator address.
@@ -1140,7 +1140,7 @@ curl https://hyperlane-validator-signatures-NOME.s3.us-east-1.amazonaws.com/anno
 
 **4. Verify if the relayer is monitoring Terra Classic**
 
-Confirm that `relayChains` in the relayer config includes `terraclassic` or domain `1325`.
+Confirm that `relayChains` in the relayer config includes `terraclassic` or domain `132556`.
 
 ### ❌ Route on Terra Classic points to old/invalid Program ID
 

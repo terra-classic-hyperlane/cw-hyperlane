@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 /**
  * @title TerraClassicOracle
- * @notice Oracle de gas para Terra Classic (domain 1325).
+ * @notice Oracle de gas para Terra Classic (domain 132556).
  *         Implementa a interface getExchangeRateAndGasPrice usada pelo TerraClassicIGPStandalone.
  *         Owner pode atualizar exchange_rate e gas_price via setRemoteGasData.
  */

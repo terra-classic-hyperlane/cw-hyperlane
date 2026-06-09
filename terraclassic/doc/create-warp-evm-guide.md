@@ -139,7 +139,7 @@ Defines each token with its Terra Classic configuration.
 ```json
 "terra_classic": {
   "chain_id": "rebel-2",
-  "domain": 1325,
+  "domain": 132556,
   "rpc": "https://rpc.terra-classic.hexxagon.dev",
   "lcd": "https://lcd.terra-classic.hexxagon.dev",
 
@@ -331,7 +331,7 @@ networks:
     gas:
       price: '28.325'
       denom: 'uluna'
-    domain: 1325
+    domain: 132556
 ```
 
 > ⚠️ **Use sempre o RPC do `hexxagon`**. O `rpc.luncblaze.com` pode estar dias atrasado e causar falhas silenciosas de deploy (timeout + `account sequence mismatch`). Veja [Troubleshooting](#-timeouterror2--account-sequence-mismatch).
@@ -537,7 +537,7 @@ cast send $GAS_ORACLE \
 
 | Parameter | Meaning |
 |---|---|
-| `1325` | Domain ID da Terra Classic |
+| `132556` | Domain ID da Terra Classic |
 | `142244393` | Exchange rate ETH/LUNC (escala 1e8) |
 | `38325000000` | Gas price na rede em wei |
 
@@ -602,7 +602,7 @@ Otherwise, the Warp inherits the Mailbox default ISM (normal behavior).
 
 ### Step 7 — enrollRemoteRouter (EVM → Terra Classic)
 
-Registers the Terra Classic Warp on the EVM contract, authorizing messages from domain 1325:
+Registers the Terra Classic Warp on the EVM contract, authorizing messages from domain 132556:
 
 ```bash
 cast send $WARP_ADDRESS \
@@ -1151,10 +1151,10 @@ cast call $SEU_WARP_EVM "routers(uint32)(bytes32)" 1325 --rpc-url $RPC
 
 | Cause | Diagnosis | Fix |
 |---|---|---|
-| `enrollRemoteRouter(1325)` missing on EVM Warp | `routers(1325)` returns `0x000...` | `cast send $WARP "enrollRemoteRouter(uint32,bytes32)" 1325 0xHEX_TERRA --private-key $ETH_KEY --legacy` |
+| `enrollRemoteRouter(132556)` missing on EVM Warp | `routers(132556)` returns `0x000...` | `cast send $WARP "enrollRemoteRouter(uint32,bytes32)" 1325 0xHEX_TERRA --private-key $ETH_KEY --legacy` |
 | Validator not signing | Latest S3 checkpoint is old | Restart the Hyperlane validator |
 | Relayer not running | No `process()` attempts | Start the relayer with `hyperlane relayer --chains sepolia` |
-| Wrong bytes32 in `enrollRemoteRouter` | `routers(1325)` ≠ Warp Terra hex | Re-run `enrollRemoteRouter` with the correct 32-byte hex |
+| Wrong bytes32 in `enrollRemoteRouter` | `routers(132556)` ≠ Warp Terra hex | Re-run `enrollRemoteRouter` with the correct 32-byte hex |
 
 > 💡 **Check the validator:** The validator should have a recent `checkpoint_latest_index.json` in its storage (S3/GCS).
 > If the index stopped advancing, the validator is not running.
@@ -1402,7 +1402,7 @@ Addresses of all active contracts in this project, for quick reference and manua
 
 ---
 
-### Terra Classic (chain rebel-2 / domain 13253)
+### Terra Classic (chain rebel-2 / domain 1325563)
 
 | Item | Value |
 |---|---|
@@ -1543,4 +1543,4 @@ console.log('chainId:', meta.chainId, '| domainId:', meta.domainId || meta.chain
 | Polygon | 137 | 137 |
 | Arbitrum | 42161 | 42161 |
 | Optimism | 10 | 10 |
-| **Terra Classic** | rebel-2 | **13253** |
+| **Terra Classic** | rebel-2 | **1325** |

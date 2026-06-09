@@ -13,7 +13,7 @@ contract TerraClassicIGPStandalone {
     uint256 internal constant TOKEN_EXCHANGE_RATE_SCALE = 1e10;
     uint256 internal constant DEFAULT_GAS_USAGE = 50_000;
     uint8 internal constant IGP_HOOK_TYPE = 4; // INTERCHAIN_GAS_PAYMASTER ✅
-    uint32 internal constant TERRA_CLASSIC_DOMAIN = 1325;
+    uint32 internal constant TERRA_CLASSIC_DOMAIN = 132556;
     
     // Message offsets
     uint256 private constant DESTINATION_OFFSET = 41;

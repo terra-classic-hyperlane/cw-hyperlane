@@ -1,16 +1,16 @@
 {
-  "_comment": "Centralized configuration for EVM ↔ Terra Classic Warp Routes",
+  "_comment": "Centralized configuration for EVM \u2194 Terra Classic Warp Routes",
   "_version": "3.0.0",
   "_updated": "2026-06-04",
   "terra_classic": {
     "_comment": "Terra Classic configuration. Each token has its type (native/cw20), mode (collateral/locked) and deployed warp address (for enrollRemoteRouter on the EVM side).",
     "chain_id": "columbus-5",
-    "domain": 1325,
+    "domain": 132556,
     "rpc": "https://rpc.terra-classic.hexxagon.io",
     "lcd": "https://lcd.terra-classic.hexxagon.io",
     "tokens": {
       "wlunc": {
-        "_comment": "Native LUNC — hpl_warp_native already deployed",
+        "_comment": "Native LUNC \u2014 hpl_warp_native already deployed",
         "id": "wwwwlunc",
         "name": "Wrapped Terra Classic LUNC",
         "symbol": "LUNC",
@@ -29,7 +29,7 @@
         }
       },
       "ustc": {
-        "_comment": "Native USTC — hpl_warp_native already deployed",
+        "_comment": "Native USTC \u2014 hpl_warp_native already deployed",
         "id": "wwwustc",
         "name": "Wrapped TerraClassic USD",
         "symbol": "USTC",
@@ -48,7 +48,7 @@
         }
       },
       "juris": {
-        "_comment": "JURIS CW20 collateral — hpl_warp_cw20 already deployed",
+        "_comment": "JURIS CW20 collateral \u2014 hpl_warp_cw20 already deployed",
         "id": "juris",
         "name": "Juris Token",
         "symbol": "JURIS",
@@ -67,7 +67,7 @@
         }
       },
       "xpto": {
-        "_comment": "XPTO CW20 collateral — new token, warp NOT yet deployed on Terra Classic",
+        "_comment": "XPTO CW20 collateral \u2014 new token, warp NOT yet deployed on Terra Classic",
         "id": "xpto",
         "name": "XPTO Token",
         "symbol": "XPTO",
@@ -86,7 +86,7 @@
         }
       },
       "xptv": {
-        "_comment": "XPTV CW20 collateral — new token, warp NOT yet deployed on Terra Classic",
+        "_comment": "XPTV CW20 collateral \u2014 new token, warp NOT yet deployed on Terra Classic",
         "id": "xptv",
         "name": "XPTV Token",
         "symbol": "XPTV",
@@ -105,7 +105,7 @@
         }
       },
       "xpv": {
-        "_comment": "XPV CW20 collateral — new token, warp NOT yet deployed on Terra Classic",
+        "_comment": "XPV CW20 collateral \u2014 new token, warp NOT yet deployed on Terra Classic",
         "id": "xpv",
         "name": "XPV Token",
         "symbol": "XPV",
@@ -124,7 +124,7 @@
         }
       },
       "ztt": {
-        "_comment": "ZTT CW20 collateral — warp NOT yet deployed on Terra Classic",
+        "_comment": "ZTT CW20 collateral \u2014 warp NOT yet deployed on Terra Classic",
         "id": "ztt",
         "name": "ZTT Token",
         "symbol": "ZTT",
@@ -143,7 +143,7 @@
         }
       },
       "igorfake": {
-        "_comment": "IGORFAKE CW20 collateral — mainnet columbus-5",
+        "_comment": "IGORFAKE CW20 collateral \u2014 mainnet columbus-5",
         "id": "igorfake",
         "name": "IGORFAKE",
         "symbol": "IGORFAKE",
@@ -162,9 +162,10 @@
         }
       }
     },
-    "igp": "terra1f6n8asv4ecqjjhvf57cprgcjwzd4y2mncpp6gcc95gd22mljnrcs3gcgkk",
-    "igp_oracle": "terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2",
-    "_igp_comment": "Mainnet columbus-5 IGP. Domain 56 (BSC) not yet configured in TC IGP oracle — add via governance"
+    "igp": "terra1taunhg629rssf3g939nqr0h594q5mssrzdj5lkx2hygmxmh72ghqeqqnvz",
+    "igp_oracle": "terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d",
+    "_igp_comment": "Mainnet columbus-5 IGP. Domain 56 (BSC) not yet configured in TC IGP oracle \u2014 add via governance",
+    "mailbox": "terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9"
   },
   "networks": {
     "sepolia": {
@@ -186,7 +187,7 @@
       ],
       "explorer": "https://sepolia.etherscan.io",
       "mailbox": {
-        "_comment": "Hyperlane central messaging hub — required for cross-chain send/receive",
+        "_comment": "Hyperlane central messaging hub \u2014 required for cross-chain send/receive",
         "address": "0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766"
       },
       "ism": {
@@ -205,7 +206,7 @@
         "agg_hook_factory": "0x160C28C92cA453570aD7C031972b58d5Dd128F72"
       },
       "igp": {
-        "_comment": "IGP: Gas Paymaster — allows paying Terra Classic gas using ETH. gas_oracle is the Hyperlane contract that provides prices",
+        "_comment": "IGP: Gas Paymaster \u2014 allows paying Terra Classic gas using ETH. gas_oracle is the Hyperlane contract that provides prices",
         "official_address": "0x6f2756380FD49228ae25Aa7F2817993cB74Ecc1",
         "gas_oracle": "0x7113Df4d1D8B230e6339011d10277a6E5AC4eC9c",
         "overhead_default": 200000,
@@ -290,7 +291,7 @@
         "address": "0xF9F6F5646F478d5ab4e20B0F910C92F1CCC9Cc6D"
       },
       "ism": {
-        "_comment": "ISM BSC Testnet — validates messages from Terra Classic",
+        "_comment": "ISM BSC Testnet \u2014 validates messages from Terra Classic",
         "type": "messageIdMultisigIsm",
         "factory": "0x0D96aF0c01c4bbbadaaF989Eb489c8783F35B763",
         "deployed_address": "0x2b31a08d397b7e508cbE0F5830E8a9182C88b6cA",
@@ -305,7 +306,7 @@
         "agg_hook_factory": "0xa1145B39F1c7Ef9aA593BC1DB1634b00CC020942"
       },
       "igp": {
-        "_comment": "IGP BSC Testnet — gas oracle provides BNB/gas prices",
+        "_comment": "IGP BSC Testnet \u2014 gas oracle provides BNB/gas prices",
         "official_address": "0x0dD20e410bdB95404f71c5a4e7Fa67B892A5f949",
         "gas_oracle": "0x124EBCBC018A5D4Efe639f02ED86f95cdC3f6498",
         "overhead_default": 200000,
@@ -514,7 +515,7 @@
           "_comment": "exchange_rate: BNB_USD / LUNC_USD = 617.38 / 0.00006824 (2026-06-04)"
         },
         "gas_oracle_custom": "0x38fC50ecC1D21e45705be7441cc1Ff9bcDDec488",
-        "_note": "gas_oracle_custom é o TerraClassicOracle deployado (owner: deployer). O official gas_oracle (Hyperlane) não tem domain 1325."
+        "_note": "gas_oracle_custom \u00e9 o TerraClassicOracle deployado (owner: deployer). O official gas_oracle (Hyperlane) n\u00e3o tem domain 132556."
       },
       "warp_tokens": {
         "wlunc": {
@@ -542,7 +543,7 @@
           "owner": ""
         },
         "ztt": {
-          "_comment": "BSC mainnet synthetic ZTT — deploy pendente",
+          "_comment": "BSC mainnet synthetic ZTT \u2014 deploy pendente",
           "deployed": true,
           "address": "0x6AB3EaF4dC64496BB435D221563C5e3e1132A592",
           "igp_custom": "0x5Ea49420DFCa83ca8E7eddA9160A3009F6aE6a7B",
@@ -564,7 +565,7 @@
       }
     },
     "polygon": {
-      "_comment": "Polygon Mainnet — disabled",
+      "_comment": "Polygon Mainnet \u2014 disabled",
       "enabled": false,
       "display_name": "Polygon Mainnet",
       "chain_id": 137,
@@ -644,7 +645,7 @@
       }
     },
     "arbitrum": {
-      "_comment": "Arbitrum One — disabled",
+      "_comment": "Arbitrum One \u2014 disabled",
       "enabled": false,
       "display_name": "Arbitrum One",
       "chain_id": 42161,
@@ -724,7 +725,7 @@
       }
     },
     "optimism": {
-      "_comment": "Optimism — disabled",
+      "_comment": "Optimism \u2014 disabled",
       "enabled": false,
       "display_name": "Optimism",
       "chain_id": 10,

@@ -247,14 +247,14 @@ The script instantiates **12 contracts** in the following order:
 ```json
 {
   "hrp": "terra",
-  "domain": 13253,
+  "domain": 1325,
   "owner": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n"
 }
 ```
 
 **Parameter Explanation:**
 - `hrp` (string): Human-readable part of Bech32 address - chain prefix (e.g., "terra" for Terra Classic)
-- `domain` (u32): Unique chain domain ID in Hyperlane protocol. Terra Classic Testnet = 13253
+- `domain` (u32): Unique chain domain ID in Hyperlane protocol. Terra Classic Testnet = 1325
 - `owner` (string): Address that will have admin control of the contract (governance module)
 
 **Code ID:** `1981`

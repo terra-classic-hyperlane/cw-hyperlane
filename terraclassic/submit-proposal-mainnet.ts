@@ -34,17 +34,17 @@ const GOV_MODULE  = 'terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n';
 const PRIVATE_KEY_HEX = process.env.PRIVATE_KEY || process.env.TERRA_PRIVATE_KEY || '';
 
 // ============================================================================
-// MAINNET CONTRACT ADDRESSES — instantiated 2026-06-03
+// MAINNET CONTRACT ADDRESSES — v2 re-deploy 2026-06-09, domain 132556
 // ============================================================================
-const MAILBOX       = 'terra1qeutmjcnwmhmumv4xlzrqmva0m4usdw6lt7mayk7wfw7gftsv6wq2xnxh5';
-const ISM_MULTI_ETH = 'terra16axf5f8pqjz3kap0hmrwhatav2q8yrngn6f9vrzx0ralypzxw47s9tml5u';
-const ISM_MULTI_BSC = 'terra16hqg4napp3vypdvyymzd3sdsc3uewhyctxjng79j67lku27a5r7q4z8lnt';
-const ISM_MULTI_SOL = 'terra180s622shslcldkrl93ksaddhnfvvclejvgt70xsz8flphwzc3fcqkn7m09';
-const ISM_ROUTING   = 'terra1gd3re2pmv34ruwlmmhq80qtp6xqt8htgjqdvsj6clzh0wef6s7mqt6p5ka';
-const IGP           = 'terra1f6n8asv4ecqjjhvf57cprgcjwzd4y2mncpp6gcc95gd22mljnrcs3gcgkk';
-const IGP_ORACLE    = 'terra14yp4fvjx9llussdy7ghpu3gszrdfr0q3v53qcy4lkxzs2wc5dngq9zlux2';
-const HOOK_AGG_DEF  = 'terra1vtxef5jzax9uaktygay7nnl48akxekt94yg6ak4xa7unawp3du2qevkgde'; // Merkle + IGP
-const HOOK_AGG_REQ  = 'terra1n5wfxj38y5ejkh9kkz4ud7t6gqqshzhhhcu97j2j0kfa4359za8sdsqexu'; // Pausable + Fee
+const MAILBOX       = 'terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9';
+const ISM_MULTI_ETH = 'terra187rzjc3dznfxqtqqrwh796e5q4khmvp5av8mka6zhp98zjfk2z2qneldar';
+const ISM_MULTI_BSC = 'terra1nqj7qlnt2sty0dgnu3ss5z4u6wr7hjfea7cn6wpwjt2uymts8ucsmuj9xw';
+const ISM_MULTI_SOL = 'terra10s3p36tjek8amhlc4krxpzln6g8n0qy9jq82wyda434l3rv89wfsucl50t';
+const ISM_ROUTING   = 'terra1uhzzvt9x3u8hjnkp695hklexx2uywjvfqv454d93ds92sgtpwk7qrpxdg0';
+const IGP           = 'terra1taunhg629rssf3g939nqr0h594q5mssrzdj5lkx2hygmxmh72ghqeqqnvz';
+const IGP_ORACLE    = 'terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d';
+const HOOK_AGG_DEF  = 'terra1026v947k2jn58t09ppw003xujj92vp3lxv0fg3xk8ccz42r8d2sqvnmvel'; // Merkle + IGP
+const HOOK_AGG_REQ  = 'terra1xmdd7yhu3qdlfhrcku8srfvtday6efymj54gqz0daxsmn8pvqygq0nxq04'; // Pausable + Fee
 
 // ============================================================================
 // EXECUTION MESSAGES
