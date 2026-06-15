@@ -277,7 +277,9 @@ Terra Classic (LUNC/USTC)          Solana Mainnet
 
 ~~The original proposal requested direct payment of **9.08 SOL**.~~
 
-The community will send **LUNC** directly to my wallet. The amount was calculated using **$80/SOL** as a conservative reference, given SOL's high volatility and the time the proposal may take to be approved.
+**What is actually needed is a fixed quantity of SOL — 9.08 SOL.** This amount is set by Solana's rent-exempt rule (proportional to each program's byte size) and **does not depend on the SOL/USD price**. The LUNC figure below is *only* the amount required to purchase that SOL.
+
+The community will send **LUNC** directly to my wallet. The LUNC amount was calculated converting **9.08 SOL at $80/SOL** — a conservative reference above the ~$71 spot — to absorb price movement during the voting period. **To minimize exposure, the received LUNC will be converted to SOL immediately upon approval.** If the 9.08 SOL ends up costing less, **the surplus is returned to the community in LUNC** (it is not kept and not converted).
 
 | Reference | Value |
 |-----------|-------|
