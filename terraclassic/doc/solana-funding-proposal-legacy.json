@@ -1,6 +1,6 @@
 {
   "title": "Hyperlane Warp Routes - Solana Mainnet Deployment Funding (LUNC/USTC)",
-  "description": "Community Pool spend to fund the deployment of 5 Solana programs (ISM, Warp LUNC, Warp USTC, IGP, Oracle) required to activate Hyperlane Warp Routes between Terra Classic and Solana Mainnet, enabling trustless non-custodial bridging of LUNC and USTC. Total: 9.08 SOL valued conservatively at $80/SOL = $726.40, paid in LUNC at $0.00007357 (2026-06-15) = 9,873,590 LUNC. LUNC is converted to SOL on the purchase day with published TX hashes; any remaining LUNC is returned to the community. Deployed programs are transferred to governance control. Full proposal: https://github.com/terra-classic-hyperlane/cw-hyperlane/blob/main/terraclassic/doc/funding-proposal.md",
+  "description": "Deploy 5 Solana programs for Hyperlane LUNC/USTC bridging. Cost: 9.08 SOL = 9,873,590 LUNC ($80 buffer); surplus returned. https://discourse.luncgoblins.com/t/funding-proposal-hyperlane-warp-routes-deployment-on-solana-mainnet-v-2/503",
   "recipient": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
   "amount": "9873590000000uluna",
   "deposit": "1000000000000uluna"
