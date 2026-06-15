@@ -9,8 +9,8 @@
       ]
     }
   ],
-  "metadata": "https://discourse.luncgoblins.com/t/funding-proposal-hyperlane-warp-routes-deployment-on-solana-mainnet-v-2/503",
-  "title": "Hyperlane Warp Routes - Solana Mainnet Deployment Funding (LUNC/USTC)",
-  "summary": "Deploy 5 Solana programs for Hyperlane LUNC/USTC bridging. Cost: 9.08 SOL = 9,873,590 LUNC ($80 buffer); surplus returned. https://discourse.luncgoblins.com/t/funding-proposal-hyperlane-warp-routes-deployment-on-solana-mainnet-v-2/503",
+  "metadata": "{\"title\":\"Hyperlane Warp Routes - Solana Mainnet Deployment Funding (LUNC/USTC/CW20)\",\"summary\":\"Solana LUNC/USTC/CW20 Hyperlane bridging. https://discourse.luncgoblins.com/t/funding-proposal-hyperlane-warp-routes-deployment-on-solana-mainnet-v-2/503\"}",
+  "title": "Hyperlane Warp Routes - Solana Mainnet Deployment Funding (LUNC/USTC/CW20)",
+  "summary": "Solana LUNC/USTC/CW20 Hyperlane bridging. https://discourse.luncgoblins.com/t/funding-proposal-hyperlane-warp-routes-deployment-on-solana-mainnet-v-2/503",
   "deposit": "1000000000000uluna"
 }
