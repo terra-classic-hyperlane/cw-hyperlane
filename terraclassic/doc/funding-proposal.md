@@ -20,7 +20,7 @@
 
 I would like to apologize to the community for not disclosing these costs in the original proposal that requested authorization to carry out this Hyperlane integration work with Terra Classic.
 
-During Solana testnet testing, I had already noticed that program deployment costs were significantly higher than on EVM networks. However, I believed the cost would be different on mainnet — which turned out to be a surprise: the rent-exempt cost on Solana Mainnet is equivalent to testnet in SOL terms, but with SOL priced at ~$65 USD at the time, the real financial impact was far higher than expected.
+During Solana testnet testing, I had already noticed that program deployment costs were significantly higher than on EVM networks. However, I believed the cost would be different on mainnet — which turned out to be a surprise: the rent-exempt cost on Solana Mainnet is equivalent to testnet in SOL terms, and with SOL trading around **$71 USD today (2026-06-15)** — valued conservatively at **$80 USD** in this proposal as a volatility safety buffer — the real financial impact is far higher than on EVM networks.
 
 I acknowledge this information should have been raised and communicated beforehand. This proposal is the way to correct that gap transparently, with all data available for the community to evaluate.
 
