@@ -16,6 +16,35 @@ community is measured **only against the community contribution**.
 | Personal test funds (deployer) | 2.102794599 | pre-existing, belongs to the deployer — **not** community money |
 | **Total in payer wallet (pre-deploy)** | **9.552065795** | |
 
+### Funding trail — how the community SOL was sourced
+
+The community contribution (**+7.449182 SOL**) was sourced from community **LUNC**,
+converted on-chain through the steps below — all on **2026-07-02**, within ~8 minutes:
+
+| # | Chain(s) | Conversion / transfer | Amount | Time (UTC) | Tx |
+|---|----------|-----------------------|--------|------------|-----|
+| 1 | Terra Classic | **LUNC → USDC** (swap) | ≈ 4,936,795 LUNC → ≈ 585.90 USDC | 03:16:39 | [`FE10F019…D8236`](https://finder.terra.money/classic/tx/FE10F019AABE5E4F67EB5E09AD29386E6F7B85E2D78AAA5B22B4E229951D8236) |
+| 2 | Terra Classic → Noble | **USDC → Noble** (IBC, channel-113) | 585.902200 USDC | 03:19:15 | [`11AD2400…563ED`](https://finder.terra.money/classic/tx/11AD2400D72C5960D51A0F92948996B64C5DE9095161FFE342ABD5A90E8563ED) |
+| 3 | Noble → Solana | **USDC → Solana** (CCTP / Range) | ≈ 585.702903 USDC (após taxa de bridge) | ~03:2x | [range.org](https://usdc.range.org/transactions?sc=INTERCHAIN&s=noble1act45umsc0nwj570qfe8zumarwws5jz9ml2tdl) |
+| 4 | Solana | **USDC → SOL** (swap → wSOL → SOL) | 585.702903 USDC → **+7.449182 SOL** | 03:24:02 | [`44jqir…oooYQwR`](https://solscan.io/tx/44jqirx58q6t7Ey81b5h1WQQPNgvqrVw4Amnp8QkhRopD3DL4tbn7cvC84t9kdA7MVrGqJAAMecyojHQvoooYQwR) |
+
+Taxa implícita SOL: 585.702903 USDC ÷ 7.449182 SOL ≈ **$78,63/SOL**.
+
+**Endereços da trilha** (todas as carteiras são do **desenvolvedor de deploy** — usadas
+para executar a conversão e o deploy; **não** são carteiras da comunidade):
+| Papel | Endereço |
+|-------|----------|
+| Carteira Terra Classic — **do desenvolvedor de deploy** | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` |
+| Conta Noble (intermediária) — do desenvolvedor de deploy | `noble1act45umsc0nwj570qfe8zumarwws5jz9ml2tdl` |
+| Carteira Solana (payer dos deploys) — do desenvolvedor de deploy | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
+
+> **Importante:** as carteiras acima são do **desenvolvedor de deploy**, não da
+> comunidade. O que é da comunidade é o **valor** — os **7,449 SOL** (≈ 585,70 USDC,
+> convertidos de LUNC) — que foi roteado *através* das carteiras do desenvolvedor de
+> deploy para realizar os deploys. On-chain confirma o baseline: a carteira Solana
+> `BirXd4Q…` foi de **2.102884 → 9.552066 SOL** ao receber os 7.449182 SOL (step 4);
+> os **2,1028 SOL pré-existentes** são fundos pessoais do desenvolvedor de deploy.
+
 ## Summary
 
 | | |
@@ -131,3 +160,20 @@ verified binary (`BINARY_SOURCE=local`, SHA `d6f2fc9…33419`) and the community
 Each follows the same 3-step process documented in `WARP-COMMUNITY-GUIDE.md` §11
 (create program → buffer init/wiring → set_route on Terra Classic). Each real route
 costs ~2.2 SOL in program rent (recoverable) + minimal fees.
+
+## Community fund — return of any leftover
+
+**Commitment:** once **all LUNC and USTC production warp routes are deployed** and the
+**`igorfake` test token is closed** (recovering ~2.28 SOL of its rent), **any SOL
+remaining from the community donation of `7.449182` SOL will be returned to the
+community.**
+
+The community's `7.449182` SOL (≈ 585.70 USDC, converted from LUNC — see *Funding source*
+and *Funding trail*) is tracked **separately** from the deploy developer's personal funds
+(the pre-existing `2.1028` SOL). Only what is genuinely consumed by the production
+deployment (LUNC + USTC + shared IGP/ISM infra + delivery/relayer costs) is charged
+against the community donation; the **remaining balance is returned to the community**.
+
+> Portuguese / Português: **assim que todos os deploys de LUNC e USTC forem concluídos e
+> o token de teste `igorfake` for fechado (recuperando ~2,28 SOL), o valor que sobrar dos
+> `7.449182` SOL doados pela comunidade será devolvido à comunidade.**
