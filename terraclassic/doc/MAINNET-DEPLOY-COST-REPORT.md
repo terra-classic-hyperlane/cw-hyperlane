@@ -22,8 +22,8 @@ community is measured **only against the community contribution**.
 |---|---|
 | Payer wallet | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
 | Balance before deploys | `9.552065795` |
-| Balance now | `4.510321725` |
-| **Total spent (from the combined wallet)** | **≈ 5.041744** |
+| Balance now (after relayer funding) | `≈ 4.449647` |
+| **Total spent (from the combined wallet)** | **≈ 5.102414** |
 
 Most of the total is **rent** (rent-exempt reserve locked inside on-chain accounts) —
 **recoverable** by closing the accounts/programs; it is invested in on-chain storage,
@@ -63,13 +63,30 @@ not burned. Only the transaction fees (~0.017 SOL) are non-recoverable.
 | ATA payer (funding) | `CuT1SZWTEHCBtKcFUptf53U7npm9fn41xDucp699nr7D` | 0.05000000 |
 | **Subtotal** | | **2.27916968** |
 
+### 4. Operational — relayer signer funding (delivery gas)
+
+The **relayer** needs SOL in its Solana signer to pay for message-delivery transactions
+(≈ 0.0013 SOL per delivery: fee + recipient ATA + token mint). Funded on 2026-07-03:
+
+| Item | Address | SOL |
+|------|---------|-----|
+| Relayer Solana signer | `PbEo7Fn2eJ6LYa4B8YU4MexB6s1BEQquWKCM1cwwrkS` | 0.06067 (≈ **$5.00** @ $82.41/SOL) |
+
+TX: `4MNLr5HhC37jEYRKexyXFDpcoZArMwGjSMN3pWxmqinfoZ4qhEjvxWHDsLsnEkKysgNBxrbJsDaXQ3gfjwv6zLBy`
+
+> This is an **operational / recurring** cost — **not** recoverable rent. It is consumed
+> by delivery fees on Solana. Monitor the signer balance and top it up as needed
+> (~0.06 SOL ≈ 40 deliveries). It unblocked the first TC→Solana deliveries (messages
+> `0xef69b6f7…` and `0x269c455b…` delivered successfully).
+
 ## Totals
 
 | | SOL |
 |---|---|
 | **Rent locked** (recoverable on teardown) | **5.02507064** |
 | **Transaction fees** (burned, non-recoverable) | **≈ 0.01667** |
-| **TOTAL SPENT** | **≈ 5.04174** |
+| **Operational** — relayer signer funding (delivery gas) | **0.06067** |
+| **TOTAL** | **≈ 5.10241** |
 
 > programdata rent scales with the `.so` size: warp `2.22` (312K) > IGP `1.61` (228K) >
 > ISM `1.12` (160K).

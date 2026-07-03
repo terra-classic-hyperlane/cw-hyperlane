@@ -43,3 +43,8 @@ node_modules/
 wasm_codes.zip
 
 .yarn/install-state.gz
+
+# Backup files (may contain keys) — never commit
+*.bak
+*.v1.bak.json
+config.yaml.v1.bak

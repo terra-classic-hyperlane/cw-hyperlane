@@ -372,3 +372,76 @@ Exemplo executado: TX `4ABD9993…C75AE1`
   `BINARY_SOURCE=local` e pule os 15-20 min de build.
 - **Custo real** do deploy do programa ≈ **2,2 SOL** (a estimativa antiga mostrava a
   metade; corrigida).
+
+---
+
+## 12. Agentes off-chain (Validator + Relayer) — operação e troubleshooting
+
+A infra on-chain **não entrega mensagens sozinha**. É preciso rodar dois agentes
+(binários Hyperlane, ex.: via systemd):
+
+- **Validator** (valida columbus-5): assina os checkpoints da merkle tree da mailbox de
+  origem, publica as assinaturas num **bucket S3**, e **anuncia** o local no
+  `validator_announce` de columbus-5.
+- **Relayer**: lê a mensagem despachada no TC, pega a assinatura do validator, monta a
+  prova para o ISM comunitário e **submete a tx de entrega** no destino (pagando o gas).
+
+### Config crítico do VALIDATOR (mainnet)
+| Campo | Valor correto (mainnet) |
+|-------|-------------------------|
+| `originChainName` | `terraclassic` |
+| `domainId` (terraclassic) | **132556** (NÃO 1325 = rebel-2/testnet) |
+| `merkleTreeHook` (terraclassic) | `0x3c7e0d10013db710c6b8322dab479e3f0950fc1dbe49a1cf3e9950429db9f8ca` (NÃO `0xcb5cd50e…` = testnet) |
+| `checkpointSyncer.bucket` | um bucket S3 **exclusivo de mainnet** |
+
+> ⚠️ **NUNCA compartilhe o mesmo bucket S3 entre validator de testnet e de mainnet.**
+> Um validator testnet gravando no bucket de mainnet escreve checkpoints com
+> `mailbox_domain: 1325`, que o relayer **descarta** (mismatch de domínio) → as
+> entregas de mainnet travam. Use buckets separados (ex.: `…-terraclassic` para mainnet,
+> `…-terraclassic-testnet` para testnet).
+
+### Config crítico do RELAYER (mainnet)
+- `relayChains` inclui **`solanamainnet`** (ex.: `terraclassic,bsc,ethereum,solanamainnet`).
+- `chains.solanamainnet.rpcUrls` → use **Helius** (o público `api.mainnet-beta.solana.com`
+  dá 429 e falha em "landar" tx sob congestionamento).
+- **Signer Solana COM SOL.** O relayer paga cada entrega no Solana (~**0,0013 SOL** cada:
+  taxa + ATA + mint). Sem SOL, **nada entrega** (a mensagem fica pendente sem erro claro).
+  ~$5 (≈0,06 SOL) cobre ~40 entregas — **monitore e recarregue** o signer.
+- RPCs de **BSC/ETH** com API key (os públicos dão `limit exceeded`/`unauthorized`).
+
+### Troubleshooting: "fiz a transferência mas o token não chegou"
+
+Cheque nesta ordem:
+
+```bash
+RPC="https://mainnet.helius-rpc.com/?api-key=<KEY>"
+CLIENT=~/hyperlane-monorepo/rust/sealevel/target/release/hyperlane-sealevel-client
+MAILBOX=E588QtVUvresuXq2KoNEwAmoifCzYGpRBdHByN9KQMbi
+
+# 1) A mensagem foi entregue no destino?
+$CLIENT -u "$RPC" mailbox delivered --message-id <0xMSGID> --program-id $MAILBOX
+
+# 2) O validator está assinando o domínio CERTO (132556, não 1325)?
+B="<bucket-do-validator>"; U="https://$B.s3.<region>.amazonaws.com"
+curl -s "$U/checkpoint_latest_index.json"                    # ex.: 8
+curl -s "$U/checkpoint_8_with_id.json" | grep mailbox_domain # deve ser 132556
+
+# 3) Validator está em dia? (métrica)
+curl -s localhost:9090/metrics | grep hyperlane_latest_checkpoint
+
+# 4) O SIGNER do relayer tem SOL?
+solana balance <SIGNER_SOLANA_DO_RELAYER> --url "$RPC"       # se 0 -> financie!
+
+# 5) O relayer está tentando entregar? (logs)
+journalctl -u hyperlane-relayer | grep <MSGID>              # InclusionStage / Finalized
+```
+
+**Causas reais já encontradas (deploy igorfake mainnet):**
+1. **Bucket S3 compartilhado testnet+mainnet** → checkpoints `domain 1325` poluíram o
+   bucket de mainnet → relayer travou. *Fix:* apagar os checkpoints 1325 do bucket +
+   corrigir `checkpoint_latest_index` + bucket separado para testnet.
+2. **Signer Solana do relayer com 0 SOL** → o relayer montava a tx mas não conseguia
+   submeter. *Fix:* enviar SOL para o signer.
+
+Depois de corrigir, o relayer **reprocessa as pendentes automaticamente** (não precisa
+reenviar a transferência).
