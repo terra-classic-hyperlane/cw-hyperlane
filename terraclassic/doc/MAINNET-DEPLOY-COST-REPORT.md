@@ -92,7 +92,7 @@ not burned. Only the transaction fees (~0.017 SOL) are non-recoverable.
 | ATA payer (funding) | `CuT1SZWTEHCBtKcFUptf53U7npm9fn41xDucp699nr7D` | 0.05000000 |
 | **Subtotal** | | **2.27916968** |
 
-### 4. Operational — relayer signer funding (delivery gas)
+### 4. Operational — relayer signer funding (delivery gas) — **borne by the relayer operator, NOT the community**
 
 The **relayer** needs SOL in its Solana signer to pay for message-delivery transactions
 (≈ 0.0013 SOL per delivery: fee + recipient ATA + token mint). Funded on 2026-07-03:
@@ -103,19 +103,29 @@ The **relayer** needs SOL in its Solana signer to pay for message-delivery trans
 
 TX: `4MNLr5HhC37jEYRKexyXFDpcoZArMwGjSMN3pWxmqinfoZ4qhEjvxWHDsLsnEkKysgNBxrbJsDaXQ3gfjwv6zLBy`
 
-> This is an **operational / recurring** cost — **not** recoverable rent. It is consumed
-> by delivery fees on Solana. Monitor the signer balance and top it up as needed
+> ⚠️ **This is a cost of whoever OPERATES the relayer — NOT a community cost.** The
+> relayer is an off-chain service; its Solana signer gas is paid by the relayer operator.
+> Currently the **deploy developer operates the relayer and volunteers to keep operating
+> it**, funding this signer from their own funds. It is therefore **not charged against
+> the community donation**. It is an operational/recurring cost (not recoverable rent),
+> consumed by delivery fees; the operator monitors and tops up the signer as needed
 > (~0.06 SOL ≈ 40 deliveries). It unblocked the first TC→Solana deliveries (messages
-> `0xef69b6f7…` and `0x269c455b…` delivered successfully).
+> `0xef69b6f7…` and `0x269c455b…`, delivered successfully).
 
 ## Totals
 
 | | SOL |
 |---|---|
 | **Rent locked** (recoverable on teardown) | **5.02507064** |
-| **Transaction fees** (burned, non-recoverable) | **≈ 0.01667** |
-| **Operational** — relayer signer funding (delivery gas) | **0.06067** |
-| **TOTAL** | **≈ 5.10241** |
+| **Transaction fees** (deploy — burned, non-recoverable) | **≈ 0.01667** |
+| **Deploy subtotal** (against the community-funded pool) | **≈ 5.04174** |
+| **Relayer signer funding** — *operator-borne, **NOT** community* | **0.06067** |
+| **Total moved from the wallet** | **≈ 5.10241** |
+
+> The **deploy subtotal (≈ 5.04174 SOL)** is what is charged against the community
+> donation (of which ≈ 5.025 is recoverable rent, ≈ 0.017 burned fees). The **relayer
+> signer funding (0.06067 SOL)** is **not** community cost — it belongs to the relayer
+> operator (see §4).
 
 > programdata rent scales with the `.so` size: warp `2.22` (312K) > IGP `1.61` (228K) >
 > ISM `1.12` (160K).
@@ -170,10 +180,31 @@ community.**
 
 The community's `7.449182` SOL (≈ 585.70 USDC, converted from LUNC — see *Funding source*
 and *Funding trail*) is tracked **separately** from the deploy developer's personal funds
-(the pre-existing `2.1028` SOL). Only what is genuinely consumed by the production
-deployment (LUNC + USTC + shared IGP/ISM infra + delivery/relayer costs) is charged
-against the community donation; the **remaining balance is returned to the community**.
+(the pre-existing `2.1028` SOL). Only what is genuinely consumed by the **on-chain
+production deployment** (LUNC + USTC warp routes + shared IGP/ISM infra) is charged
+against the community donation. **Relayer operating costs (signer gas) are borne by the
+relayer operator, not the community** (see §4). The **remaining balance is returned to
+the community**.
 
 > Portuguese / Português: **assim que todos os deploys de LUNC e USTC forem concluídos e
 > o token de teste `igorfake` for fechado (recuperando ~2,28 SOL), o valor que sobrar dos
 > `7.449182` SOL doados pela comunidade será devolvido à comunidade.**
+
+## Governance — ownership handoff to a validators multisig
+
+During deployment the community infrastructure (community **IGP** and **ISM**) and the
+warp routes are owned by the **deploy developer's key** (bootstrap owner). This is
+temporary.
+
+> ⭐ **Once all deployments are complete, ownership will be transferred to a
+> multi-signature (multisig) account controlled by the Hyperlane validators** — so that
+> **no single party controls the community infrastructure**; changes (oracle updates,
+> ISM validators, upgrades, beneficiary) require M-of-N approval by the validators.
+
+This covers **all authorities**: IGP owner + beneficiary, Overhead IGP owner, ISM owner,
+program upgrade authorities, and each warp route owner. The bootstrap-then-handoff
+sequence and the exact transfer procedure are documented in `TRANSFER-SOLANA-OWNERSHIP.md`.
+
+> Português: **assim que tudo for implantado, o `owner` passará a ser uma conta
+> multi-assinatura (multisig) dos validadores da Hyperlane** — governança compartilhada,
+> sem controle por uma única parte.

@@ -189,7 +189,7 @@ Cada token vive em `.networks.<net>.warp_tokens.<key>`:
 - `type: synthetic` → token nasce na Solana representando o ativo do Terra Classic.
 - `decimals` → precisa bater com o ativo de origem.
 - `owner` → para quem o script transfere a posse do warp **ao final** do deploy.
-  Em produção, use o **multisig da comunidade** (não uma EOA de deploy).
+  Em produção, use o **multisig dos validadores da Hyperlane** (não uma EOA de deploy).
 - `program_id`/`mint_address`/`deployed` são preenchidos pelo script automaticamente.
 
 ---
@@ -236,7 +236,7 @@ automação com chave quente — quem é owner do IGP também pode trocar o bene
 ### Modelo de handoff (deployer → governança)
 1. Deploy com a **chave de deploy** (quente) — vira owner temporário.
 2. Configura tudo (oráculo, validators, beneficiary) **enquanto** ainda é owner.
-3. Transfere **owner + upgrade authority** para o **multisig da comunidade** (Squads).
+3. Transfere **owner + upgrade authority** para o **multisig dos validadores da Hyperlane** (Squads).
    - Use `transfer-solana-ownership.sh` (ver `TRANSFER-SOLANA-OWNERSHIP.md`).
    - Ordem importa: setar beneficiary **antes** de transferir o owner.
    - São **3 autoridades** por programa (owner de access-control, upgrade authority) +

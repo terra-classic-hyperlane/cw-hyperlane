@@ -17,7 +17,7 @@ como dona de tudo. Depois, a posse é entregue a quem deve governar de fato.
 | Fase | `NEW_OWNER` | Quando |
 |------|-------------|--------|
 | **1 — Ensaio** | `EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd` (chave de owner que você controla) | Agora, em testnet, para validar o fluxo |
-| **2 — Produção** | Vault do **multisig Squads** da comunidade | Depois de todo o deploy de mainnet estar pronto e conferido |
+| **2 — Produção** | Vault do **multisig Squads dos validadores da Hyperlane** | Depois de todo o deploy de mainnet estar pronto e conferido |
 
 A Fase 1 é um teste seguro: como você controla **as duas** chaves (deployer e
 `EMAYGf`), dá para reverter. Na Fase 2, entregar ao multisig é **porta de mão única**.
@@ -74,7 +74,7 @@ Se você não passar, o script lista os tokens deployados e sai.
 # Mainnet (dry-run)
 NET_KEY=solanamainnet ./transfer-solana-ownership.sh igorfake
 
-# Fase 2 — entregar ao multisig da comunidade
+# Fase 2 — entregar ao multisig dos validadores da Hyperlane
 NEW_OWNER=<SQUADS_VAULT> NET_KEY=solanamainnet ./transfer-solana-ownership.sh igorfake --execute
 ```
 
