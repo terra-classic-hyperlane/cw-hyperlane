@@ -15,13 +15,13 @@
       "monorepo_dir": "/home/lunc/hyperlane-monorepo/rust/sealevel",
       "ism": {
         "_comment": "MultisigISM program — valida mensagens da Terra Classic recebidas no Solana",
-        "program_id": "5FgXjCJ8hw1hDbYhvwMB7PFN6oBhVcHuLo3ABoYynMZh",
+        "program_id": "FQXMB763C9EMKGsGgjjkvtZvUakV9RieMpRwx11gRbja",
         "threshold": 1
       },
       "igp": {
         "_comment": "IGP program + overhead account — paga gas na Terra Classic. destination_gas_terra = unidades de gas no destino",
-        "program_id": "5p7Hii6CJL4xGBYYTGEQmH9LnUSZteFJUu9AVLDExZX2",
-        "account": "E9i32KsKGQZMYTguZ81VHUueNvpTGh7nb9J5bRif4xT1",
+        "program_id": "ESag6QsGmixv5HrtEgi5qxJxWQS1NeBa5TCVKfnCQ8c2",
+        "account": "FgsCd3gFPaUuzU7jH9rSp9YQ4mNrvxo9SxDs75FRgtny",
         "destination_gas_terra": 3000000
       },
       "warp_tokens": {
@@ -92,16 +92,18 @@
           "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
         },
         "igorfake": {
-          "deployed": false,
+          "deployed": true,
           "type": "synthetic",
-          "program_id": "",
-          "program_hex": "",
-          "mint_address": "",
+          "program_id": "GfwnLrBJtG161xgN7fnoVnDFFzgwE9p1YGzE4CBNgz9N",
+          "program_hex": "0xe8d9510b2149c6a1d8b4858ac6cfccda08e82283020b405d992ee0f1616fa4d1",
+          "mint_address": "3jum56DGwWqNhhNKBZUtpbH4z6pBDF9yLypac5nJog2i",
           "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-igorfake.json",
           "decimals": 6,
           "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
         }
-      }
+      },
+      "mailbox": "75HBBLae3ddeneJVrZeyrDfv6vb7SMC3aCpBucSXS5aR",
+      "validator_announce": "8qNYSi9EP1xSnRjtMpyof88A26GBbdcrsa61uSaHiwx3"
     },
     "solanamainnet": {
       "_comment": "Solana Mainnet — habilitado 2026-06-04",
@@ -121,13 +123,13 @@
       "monorepo_dir": "/home/lunc/hyperlane-monorepo/rust/sealevel",
       "ism": {
         "_comment": "MultisigISM mainnet — LwNfVYMDzAe5dCJgA5CipTZcT34Eyf74zLr81K91jxk",
-        "program_id": "LwNfVYMDzAe5dCJgA5CipTZcT34Eyf74zLr81K91jxk",
+        "program_id": "4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ",
         "threshold": 1
       },
       "igp": {
         "_comment": "IGP program mainnet + overhead_igp_account (AkeHBb...)",
-        "program_id": "BhNcatUDC2D5JTyeaqrdSukiVFsEHK7e3hVmKMztwefv",
-        "account": "AkeHBbE5JkwVppujCQQ6WuxsVsJtruBAjUo6fDCFp6fF",
+        "program_id": "FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR",
+        "account": "FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ",
         "destination_gas_terra": 3000000
       },
       "warp_tokens": {
@@ -135,14 +137,15 @@
           "_comment": "IGORFAKE CW20 → token sintético no Solana Mainnet",
           "deployed": true,
           "type": "synthetic",
-          "program_id": "Hs4FrEgigJaabS5HtdkzceFdCPNmPhntWbbdWBJcXyCn",
-          "program_hex": "0xfa8db67e3dba9c6286873f1ab9ae954232464fa8091881650f3097fe831db30b",
-          "mint_address": "5s6DL6pYGxLNXNf1U915BLzLxNkRjnWCzqyzEfXuYDQT",
+          "program_id": "EPJNrrpCeZGqDPoFtdV9u9uDWBNW3Xqh84LfM7345zcL",
+          "program_hex": "0xc6de5b1fd8d285c06fa3967440530edfec35e907464599e3b485c5f273437f95",
+          "mint_address": "CeLHx5Wm9AzuWRnP4URMfNqNa9kDDrnsNGoATCS96QwD",
           "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-igorfake.json",
           "decimals": 6,
           "owner": "BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j"
         }
-      }
+      },
+      "validator_announce": "pRgs5vN4Pj7WvFbxf6QDHizo2njq2uksqEUbaSghVA8"
     },
     "solanadevnet": {
       "_comment": "Solana Devnet — para testes locais",

@@ -11,3 +11,12 @@ log/
 
 # ── Local keypair references (never store private keys in repo) ───────────
 *.local.json
+
+# ── Private keypairs + deployment artifacts (never commit) ────────────────
+**/keys/
+warp/reference-program/
+warp/solanamainnet/
+warp/solanatestnet/
+warp/solanadevnet/
+warp/terraclassic-cw20-*.json
+*.bak

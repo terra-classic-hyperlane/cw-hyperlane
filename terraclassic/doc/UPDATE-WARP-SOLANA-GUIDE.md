@@ -218,7 +218,7 @@ warp program. This is the Solana → Terra Classic directional link.
 **Inputs:**
 - Remote domain (Terra Classic = 132556)
 - Remote router address in hex (0x format), e.g.:
-  `0xdd2cbc22fdfb1ebfc9e2119565eb87eb67c87dcdad4bbfd29ceee9e83f38f921`
+  `0x70fd6184ff0a5ad088c9b199bba6666bf4cb0a35cf92f5d94c27791d4a2da859`
 
 **Note:** The Terra Classic → Solana direction (`set_route`) must be done
 separately on the Terra Classic side using `terrad` or the deploy script.
@@ -330,7 +330,7 @@ $CLIENT -k $KEY -u $RPC igp destination-gas-overhead \
 ```bash
 $CLIENT -k $KEY -u $RPC token enroll-remote-router \
   --program-id $PID \
-  1325 0xdd2cbc22fdfb1ebfc9e2119565eb87eb67c87dcdad4bbfd29ceee9e83f38f921
+  1325 0x70fd6184ff0a5ad088c9b199bba6666bf4cb0a35cf92f5d94c27791d4a2da859
 ```
 
 ### Transfer ownership

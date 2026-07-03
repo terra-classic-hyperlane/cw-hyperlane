@@ -8,7 +8,7 @@
 
 IGORFAKE/terraclassic-bsc-ethereum-solanamainnet:
   tokens:
-    - addressOrDenom: "terra1m5ktcghalv0tlj0zzx2kt6u8adnuslwd449ml55uam57s0eclyssv634a4"
+    - addressOrDenom: "terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel"
       chainName: "terraclassic"
       standard: "CwHypCollateral"
       collateralAddressOrDenom: "terra1lpkaaqjaq8zfwktge3vy0zg46nxxsynsge2wxa7addpweu2w6gmsy3lhkr"
@@ -24,7 +24,7 @@ IGORFAKE/terraclassic-bsc-ethereum-solanamainnet:
       chainName: "bsc"
       standard: "EvmHypSynthetic"
       connections:
-        - token: "cosmos|terraclassic|terra1m5ktcghalv0tlj0zzx2kt6u8adnuslwd449ml55uam57s0eclyssv634a4"
+        - token: "cosmos|terraclassic|terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel"
       decimals: 6
       logoURI: ""
       name: "IGORFAKE"
@@ -33,7 +33,7 @@ IGORFAKE/terraclassic-bsc-ethereum-solanamainnet:
       chainName: "ethereum"
       standard: "EvmHypSynthetic"
       connections:
-        - token: "cosmos|terraclassic|terra1m5ktcghalv0tlj0zzx2kt6u8adnuslwd449ml55uam57s0eclyssv634a4"
+        - token: "cosmos|terraclassic|terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel"
       decimals: 6
       logoURI: ""
       name: "IGORFAKE"
@@ -43,7 +43,7 @@ IGORFAKE/terraclassic-bsc-ethereum-solanamainnet:
       standard: "SealevelHypSynthetic"
       collateralAddressOrDenom: "5s6DL6pYGxLNXNf1U915BLzLxNkRjnWCzqyzEfXuYDQT"
       connections:
-        - token: "cosmos|terraclassic|terra1m5ktcghalv0tlj0zzx2kt6u8adnuslwd449ml55uam57s0eclyssv634a4"
+        - token: "cosmos|terraclassic|terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel"
       decimals: 6
       logoURI: ""
       name: "IGORFAKE"

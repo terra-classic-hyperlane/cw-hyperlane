@@ -504,7 +504,7 @@ $CLIENT -k $KEY -u $RPC token set-destination-gas \
 
 # Enroll remote router
 $CLIENT -k $KEY -u $RPC token enroll-remote-router \
-  --program-id $PID 1325 0xdd2cbc22fdfb1ebfc9e2119565eb87eb67c87dcdad4bbfd29ceee9e83f38f921
+  --program-id $PID 1325 0x70fd6184ff0a5ad088c9b199bba6666bf4cb0a35cf92f5d94c27791d4a2da859
 ```
 
 ---

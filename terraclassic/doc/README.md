@@ -267,7 +267,7 @@ Deployed 2026-06-09 via `CustomInstantiateWasm-mainnet-v2.ts` (v2 — domain 132
 | Token | Warp Address | Hex bytes32 |
 |---|---|---|
 | **ZTT** | `terra13uhhpfzfxx0t0w2adxm75vkufe4f4m8stmv23nc806gahw6jd3psadyjl2` | `0x8f2f70a449319eb7b95d69b7ea32dc4e6a9aecf05ed8a8cf077e91dbbb526c43` |
-| **IGORFAKE** | `terra1m5ktcghalv0tlj0zzx2kt6u8adnuslwd449ml55uam57s0eclyssv634a4` | `0xdd2cbc22fdfb1ebfc9e2119565eb87eb67c87dcdad4bbfd29ceee9e83f38f921` |
+| **IGORFAKE** | `terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel` | `0x70fd6184ff0a5ad088c9b199bba6666bf4cb0a35cf92f5d94c27791d4a2da859` |
 
 ---
 

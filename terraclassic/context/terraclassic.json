@@ -97,6 +97,17 @@
           }
         ]
       }
+    },
+    "warp": {
+      "native": [],
+      "cw20": [
+        {
+          "id": "igorfake",
+          "type": "hpl_warp_cw20",
+          "address": "terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel",
+          "hexed": "0x70fd6184ff0a5ad088c9b199bba6666bf4cb0a35cf92f5d94c27791d4a2da859"
+        }
+      ]
     }
   }
 }

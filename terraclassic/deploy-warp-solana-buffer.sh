@@ -4,32 +4,40 @@
 #     Buffer-reuse strategy (no BPF recompilation required)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-#  Strategy: "binary dump + separate deploy"
+#  Strategy: "local build + separate deploy" (community-verifiable)
 #
 #  How it works:
-#    1. Obtains the .so binary via `solana program dump` from an already-deployed
-#       program (or uses a locally compiled binary)
+#    1. Compiles the .so binary locally from source via `cargo build-sbf`
+#       (reproducible → the community can verify the SHA-256, no blind trust in
+#        a third-party program). The hash is printed and saved as <file>.sha256.
+#       Only this locally-built binary is ever deployed — there is NO fallback
+#       to any pre-existing on-chain program's bytecode.
 #    2. Uploads the binary to chain via `solana program deploy` (direct)
 #    3. Calls jito-warp-init.js → MEV-safe init (single atomic transaction)
 #       → creates token storage + mint PDA atomically (no MEV window)
 #    4. Configures ISM, IGP, destination gas, enroll-remote-router, set_route
 #
 #  Benefits:
-#    ✅ No cargo build-sbf required (saves 15-20 min BPF compilation)
-#    ✅ Binary sourced from an existing mainnet program (trusted, no recompile)
+#    ✅ Binary compiled from source → publishable SHA-256 the community can audit
+#    ✅ No trust required in an external mainnet program (no dump, no fallback)
 #    ✅ Buffer is reused on retries (partial deploy failure = pay only once)
 #    ✅ MEV-safe mint initialization via single atomic transaction
 #    ⚠️  SOL cost for binary upload (~2-5 SOL) is unavoidable per program
+#    ⚠️  First local build takes ~15-20 min (BPF compilation); cached afterwards
 #
-#  Default source program (synthetic, solanamainnet):
-#    Fa4zQJCH7id5KL1eFJt2mHyFpUNfCCSkHgtMrLvrRJBN  (TONY / Big Tony)
+#  Binary source is chosen by BINARY_SOURCE (default: build):
+#    build  → compile locally from source            (recommended, verifiable)
+#    local  → reuse an already-compiled target/deploy/*.so (built by you)
+#
+#  Pinned toolchain + reference SHA-256 for community verification:
+#    doc/WARP-SOLANA-BINARY-REFERENCE.md
 #
 #  Usage:
 #    export TERRA_PRIVATE_KEY="your_hex_private_key"
 #    ./deploy-warp-solana-buffer.sh
 #
 #  Optional environment variables:
-#    SOURCE_PROGRAM_ID=<base58>  → program whose binary will be reused
+#    BINARY_SOURCE=build|local  → how to obtain the .so (default: build)
 #    WARP_PROGRAM_ID=<base58>    → skip deploy (program already exists)
 #    SKIP_INIT=1                 → skip token init (jito-warp-init.js)
 #    SKIP_ISM=1                  → skip ISM configuration
@@ -42,6 +50,11 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 
 set -euo pipefail
+
+# Ensure the Solana toolchain (solana, solana-keygen, cargo-build-sbf) is on PATH.
+# A terminal opened before the install — or a non-login shell — may miss it.
+_SOLANA_BIN="$HOME/.local/share/solana/install/active_release/bin"
+[ -d "$_SOLANA_BIN" ] && case ":$PATH:" in *":$_SOLANA_BIN:"*) ;; *) export PATH="$_SOLANA_BIN:$PATH" ;; esac
 
 # ─────────────────────────────────────────────────────────────────────────────
 # COLORS
@@ -60,9 +73,6 @@ LOG_DIR="$SCRIPT_DIR/log"
 mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/deploy-warp-solana-buffer.log"
 STATE_FILE="$SCRIPT_DIR/.warp-solana-buffer-state.json"
-
-# Default source program for binary dump (synthetic type, confirmed on mainnet3)
-DEFAULT_SOURCE_PROGRAM="Fa4zQJCH7id5KL1eFJt2mHyFpUNfCCSkHgtMrLvrRJBN"
 
 # Auto-detect PROJECT_ROOT (looks for package.json going up the directory tree)
 PROJECT_ROOT="$SCRIPT_DIR"
@@ -186,10 +196,17 @@ command -v node    &>/dev/null || { log_err "node is required"; exit 1; }
 command -v solana  &>/dev/null || { log_err "solana-cli is required"; exit 1; }
 command -v cargo   &>/dev/null || { log_err "cargo (Rust) is required"; exit 1; }
 
-TERRA_DOMAIN=$(evm_cfg '.terra_classic.domain')
-TERRA_RPC=$(evm_cfg    '.terra_classic.rpc')
-TERRA_CHAIN_ID=$(evm_cfg '.terra_classic.chain_id')
-log_ok "Terra Classic: domain=${TERRA_DOMAIN}, rpc=${TERRA_RPC}"
+# Which warp-evm-config.json block to read Terra Classic data from:
+#   .terra_classic          → mainnet (columbus-5)   [default]
+#   .terra_classic_testnet  → testnet (rebel-2)       [set by the testnet launcher]
+TERRA_CFG="${TERRA_CFG:-.terra_classic}"
+
+# Terra Classic vars: explicit env overrides (testnet launcher passes rebel-2 /
+# domain 1325 / luncblaze rpc) win over the config block above.
+TERRA_DOMAIN="${TERRA_DOMAIN:-$(evm_cfg "${TERRA_CFG}.domain")}"
+TERRA_RPC="${TERRA_RPC:-$(evm_cfg "${TERRA_CFG}.rpc")}"
+TERRA_CHAIN_ID="${TERRA_CHAIN_ID:-$(evm_cfg "${TERRA_CFG}.chain_id")}"
+log_ok "Terra Classic [${TERRA_CFG}]: domain=${TERRA_DOMAIN}, rpc=${TERRA_RPC}"
 
 load_state
 
@@ -197,24 +214,35 @@ load_state
 # MENU 1 — SELECT TOKEN
 # ═════════════════════════════════════════════════════════════════════════════
 log_sep "TOKEN SELECTION"
-mapfile -t TOKEN_KEYS < <(jq -r '.terra_classic.tokens | keys[]' "$EVM_CONFIG" 2>/dev/null)
+mapfile -t TOKEN_KEYS < <(jq -r "${TERRA_CFG}.tokens | keys[]" "$EVM_CONFIG" 2>/dev/null)
 declare -a TOKEN_MENU=()
 i=1
 for TK in "${TOKEN_KEYS[@]}"; do
-    TK_NAME=$(evm_cfg ".terra_classic.tokens.${TK}.name")
-    TK_SYM=$(evm_cfg  ".terra_classic.tokens.${TK}.symbol")
-    TK_DEP=$(evm_cfg  ".terra_classic.tokens.${TK}.terra_warp.deployed")
+    TK_NAME=$(evm_cfg "${TERRA_CFG}.tokens.${TK}.name")
+    TK_SYM=$(evm_cfg  "${TERRA_CFG}.tokens.${TK}.symbol")
+    TK_DEP=$(evm_cfg  "${TERRA_CFG}.tokens.${TK}.terra_warp.deployed")
     TOKEN_MENU+=("$TK")
     [ "$TK_DEP" = "true" ] && TAG="${G}[TC ok]${NC}" || TAG="${Y}[TC pending]${NC}"
     log "  [${W}$i${NC}]  ${C}${TK}${NC} — ${TK_NAME:-N/A} (${TK_SYM:-?}) ${TAG}"
     i=$((i+1))
 done
-echo -ne "  ${W}Token [1-${#TOKEN_MENU[@]}]: ${NC}"; read -r SEL_TOK 2>/dev/null || SEL_TOK="1"
-SEL_TOK="${SEL_TOK:-1}"
+# Non-interactive token selection: if TOKEN_KEY is preset (e.g. by a launcher)
+# and matches a token, skip the menu.
+SEL_TOK=""
+if [ -n "${TOKEN_KEY:-}" ]; then
+    for idx in "${!TOKEN_MENU[@]}"; do
+        [ "${TOKEN_MENU[$idx]}" = "$TOKEN_KEY" ] && SEL_TOK=$((idx+1))
+    done
+    [ -n "$SEL_TOK" ] && log_info "Token preset via TOKEN_KEY=${TOKEN_KEY} (menu skipped)"
+fi
+if [ -z "$SEL_TOK" ]; then
+    echo -ne "  ${W}Token [1-${#TOKEN_MENU[@]}]: ${NC}"; read -r SEL_TOK 2>/dev/null || SEL_TOK="1"
+    SEL_TOK="${SEL_TOK:-1}"
+fi
 [[ "$SEL_TOK" =~ ^[0-9]+$ ]] && [ "$SEL_TOK" -ge 1 ] && [ "$SEL_TOK" -le "${#TOKEN_MENU[@]}" ] \
     || { log_err "Invalid selection"; exit 1; }
 TOKEN_KEY="${TOKEN_MENU[$((SEL_TOK-1))]}"
-TK_TC=".terra_classic.tokens.${TOKEN_KEY}"
+TK_TC="${TERRA_CFG}.tokens.${TOKEN_KEY}"
 TOKEN_NAME=$(evm_cfg    "${TK_TC}.name")
 TOKEN_SYMBOL=$(evm_cfg  "${TK_TC}.symbol")
 TOKEN_DEC=$(evm_cfg     "${TK_TC}.decimals")
@@ -242,8 +270,19 @@ for NK in "${NET_KEYS[@]}"; do
     i=$((i+1))
 done
 [ ${#NET_MENU[@]} -eq 0 ] && { log_err "No Solana network enabled!"; exit 1; }
-echo -ne "  ${W}Network [1-${#NET_MENU[@]}]: ${NC}"; read -r SEL_NET 2>/dev/null || SEL_NET="1"
-SEL_NET="${SEL_NET:-1}"
+# Non-interactive network selection: if NET_KEY is preset (e.g. by the testnet
+# launcher) and matches an enabled network, skip the menu.
+SEL_NET=""
+if [ -n "${NET_KEY:-}" ]; then
+    for idx in "${!NET_MENU[@]}"; do
+        [ "${NET_MENU[$idx]}" = "$NET_KEY" ] && SEL_NET=$((idx+1))
+    done
+    [ -n "$SEL_NET" ] && log_info "Network preset via NET_KEY=${NET_KEY} (menu skipped)"
+fi
+if [ -z "$SEL_NET" ]; then
+    echo -ne "  ${W}Network [1-${#NET_MENU[@]}]: ${NC}"; read -r SEL_NET 2>/dev/null || SEL_NET="1"
+    SEL_NET="${SEL_NET:-1}"
+fi
 [[ "$SEL_NET" =~ ^[0-9]+$ ]] && [ "$SEL_NET" -ge 1 ] && [ "$SEL_NET" -le "${#NET_MENU[@]}" ] \
     || { log_err "Invalid selection"; exit 1; }
 NET_KEY="${NET_MENU[$((SEL_NET-1))]}"
@@ -252,7 +291,7 @@ N=".networks.${NET_KEY}"
 NET_DISPLAY=$(sol_cfg "${N}.display_name")
 NET_ENV=$(sol_cfg     "${N}.environment")
 NET_DOMAIN=$(sol_cfg  "${N}.domain")
-NET_RPC=$(sol_cfg     "${N}.rpc")
+NET_RPC="${NET_RPC:-$(sol_cfg "${N}.rpc")}"   # env override wins over config (better RPC for congested nodes)
 NET_EXPLORER=$(sol_cfg "${N}.explorer")
 NET_KEYPAIR=$(sol_cfg "${N}.keypair" | sed "s|^~|$HOME|")
 NET_MONOREPO=$(sol_cfg "${N}.monorepo_dir" | sed "s|^~|$HOME|")
@@ -342,52 +381,74 @@ read -r CONFIRM 2>/dev/null || CONFIRM="y"
 [[ "$CONFIRM" =~ ^[nN]$ ]] && { log "  Cancelled."; exit 0; }
 
 # ═════════════════════════════════════════════════════════════════════════════
-# STEP 1 — GET BINARY (.so)
+# STEP 1 — GET BINARY (.so) — local build preferred (community-verifiable)
 # ═════════════════════════════════════════════════════════════════════════════
 log_sep "STEP 1 — GET BINARY (.so)"
 
 BINARY_FILE="$WARP_ROUTE_DIR/hyperlane_sealevel_token.so"
+LOCAL_SO="$BUILT_SO_DIR/hyperlane_sealevel_token.so"
+TOKEN_MANIFEST="$NET_MONOREPO/programs/hyperlane-sealevel-token/Cargo.toml"
+BINARY_SOURCE="${BINARY_SOURCE:-build}"
+
+# Records the .so SHA-256 next to it and prints it — the community references
+# THIS hash to verify the deployed bytecode instead of trusting a live program.
+publish_hash() {
+    local so="$1"
+    [ -f "$so" ] || return 0
+    local sum
+    sum=$(sha256sum "$so" | awk '{print $1}')
+    echo "$sum  $(basename "$so")" > "${so}.sha256"
+    BINARY_SHA256="$sum"
+    log_ok "SHA-256: ${G}${sum}${NC}"
+    log_info "Hash saved: ${so}.sha256"
+    log_info "Anyone can verify with: ${Y}sha256sum ${so}${NC}"
+}
 
 if [ -n "${WARP_PROGRAM_ID:-}" ]; then
-    log_warn "WARP_PROGRAM_ID already set — skipping binary download and deploy."
+    log_warn "WARP_PROGRAM_ID already set — skipping binary acquisition and deploy."
     BINARY_FILE=""
 elif [ -f "$BINARY_FILE" ]; then
-    log_ok "Binary already exists: ${C}${BINARY_FILE}${NC}"
-    BINARY_SZ=$(du -sh "$BINARY_FILE" | cut -f1)
-    log_info "Size: ${BINARY_SZ}"
+    log_ok "Binary already present: ${C}${BINARY_FILE}${NC} ($(du -sh "$BINARY_FILE" | cut -f1))"
+    publish_hash "$BINARY_FILE"
 else
-    SOURCE_PROGRAM="${SOURCE_PROGRAM_ID:-${DEFAULT_SOURCE_PROGRAM}}"
-
-    # Option A: use locally compiled binary
-    LOCAL_SO="$BUILT_SO_DIR/hyperlane_sealevel_token.so"
-    if [ -f "$LOCAL_SO" ]; then
-        log_info "Local binary found: ${LOCAL_SO}"
-        cp "$LOCAL_SO" "$BINARY_FILE"
-        log_ok "Using locally compiled binary."
-    else
-        # Option B: dump binary from an existing mainnet program
-        log_info "Local binary not found. Dumping from program ${SOURCE_PROGRAM}..."
-        log_info "Source program (synthetic solanamainnet): ${C}${SOURCE_PROGRAM}${NC}"
-        DUMP_RPC="${DUMP_RPC:-https://api.mainnet-beta.solana.com}"
-        log_info "Dump RPC: ${DUMP_RPC}"
-        log ""
-        set +e
-        solana program dump "$SOURCE_PROGRAM" "$BINARY_FILE" \
-            --url "$DUMP_RPC" 2>&1 | tee -a "$LOG_FILE"
-        DUMP_EXIT=$?
-        set -e
-        if [ $DUMP_EXIT -ne 0 ] || [ ! -f "$BINARY_FILE" ]; then
-            log_err "Failed to dump program ${SOURCE_PROGRAM}"
-            log "  Check the RPC or set SOURCE_PROGRAM_ID to another synthetic program."
-            log "  Alternative: compile the binary locally:"
-            log "    cd $NET_MONOREPO && cargo build-sbf --manifest-path programs/token/Cargo.toml"
-            log "    cp target/deploy/hyperlane_sealevel_token.so ${BINARY_FILE}"
+    case "$BINARY_SOURCE" in
+        build)
+            # Only path that deploys: compile from source so the SHA-256 is auditable.
+            log_info "Binary source: ${G}build${NC} (compile locally from source — verifiable)"
+            command -v cargo-build-sbf &>/dev/null || {
+                log_err "cargo-build-sbf not found in PATH — cannot build locally."
+                log "  Install the Solana toolchain, or (if you already built it) set BINARY_SOURCE=local."
+                exit 1; }
+            [ -f "$TOKEN_MANIFEST" ] || { log_err "Token manifest not found: $TOKEN_MANIFEST"; exit 1; }
+            log_info "Compiling: ${C}cargo build-sbf --manifest-path ${TOKEN_MANIFEST}${NC}"
+            log_warn "First build may take ~15-20 min (BPF compilation); cached afterwards."
+            log ""
+            set +e
+            ( cd "$NET_MONOREPO" && cargo build-sbf --manifest-path "$TOKEN_MANIFEST" ) 2>&1 | tee -a "$LOG_FILE"
+            BUILD_EXIT=${PIPESTATUS[0]}
+            set -e
+            if [ $BUILD_EXIT -ne 0 ] || [ ! -f "$LOCAL_SO" ]; then
+                log_err "Local build failed (exit $BUILD_EXIT). Fix the toolchain/source and retry."
+                exit 1
+            fi
+            cp "$LOCAL_SO" "$BINARY_FILE"
+            log_ok "Compiled locally from source."
+            ;;
+        local)
+            # Reuse a binary you already compiled yourself (no rebuild).
+            log_info "Binary source: ${G}local${NC} (reuse pre-compiled ${LOCAL_SO})"
+            [ -f "$LOCAL_SO" ] || { log_err "No compiled binary at ${LOCAL_SO}. Use BINARY_SOURCE=build."; exit 1; }
+            cp "$LOCAL_SO" "$BINARY_FILE"
+            log_ok "Using pre-compiled local binary."
+            ;;
+        *)
+            log_err "Unknown BINARY_SOURCE='${BINARY_SOURCE}' (valid: build | local)"
             exit 1
-        fi
-        BINARY_SZ=$(du -sh "$BINARY_FILE" | cut -f1)
-        log_ok "Dump complete: ${C}${BINARY_FILE}${NC} (${BINARY_SZ})"
-        log_info "Source program used: ${SOURCE_PROGRAM}"
-    fi
+            ;;
+    esac
+    BINARY_SZ=$(du -sh "$BINARY_FILE" | cut -f1)
+    log_ok "Binary ready: ${C}${BINARY_FILE}${NC} (${BINARY_SZ})"
+    publish_hash "$BINARY_FILE"
 fi
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -426,7 +487,7 @@ else
         BALANCE=$(solana balance "$NET_KEYPAIR" --url "$NET_RPC" 2>/dev/null | awk '{print $1}' || echo "0")
         log_info "Wallet balance: ${BALANCE} SOL"
         BINARY_SZ_BYTES=$(wc -c < "$BINARY_FILE" 2>/dev/null || echo "0")
-        RENT_EST=$(python3 -c "print(f'~{($BINARY_SZ_BYTES * 0.00000348):.2f} SOL')" 2>/dev/null || echo "~2-5 SOL")
+        RENT_EST=$(python3 -c "print(f'~{($BINARY_SZ_BYTES * 0.00000696):.2f} SOL')" 2>/dev/null || echo "~2-5 SOL")  # ~6.96e-6 SOL/byte (programdata rent, medido)
         log_info "Estimated binary upload cost: ${RENT_EST}"
         log_warn "This SOL cost is unavoidable — it pays for on-chain program storage."
 
@@ -480,11 +541,14 @@ fi
 
 log_ok "Program ID: ${G}${WARP_PROGRAM_ID}${NC}"
 
-# Convert Program ID to hex32 (required for Terra Classic set_route)
-if [ -z "${WARP_HEX:-}" ]; then
-    WARP_HEX=$(b58_to_hex32 "$WARP_PROGRAM_ID")
-    [ -z "$WARP_HEX" ] && { log_err "Failed to convert Program ID to hex32!"; exit 1; }
-    save_state
+# Convert Program ID to hex32 (required for Terra Classic set_route).
+# ALWAYS derive from WARP_PROGRAM_ID (source of truth) — a stale program_hex in the
+# config (e.g. from a previous/closed program) must NOT win, or set_route on Terra
+# Classic would point at the wrong Solana program.
+if [ -n "${WARP_PROGRAM_ID:-}" ]; then
+    _DERIVED_HEX=$(b58_to_hex32 "$WARP_PROGRAM_ID")
+    [ -z "$_DERIVED_HEX" ] && { log_err "Failed to convert Program ID to hex32!"; exit 1; }
+    [ "${WARP_HEX:-}" != "$_DERIVED_HEX" ] && WARP_HEX="$_DERIVED_HEX" && save_state
 fi
 log_info "Program ID (hex32): 0x${WARP_HEX}"
 
@@ -890,6 +954,7 @@ Network:          ${NET_DISPLAY} (domain: ${NET_DOMAIN})
 Token:            ${TOKEN_NAME} (${TOKEN_SYMBOL})
 Program ID (b58): ${WARP_PROGRAM_ID}
 Program ID (hex): 0x${WARP_HEX}
+Binary SHA-256:   ${BINARY_SHA256:-N/A}
 Mint Address:     ${MINT_ADDRESS:-N/A}
 ISM Program:      ${ISM_PROGRAM_ID}
 IGP Program:      ${IGP_PROGRAM_ID}
