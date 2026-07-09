@@ -804,6 +804,15 @@ else
     TMP_DIR="/tmp/igp-deploy-$$"
     mkdir -p "$TMP_DIR/src"
     [ ! -f "$IGP_SOL" ] && { log_err "IGP SOL not found: $IGP_SOL"; exit 1; }
+    # ⭐ GUARD: o domain hardcoded no .sol DEVE ser o TERRA_DOMAIN alvo. Em 04/jun/2026 o IGP foi
+    #    deployado com 1325 (testnet) na constante e a VOLTA ficou quebrada por um mês sem ninguém notar.
+    SOL_DOMAIN=$(grep -oE 'TERRA_CLASSIC_DOMAIN\s*=\s*[0-9]+' "$IGP_SOL" | grep -oE '[0-9]+' | head -1)
+    if [ -n "$SOL_DOMAIN" ] && [ "$SOL_DOMAIN" != "$TERRA_DOMAIN" ]; then
+        log_err "Domain no .sol (${SOL_DOMAIN}) ≠ TERRA_DOMAIN alvo (${TERRA_DOMAIN})!"
+        log "  Corrija a constante TERRA_CLASSIC_DOMAIN em ${IGP_SOL} antes de deployar."
+        exit 1
+    fi
+    log_ok "IGP .sol domain check: TERRA_CLASSIC_DOMAIN=${SOL_DOMAIN} ✅"
     cp "$IGP_SOL" "$TMP_DIR/src/TerraClassicIGP.sol"
 
     cd "$TMP_DIR"
@@ -987,12 +996,20 @@ else
                     "setGasOracle(address,uint96)" "$ORACLE_ADDRESS" "$GAS_OVERHEAD" \
                     --rpc-url "$NET_RPC" \
                     --private-key "$ETH_PRIVATE_KEY" \
-                    --legacy) || { log_warn "setGasOracle failed — check IGP owner"; TX_SETORACLE=""; }
+                    --legacy) || TX_SETORACLE=""
 
-                [ -n "${TX_SETORACLE:-}" ] && {
+                if [ -n "${TX_SETORACLE:-}" ]; then
                     log_ok "IGP now using custom oracle!"
                     log "   TX: ${B}${NET_EXPLORER}/tx/${TX_SETORACLE}${NC}"
-                }
+                else
+                    # FATAL: sem o oracle custom o IGP fica no oficial (sem o domain TC) → quote 0 ou revert →
+                    # a VOLTA (synthetic→TC) NÃO funciona ou despacha SEM pagar o relayer (mensagem presa).
+                    # Causa comum: RPC público instável (retry com outro --rpc-url) ou wallet não-owner do IGP.
+                    log_err "setGasOracle FAILED — the RETURN route will NOT work. Fix before continuing:"
+                    log "  cast send $IGP_ADDRESS \"setGasOracle(address,uint96)\" $ORACLE_ADDRESS $GAS_OVERHEAD \\"
+                    log "    --rpc-url <OUTRO_RPC> --private-key \$ETH_PRIVATE_KEY --legacy"
+                    exit 1
+                fi
             fi
 
             # Persist oracle address in warp-evm-config.json
@@ -1400,6 +1417,23 @@ if [ "$HAVE_CAST" = "true" ]; then
             log_warn "Router: ${ROUTER} (esperado: 0x${TERRA_B32_EXP})"
             ERROS=$((ERROS+1))
         fi
+    fi
+
+    # 7. ⭐ TESTE REAL DA VOLTA (o que importa!): quoteGasPayment(TERRA_DOMAIN) no warp.
+    #    Reverte "destination not supported" = IGP velho/errado no hook (bug 2026-07-09: domain testnet
+    #    1325 hardcoded). Quote 0 = oracle sem o domain TC (despacharia SEM pagar o relayer → msg presa).
+    log_info "7. RETURN route quote (quoteGasPayment(${TERRA_DOMAIN}))..."
+    RQUOTE=$(cast_read "$WARP_ADDRESS" "quoteGasPayment(uint32)(uint256)" "$TERRA_DOMAIN")
+    RQUOTE_NUM=$(echo "$RQUOTE" | grep -oE '^[0-9]+' | head -1)
+    if [ -z "$RQUOTE_NUM" ]; then
+        log_err "RETURN quote REVERTED — a volta (synthetic→TC) NÃO funciona! Verifique se o hook aponta p/ o IGP NOVO (domain ${TERRA_DOMAIN}) e se o AggregationHook foi re-setado (setHook)."
+        ERROS=$((ERROS+1))
+    elif [ "$RQUOTE_NUM" = "0" ]; then
+        log_err "RETURN quote = 0 — oracle do IGP sem o domain ${TERRA_DOMAIN} (setGasOracle p/ o custom). Despachar assim deixa a mensagem PRESA (sem pagamento ao relayer)."
+        ERROS=$((ERROS+1))
+    else
+        RQUOTE_NATIVE=$(python3 -c "print(f'{${RQUOTE_NUM}/1e18:.9f}')" 2>/dev/null || echo "?")
+        log_ok "RETURN route OK — fee ${RQUOTE_NATIVE} ${NET_KEY^^}-native (${RQUOTE_NUM} wei) ✅"
     fi
 fi
 

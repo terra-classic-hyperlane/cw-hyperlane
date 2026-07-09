@@ -130,7 +130,8 @@
         "_comment": "IGP program mainnet + overhead_igp_account (AkeHBb...)",
         "program_id": "FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR",
         "account": "FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ",
-        "destination_gas_terra": 3000000
+        "destination_gas_terra": 3000000,
+        "account_type": "overhead-igp"
       },
       "warp_tokens": {
         "igorfake": {

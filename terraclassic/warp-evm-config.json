@@ -449,8 +449,8 @@
         "igorfake": {
           "deployed": true,
           "address": "0xA687a4C4Ca49795999b36fDC8A18D1ddD63EdfB5",
-          "igp_custom": "0x574f760bA7488CDc987bfa85A655Db735CB0b18f",
-          "hook_aggregation": "0x77761888F33AF67627806A26Bb3F8ee727B1317A",
+          "igp_custom": "0x9650F1f8DB492750323172145e67Df4e89E964Aa",
+          "hook_aggregation": "0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8",
           "owner": "0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae",
           "oracle_custom": "0x3987cCE8f08037EBF93Ef3a934753540A94196cE",
           "ism_custom": ""
@@ -555,8 +555,8 @@
         "igorfake": {
           "deployed": true,
           "address": "0x3605d8946fC6f5a75D89D92173100F59743b5318",
-          "igp_custom": "0x5Cda2A25cFba9A6C6E550E20f87d551326F37E7E",
-          "hook_aggregation": "0x5a2666154ab2c4D43ce9187D2F6780d6eEb50A10",
+          "igp_custom": "0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923",
+          "hook_aggregation": "0xD2c82583C261fce94cD3F97f1dFF9B20a9338164",
           "owner": "0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291",
           "oracle_custom": "0x7dE950f8F0a037783989a6BE84B3620916552306",
           "ism_custom": "0xa82087B8eea0394B1476f716B91c10531025Ef42",

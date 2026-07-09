@@ -132,10 +132,24 @@ echo "$NET_RPC" | grep -q "YOUR_HELIUS_API_KEY" && {
 # Terra Classic domain + oracle params (community inputs — override via env vars)
 # Terra domain: explicit env override (testnet launcher passes 1325) wins over config (mainnet 132556)
 [ -z "${TERRA_DOMAIN:-}" ] && { TERRA_DOMAIN=$(evm_cfg '.terra_classic.domain'); TERRA_DOMAIN="${TERRA_DOMAIN:-132556}"; }
-ORACLE_EXCHANGE_RATE="${ORACLE_EXCHANGE_RATE:-1000000000000}"  # 1 SOL ≈ 1e6 LUNC = 1e12 uluna
+# ─────────────────────────────────────────────────────────────────────────────
+# FÓRMULA REAL do quote sealevel (validada on-chain, 2026-07-09; scale rust = 1e19):
+#   lamports = (gas_amount + GAS_OVERHEAD) × ORACLE_GAS_PRICE × ORACLE_EXCHANGE_RATE / 1e19 × 10^(9 − DECIMALS)
+# Para CALIBRAR pelo preço-alvo em lamports (ex.: US$0.02 → alvo = 0.02/SOL_USD × 1e9):
+#   ORACLE_EXCHANGE_RATE = alvo_lamports × 1e19 / ((100000 + GAS_OVERHEAD) × ORACLE_GAS_PRICE × 10^(9 − DECIMALS))
+# Default 29400000000 ⇒ ~0.000258 SOL ≈ US$0.02 (SOL $77 / LUNC $0.00006, 2026-07-09).
+# ⚠️ O antigo default 1e12 (e o 2e13 usado no 1º deploy) davam US$0.68–13.60 por volta — recalibre ao mudar preços!
+# ─────────────────────────────────────────────────────────────────────────────
+ORACLE_EXCHANGE_RATE="${ORACLE_EXCHANGE_RATE:-29400000000}"
 ORACLE_GAS_PRICE="${ORACLE_GAS_PRICE:-28325}"                  # uluna per gas unit
 ORACLE_TOKEN_DECIMALS="${ORACLE_TOKEN_DECIMALS:-6}"           # uluna
 GAS_OVERHEAD="${GAS_OVERHEAD:-3000000}"                        # overhead gas units
+# Estimativa de preço da volta com estes parâmetros (aviso se ficar caro):
+EST_LAMPORTS=$(python3 -c "print(int((100000+${GAS_OVERHEAD})*${ORACLE_GAS_PRICE}*${ORACLE_EXCHANGE_RATE}/1e19*10**(9-${ORACLE_TOKEN_DECIMALS})))")
+EST_SOL=$(python3 -c "print(f'{${EST_LAMPORTS}/1e9:.6f}')")
+echo "ℹ️  Estimated RETURN fee with these params: ~${EST_SOL} SOL (${EST_LAMPORTS} lamports)"
+python3 -c "exit(0 if ${EST_LAMPORTS} < 10_000_000 else 1)" || \
+  echo "⚠️  WARNING: return fee > 0.01 SOL — provavelmente CARO DEMAIS. Recalibre ORACLE_EXCHANGE_RATE (fórmula acima)."
 
 CLIENT_BIN="$NET_MONOREPO/target/release/hyperlane-sealevel-client"
 CLIENT_DIR="$NET_MONOREPO/client"
@@ -358,11 +372,14 @@ if [ -n "${SKIP_CONFIG_WRITE:-}" ]; then
     log_warn "SKIP_CONFIG_WRITE set — not touching config."
 else
     TMP=$(mktemp)
+    # account_type: o deploy-warp-solana-buffer.sh usa este campo p/ `token igp set <prog> <TYPE> <acct>`.
+    # Tipo errado (igp c/ conta overhead) = VOLTA quebrada (BorshIoError no PayForGas) — bug de 2026-07-09.
     jq ".networks.\"${NET_KEY}\".igp.program_id = \"${IGP_PROGRAM_ID}\" |
         .networks.\"${NET_KEY}\".igp.account = \"${WARP_IGP_ACCOUNT}\" |
+        .networks.\"${NET_KEY}\".igp.account_type = \"${WARP_IGP_TYPE}\" |
         .networks.\"${NET_KEY}\".igp.destination_gas_terra = ${GAS_OVERHEAD}" \
         "$SOL_CONFIG" > "$TMP" && mv "$TMP" "$SOL_CONFIG"
-    log_ok "igp.program_id=${IGP_PROGRAM_ID}  igp.account=${WARP_IGP_ACCOUNT}"
+    log_ok "igp.program_id=${IGP_PROGRAM_ID}  igp.account=${WARP_IGP_ACCOUNT}  igp.account_type=${WARP_IGP_TYPE}"
 fi
 
 # ═════════════════════════════════════════════════════════════════════════════

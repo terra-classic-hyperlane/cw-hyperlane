@@ -1,8 +1,0 @@
-{
-  "network":        "ethereum",
-  "token":          "igorfake",
-  "warp_address":   "0xA687a4C4Ca49795999b36fDC8A18D1ddD63EdfB5",
-  "igp_address":    "0x574f760bA7488CDc987bfa85A655Db735CB0b18f",
-  "oracle_address": "0x3987cCE8f08037EBF93Ef3a934753540A94196cE",
-  "timestamp":      "2026-06-04T12:31:15-03:00"
-}

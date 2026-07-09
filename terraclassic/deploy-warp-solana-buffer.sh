@@ -299,6 +299,11 @@ MAILBOX=$(sol_cfg     "${N}.mailbox" 2>/dev/null || echo "")
 ISM_PROGRAM_ID=$(sol_cfg "${N}.ism.program_id")
 IGP_PROGRAM_ID=$(sol_cfg "${N}.igp.program_id")
 IGP_ACCOUNT=$(sol_cfg    "${N}.igp.account")
+# ⚠️ TIPO da conta IGP ('overhead-igp' | 'igp') — DEVE casar com a conta gravada no config.
+#    BUG HISTÓRICO (2026-07-09): tipo hardcoded 'igp' com a conta OVERHEAD → PayForGas quebrava
+#    (BorshIoError) e a VOLTA sealevel→TC nunca funcionou. Nosso deploy grava a OVERHEAD → default overhead-igp.
+IGP_ACCOUNT_TYPE=$(sol_cfg "${N}.igp.account_type" 2>/dev/null || echo "")
+{ [ -z "$IGP_ACCOUNT_TYPE" ] || [ "$IGP_ACCOUNT_TYPE" = "null" ]; } && IGP_ACCOUNT_TYPE="overhead-igp"
 DEST_GAS=$(sol_cfg       "${N}.igp.destination_gas_terra")
 SOL_PID_CFG=$(sol_cfg    "${N}.warp_tokens.${TOKEN_KEY}.program_id")
 SOL_HEX_CFG=$(sol_cfg    "${N}.warp_tokens.${TOKEN_KEY}.program_hex")
@@ -718,13 +723,14 @@ log_sep "STEP 5 — CONFIGURE IGP (Interchain Gas Paymaster)"
 if [ -n "${SKIP_IGP:-}" ]; then
     log_warn "SKIP_IGP set — skipping."
 else
+    log_info "IGP type: ${IGP_ACCOUNT_TYPE} (must match the account kind — overhead account ⇒ overhead-igp)"
     set +e
     TMP=$(mktemp)
     run_client \
         -k "$NET_KEYPAIR" -u "$NET_RPC" \
         token igp \
         --program-id "$WARP_PROGRAM_ID" \
-        set "$IGP_PROGRAM_ID" igp "$IGP_ACCOUNT" 2>&1 \
+        set "$IGP_PROGRAM_ID" "$IGP_ACCOUNT_TYPE" "$IGP_ACCOUNT" 2>&1 \
         | grep -v "^warning:" | grep -v "^note:" | grep -v "^Compiling" \
         | tee -a "$LOG_FILE" "$TMP"
     IGP_EXIT=${PIPESTATUS[0]}
@@ -732,12 +738,28 @@ else
     set -e
 
     if [ $IGP_EXIT -eq 0 ]; then
-        log_ok "IGP configured: ${IGP_PROGRAM_ID} / ${IGP_ACCOUNT}"
+        log_ok "IGP configured: ${IGP_PROGRAM_ID} / ${IGP_ACCOUNT_TYPE}(${IGP_ACCOUNT})"
     elif echo "$IGP_OUT" | grep -qiE "already|same"; then
         log_ok "IGP already configured."
     else
-        log_warn "IGP configuration failed (exit $IGP_EXIT). Run manually:"
-        log "  $CLIENT_BIN -k $NET_KEYPAIR -u $NET_RPC token igp --program-id $WARP_PROGRAM_ID set $IGP_PROGRAM_ID igp $IGP_ACCOUNT"
+        # FATAL: sem o IGP correto a VOLTA (sealevel→TC) NÃO funciona — não seguir como sucesso.
+        log_err "IGP configuration FAILED (exit $IGP_EXIT). The RETURN route will NOT work. Run manually:"
+        log "  $CLIENT_BIN -k $NET_KEYPAIR -u $NET_RPC token igp --program-id $WARP_PROGRAM_ID set $IGP_PROGRAM_ID $IGP_ACCOUNT_TYPE $IGP_ACCOUNT"
+        exit 1
+    fi
+
+    # ── VERIFICAÇÃO on-chain: o tipo gravado no token DEVE ser o esperado ────────
+    set +e
+    IGP_GET=$(run_client -k "$NET_KEYPAIR" -u "$NET_RPC" \
+        token igp --program-id "$WARP_PROGRAM_ID" get synthetic 2>&1 | tail -5)
+    set -e
+    if echo "$IGP_GET" | grep -q "OverheadIgp" && [ "$IGP_ACCOUNT_TYPE" = "overhead-igp" ]; then
+        log_ok "Verified on-chain: token IGP type = OverheadIgp ✅"
+    elif echo "$IGP_GET" | grep -qE "\bIgp\(" && [ "$IGP_ACCOUNT_TYPE" = "igp" ]; then
+        log_ok "Verified on-chain: token IGP type = Igp ✅"
+    else
+        log_warn "Could not verify IGP type on-chain — CHECK MANUALLY (type mismatch breaks the return route):"
+        log "  $CLIENT_BIN -u $NET_RPC token igp --program-id $WARP_PROGRAM_ID get synthetic"
     fi
 fi
 

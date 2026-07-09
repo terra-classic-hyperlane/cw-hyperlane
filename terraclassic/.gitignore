@@ -20,3 +20,14 @@ warp/solanatestnet/
 warp/solanadevnet/
 warp/terraclassic-cw20-*.json
 *.bak
+
+# ── Chaves privadas locais (NUNCA subir) ──────────────────────────────────
+.tc-warp-key.sh
+*key*.env
+*.key
+.env
+.env.*
+
+# ── State/backup files do deploy EVM (endereços/estado local) ─────────────
+.warp-evm-state.json
+warp-evm-config.json.bak*
