@@ -232,12 +232,16 @@ Defines each EVM network with all Hyperlane addresses and IGP configurations.
     },
 
     "igp": {
+      "deployed_address": "",               ← PRODUCTION IGP to reuse (step 3 skips the
+                                              deploy and uses it; fees → vault pool).
+                                              Empty = deploy a fresh custom IGP.
+                                              Env IGP_ADDRESS overrides this field.
       "gas_oracle":      "0x7113Df4d1D8B230e6339011d10277a6E5AC4eC9c",
       "overhead_default": 200000,
       "terra_classic_config": {
-        "exchange_rate":   142244393,       ← see calculation below
-        "gas_price_wei":   38325000000
-      }
+        "exchange_rate":   142244393,       ← see calculation below (only used when
+        "gas_price_wei":   38325000000         deploying a NEW IGP/oracle — ignored
+      }                                        when reusing a governed production IGP)
     },
 
     "warp_tokens": {
