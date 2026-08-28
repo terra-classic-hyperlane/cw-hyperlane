@@ -1,5 +1,9 @@
 # CW Hyperlane
 
+> **Terra Classic community — start here:** 📖 [`terraclassic/doc/install/`](terraclassic/doc/install/README.md)
+> — create Warp Routes on BSC/ETH/Solana (nothing but the token is deployed; production
+> ISM/IGP are wired automatically) and the full [deployed-contracts hash inventory](terraclassic/doc/install/DEPLOY-HASHES.md).
+
 [![codecov](https://codecov.io/gh/many-things/cw-hyperlane/branch/main/graph/badge.svg?token=SGYE7FBTAO)](https://codecov.io/gh/many-things/cw-hyperlane)
 [![crates.io](https://img.shields.io/crates/v/hpl-interface)](https://crates.io/crates/hpl-interface)
 
