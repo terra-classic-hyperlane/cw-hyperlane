@@ -30,42 +30,42 @@ production addresses above.
 ## 3. Add your token to the config
 
 Edit `terraclassic/warp-evm-config.json` (guide §4.3 has the full annotated
-template). Two edits — a **definition** and a **state slot**:
+template). **You write only the token definition (§3.1).** Everything the script
+configures is deployment **state** that the script itself creates and maintains
+in the same file (§3.2) — you never write it.
 
-### 3.1 Define the token — `terra_classic.tokens`
+### 3.1 Define the token — `terra_classic.tokens` (the ONLY thing you write)
 
-What the token IS and its Terra Classic side. **You** fill the identity and type
-fields; the **last three fields are script-filled state** (like §3.2) — the script
-writes them after it deploys the TC collateral warp, so leave them empty/false:
+What the token IS and its Terra Classic side:
 
 ```jsonc
 "mytoken": {
-  "id": "mytoken", "name": "My Token", "symbol": "MTK", "decimals": 6,
+  "id": "mytoken",
+  "name": "My Token",
+  "symbol": "MTK",
+  "decimals": 6,
   "terra_warp": {
     "type": "cw20",                     // or "native"
     "mode": "collateral",
     "owner": "terra1...",
     "denom": "",                        // fill if native (e.g. "uluna")
-    "collateral_address": "terra1...",  // fill if cw20
-    // ↓ SCRIPT-FILLED after it deploys the TC collateral warp — leave as-is:
-    "warp_address": "",                 // the collateral warp address on TC
-    "warp_hexed": "",                   // same address as 32-byte hex (used by enrollRemoteRouter on the EVM side)
-    "deployed": false                   // flips to true after the TC deploy
+    "collateral_address": "terra1..."   // fill if cw20
   }
 }
 ```
 
-### 3.2 Reserve the state slot — `networks.<bsc|ethereum>.warp_tokens`
+That's it. The token now appears in the script's menu (the menu lists
+`terra_classic.tokens` keys).
 
-One **empty** entry per target chain. This is NOT configuration — it is the
-script's **deployment-state record** ("this token will exist here; nothing
-deployed yet"). You only create it empty; **the script fills it** as each step
-completes (persisted back into the JSON via `jq`):
+### 3.2 Deployment state — created and filled BY THE SCRIPT (do not write)
 
-```jsonc
-"mytoken": { "deployed": false, "address": "", "igp_custom": "",
-             "hook_aggregation": "", "owner": "" }
-```
+As the run progresses, the script **adds** its state to the same JSON via `jq`
+(missing fields/entries are created automatically — you don't pre-create them):
+
+- Inside your token's `terra_warp` (after the TC collateral deploy):
+  `warp_address` (the collateral warp on TC), `warp_hexed` (same address as
+  32-byte hex, used by `enrollRemoteRouter` on the EVM side), `deployed: true`.
+- A `networks.<bsc|ethereum>.warp_tokens.mytoken` entry per chain:
 
 | Field | What it records | Filled by |
 |---|---|---|

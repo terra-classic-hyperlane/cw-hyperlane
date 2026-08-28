@@ -304,18 +304,18 @@ Exemplo:
 ```
 
 > For **native** tokens, fill `"denom": "uluna"` (or other denom) and leave `collateral_address` empty.
+> The `warp_address` / `warp_hexed` / `deployed` fields are **script-filled state** — you may omit
+> them entirely; the script creates them after deploying the TC collateral warp.
 
-**Step 2** — Add the token in `warp_tokens` for **each network**:
+**Step 2 (optional)** — The `warp_tokens` entry per network is **created automatically
+by the script** as it deploys (state record: `deployed`, `address`, `igp_custom`,
+`hook_aggregation`, `owner` — see `install/WARP-EVM.md` §3.2). You don't need to
+pre-create it; add it empty only if you want the slot visible in the JSON beforehand:
 
 ```json
 "warp_tokens": {
-  "novotoken": {
-    "deployed":         false,
-    "address":          "",
-    "igp_custom":       "",
-    "hook_aggregation": "",
-    "owner":            ""
-  }
+  "novotoken": { "deployed": false, "address": "", "igp_custom": "",
+                 "hook_aggregation": "", "owner": "" }
 }
 ```
 
