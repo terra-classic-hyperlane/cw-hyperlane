@@ -9,23 +9,38 @@
 `data_hash` = sha256 of the stored wasm, as reported by the chain itself.
 Source: `tc-cw-hyperlane` (reproducible build, `cosmwasm/optimizer`).
 
+Complete upload set (store txs and instantiation record:
+[`../HYPERLANE_DEPLOYMENT-MAINNET_EN.md`](../HYPERLANE_DEPLOYMENT-MAINNET_EN.md)):
+
 | code_id | Contract | data_hash |
 |---|---|---|
 | 11371 | **hpl_mailbox** → `terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9` | `b6d789c1a31ee79548fd736bad241dbcd3b8b319d66a776f31479743fe49eb01` |
-| 11372 | hpl_validator_announce | `c3c42fda7aabb73ab59a6dba75e20a905a310f8876e801451fcebf1599e8167d` |
-| 11374 | hpl_ism_multisig | `32b07207c733ba7469f49d321c30cf00bacb8c9560dc92accd35df61e5e3a531` |
-| 11376 | hpl_ism_routing | `0881d65f470425290990e53b87044477eaf704e0f2da8481eb4150c6e8c8143c` |
+| 11372 | hpl_validator_announce → `terra1gtnmdevekgxpvzej3wfy20e2n335gm3muwj6geduxxa86j3x70cq00asmy` | `c3c42fda7aabb73ab59a6dba75e20a905a310f8876e801451fcebf1599e8167d` |
+| 11373 | hpl_ism_aggregate | `e33ccca03a9366c4020900e562febcd8311fc3449687ec876cc7ea8b84767f4f` |
+| 11374 | hpl_ism_multisig → inbound ISMs: ETH `terra187rzjc3…neldar` (**6-of-9**) · BSC `terra1nqj7qln…muj9xw` (**4-of-6**) · SOL `terra10s3p36t…ucl50t` (**3-of-5**) — official Hyperlane validator sets | `32b07207c733ba7469f49d321c30cf00bacb8c9560dc92accd35df61e5e3a531` |
+| 11375 | hpl_ism_pausable | `31fff431baa0d752f3f9f6c63400bef9c69363cff16d9064a1882fd697b0cacb` |
+| 11376 | hpl_ism_routing → `terra1uhzzvt9x3u8hjnkp695hklexx2uywjvfqv454d93ds92sgtpwk7qrpxdg0` (= mailbox **default_ism**) | `0881d65f470425290990e53b87044477eaf704e0f2da8481eb4150c6e8c8143c` |
 | 11377 | **hpl_igp** → `terra1taunhg629rssf3g939nqr0h594q5mssrzdj5lkx2hygmxmh72ghqeqqnvz` | `34313c90c9e08d2c342061412fafe4d064ad783f9be606255d0720590e6fad0b` |
-| 11378 | hpl_hook_aggregate | `9dfbe1ba3e0dde5ea82cb0daee819214e46afb2ac78075c4f26523e6879a5004` |
-| 11379 | hpl_hook_merkle | `c981467b9af207d09aac90716598ed51c547526b8b82189148a24e1704e7956e` |
-| 11380 | hpl_hook_pausable | `f4258979caf115b1957a13f6b7ec59161b837e07b90828c2e6fc9e4e61e9f156` |
-| 11381 | hpl_hook_fee | `0f53c4193be46b15eca53ff8cb2004dcc571bf74b345b2b7af2775b6fa99b6c2` |
+| 11378 | hpl_hook_aggregate → default `terra1026v947…vnmvel` (= mailbox **default_hook**) · required `terra1xmdd7yh…0nxq04` (= **required_hook**) | `9dfbe1ba3e0dde5ea82cb0daee819214e46afb2ac78075c4f26523e6879a5004` |
+| 11379 | hpl_hook_fee → `terra1sud5xyk…p7j8ag` | `c981467b9af207d09aac90716598ed51c547526b8b82189148a24e1704e7956e` |
+| 11380 | hpl_hook_merkle → `terra183lq6yq…yp0n2p` | `f4258979caf115b1957a13f6b7ec59161b837e07b90828c2e6fc9e4e61e9f156` |
+| 11381 | hpl_hook_pausable → `terra1x8s9qtw…9tjcnf` | `0f53c4193be46b15eca53ff8cb2004dcc571bf74b345b2b7af2775b6fa99b6c2` |
+| 11382 | hpl_hook_routing | `ff11e7535f07cb20123735b61f31bf1b60a428f67cb332faf64a2b7641d11ed3` |
+| 11383 | hpl_hook_routing_custom | `34c947fbf2cc37df33237ab062265520fc28d5427745c669631590f22fd9d534` |
+| 11384 | hpl_hook_routing_fallback | `b4930c213cae2728b83ffee876d0d880030ed079cc0167fd7e69c98880315f89` |
+| 11385 | hpl_test_mock_hook | `8dcdf5f9ef0f7632404b5310b9ed37e091c9854d6fe5e4c38ae3424948a9d3a1` |
+| 11386 | hpl_test_mock_ism | `e283df5977a897e0c33f47540f2d50f43f735dfe6f31ef2614aefff225af8c8f` |
+| 11387 | hpl_test_mock_msg_receiver | `aa7fca1213b164cb1e8a1beefe32dce6d31f7ebe8add4b568db49283bbdb43af` |
 | 11388 | **hpl_igp_oracle** → `terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d` | `3b0143755d322a7a8bcd2e6081c8a22f817644c557c85cfd4d570d69e08de1fc` |
 | 11389 | **hpl_warp_cw20** → IGORFAKE collateral `terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel` | `25b100c1c1bec141c90f4fc0e556b52025921403d7ae2d25bad8cfec35c74be7` |
+| 11390 | hpl_warp_native | `34b5deb86937f51d4b04ddc572597b95ffd1b3ce094df8a73dc1cf20babc7e55` |
 | 11392 | cw20 (IGORFAKE token) → `terra1lpkaaqjaq8zfwktge3vy0zg46nxxsynsge2wxa7addpweu2w6gmsy3lhkr` | `28506f2a3070291f1f2568f271aa5617f0a9d02ef28d98b6804a8b7ba1506d34` |
 
-**Wiring (verified):** IGP beneficiary = relayer-reward-vault `terra1gqkrh2…duzc2q` ·
-IGP-oracle owner = oracle-governor `terra1z7jmlky…9sv4hj`. Those two contracts (the
+**Wiring (all re-verified on-chain 2026-08-28):** mailbox `default_ism` = ISM
+Routing, `default_hook`/`required_hook` = the two Aggregates, inbound ISM validator
+sets/thresholds as listed above (unchanged since instantiation) · IGP beneficiary =
+relayer-reward-vault `terra1gqkrh2…duzc2q` · IGP-oracle owner = oracle-governor
+`terra1z7jmlky…9sv4hj`. Those two contracts (the
 relayer payment system) are documented with their own hashes and migration txs in
 [`tc-proof-of-delivery/docs/install/AUDIT.md`](https://github.com/terra-classic-hyperlane/proof-of-delivery/blob/main/docs/install/AUDIT.md)
 (vault code **11635** `339b8257…33fa` · governor 11587 `3383e2bc…41744`).

@@ -2,6 +2,16 @@
 
 This guide documents the complete process of deploying and configuring Hyperlane contracts on Terra Classic Mainnet (columbus-5).
 
+> ✅ **Audit status — re-verified on-chain 2026-08-28:** all 20 upload hashes
+> (code 11371–11390, §2) match the chain's `data_hash` byte for byte; the mailbox
+> wiring (§7: `default_ism` = ISM Routing, `default_hook`/`required_hook` = the two
+> Aggregation hooks) and the inbound ISM validator sets (§6: ETH **6-of-9** ·
+> BSC **4-of-6** · Solana **3-of-5**) are all live and unchanged since
+> instantiation. Deployed **after** this record: cw20 code **11392** (IGORFAKE
+> token) and the IGORFAKE warp instances — the always-current full inventory
+> (including the synthetics' warp/ISM/IGP hashes on BSC/ETH/Solana) lives in
+> [`install/DEPLOY-HASHES.md`](install/DEPLOY-HASHES.md).
+
 ---
 
 ## 📋 Table of Contents
