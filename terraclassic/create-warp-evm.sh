@@ -668,11 +668,23 @@ log_sep "STEP 1 — GENERATE WARP YAML"
 
 WARP_YAML="$SCRIPT_DIR/warp/warp-${NET_KEY}-${TOKEN_KEY}.yaml"
 
-VALIDATORS_YAML=""
-while IFS= read -r VAL; do
-    [ -n "$VAL" ] && VALIDATORS_YAML+="    - \"${VAL}\"
+# PRODUCTION ISM already deployed? → set its ADDRESS directly in the deploy
+# config: the CLI creates NO new ISM, the warp is born pointing to the shared
+# mutable 3-of-4. Fallback (empty deployed_address): inline static ISM.
+if [ -n "$ISM_DEPLOYED_CFG" ] && [ "$ISM_DEPLOYED_CFG" != "null" ] && is_evm "$ISM_DEPLOYED_CFG"; then
+    ISM_YAML="  interchainSecurityModule: \"${ISM_DEPLOYED_CFG}\""
+    log_ok "Deploy config uses the EXISTING production ISM: ${G}${ISM_DEPLOYED_CFG}${NC} (no new ISM is created)"
+else
+    VALIDATORS_YAML=""
+    while IFS= read -r VAL; do
+        [ -n "$VAL" ] && VALIDATORS_YAML+="    - \"${VAL}\"
 "
-done < <(jq -r "${N}.ism.validators[]" "$CONFIG_FILE" 2>/dev/null)
+    done < <(jq -r "${N}.ism.validators[]" "$CONFIG_FILE" 2>/dev/null)
+    ISM_YAML="  interchainSecurityModule:
+    type: ${ISM_TYPE}
+    validators:
+${VALIDATORS_YAML}    threshold: ${ISM_THRESHOLD}"
+fi
 
 cat > "$WARP_YAML" <<YAML
 # ─────────────────────────────────────────────────────────────────────────────
@@ -688,10 +700,7 @@ ${NET_KEY}:
   decimals: ${TOKEN_DEC}
   owner: "${WARP_OWNER}"
   mailbox: "${MAILBOX}"
-  interchainSecurityModule:
-    type: ${ISM_TYPE}
-    validators:
-${VALIDATORS_YAML}    threshold: ${ISM_THRESHOLD}
+${ISM_YAML}
 YAML
 
 log_ok "File: ${C}${WARP_YAML}${NC}"
@@ -1045,6 +1054,18 @@ log ""
 log "  ${INFO} O AggregationHook garante que as msgs entram na merkle tree"
 log "  ${INFO} (necessário para o validator assinar) E pagam o IGP customizado."
 log ""
+
+# Default: reuse the PRODUCTION AggregationHook (merkle + governed IGP) — only
+# when the production IGP itself is being reused, so hook and IGP stay consistent.
+if [ -z "${HOOK_AGG_ADDRESS:-}" ] || [ "${HOOK_AGG_ADDRESS}" = "null" ]; then
+    _AGG_CFG=$(cfg "${N}.hook.deployed_aggregation")
+    _IGP_PROD=$(cfg "${N}.igp.deployed_address")
+    if [ -n "$_AGG_CFG" ] && [ "$_AGG_CFG" != "null" ] && is_evm "$_AGG_CFG" \
+       && [ -n "${IGP_ADDRESS:-}" ] && [ "${IGP_ADDRESS,,}" = "${_IGP_PROD,,}" ]; then
+        HOOK_AGG_ADDRESS="$_AGG_CFG"
+        log_ok "Reusing production AggregationHook: ${G}${HOOK_AGG_ADDRESS}${NC} (no new hook is created)"
+    fi
+fi
 
 if [ "$HAVE_CAST" = "false" ]; then
     log_warn "cast not available — run manually:"

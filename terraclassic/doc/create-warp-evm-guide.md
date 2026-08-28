@@ -39,11 +39,15 @@
 > The `warp-evm-config.json` now ships with the **current production security/economy
 > defaults**, so a new warp comes out wired like IGORFAKE:
 >
+> **Nothing new is created for ISM/IGP/hook** — the script wires the new warp to the
+> contracts already in production (all verified on-chain 2026-08-28):
+>
 > | Piece | Default behavior | Where it comes from |
 > |---|---|---|
-> | **ISM** | Step 6 automatically points the new warp to the **shared mutable 3-of-4 ISM** (`StorageMessageIdMultisigIsm`): BSC `0xF6b0cDD3…cD151` · ETH `0x3ba17675…B254B`. Validator rotation is 1 owner tx for ALL warps (`tc-proof-of-delivery/deploy/storage-ism.mjs`). | `ism.deployed_address` |
-> | **IGP** | Step 3 **reuses the production IGP** (BSC `0xEdEd7a4f…4923` · ETH `0x9650F1f8…64Aa`): fees fund the relayer-reward-vault pool and gas prices are already governed by the oracle-agent/governor — no new oracle to wire. Export `IGP_ADDRESS` to override, or clear `igp.deployed_address` to force a fresh deploy. | `igp.deployed_address` |
-> | **Validators (fallback)** | The inline ISM in the generated yaml uses the current 4-validator set with threshold 3 (igorveras · tcv · darksun · burnitall) — only relevant until step 6 re-points to the shared ISM. | `ism.validators` / `ism.threshold` |
+> | **ISM** | The generated deploy yaml sets the **shared mutable 3-of-4 ISM address directly** (BSC `0xF6b0cDD3…cD151` · ETH `0x3ba17675…B254B`) — the CLI creates **no** new ISM; the warp is born pointing to it (step 6 just verifies). Validator rotation is 1 owner tx for ALL warps (`tc-proof-of-delivery/deploy/storage-ism.mjs`). | `ism.deployed_address` |
+> | **IGP** | Step 3 **reuses the production IGP** (BSC `0xEdEd7a4f…4923` · ETH `0x9650F1f8…64Aa`, beneficiary = the active vault): fees fund the relayer-reward-vault pool and gas prices are already governed by the oracle-agent/governor — no new IGP/oracle. Export `IGP_ADDRESS` to override, or clear `igp.deployed_address` to force a fresh deploy. | `igp.deployed_address` |
+> | **Hook** | Step 5 **reuses the production AggregationHook** [merkleTree + governed IGP] (BSC `0xD2c82583…8164` · ETH `0x912c4d91…0aA8`) — no new hook. Only applies while the production IGP is reused (hook and IGP stay consistent). | `hook.deployed_aggregation` |
+> | **Validators (fallback)** | The inline static ISM (4 validators, threshold 3: igorveras · tcv · darksun · burnitall) is only generated when `ism.deployed_address` is empty — e.g. a brand-new network. | `ism.validators` / `ism.threshold` |
 >
 > Post-deploy checklist for a production token: register in the hyperlane-registry
 > (pattern of PR #1559), add the route to the warp UI, and add the new warp's sender

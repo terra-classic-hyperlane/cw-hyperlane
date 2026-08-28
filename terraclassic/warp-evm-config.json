@@ -404,9 +404,10 @@
         "_comment": "SHARED MUTABLE ISM (StorageMessageIdMultisigIsm, 2026-08-20, see tc-proof-of-delivery/docs/ISM-VALIDATORS.md). deployed_address = the production 3-of-4 ISM: step 6 points the new warp to it automatically (validator rotation = 1 owner tx for ALL warps). validators/threshold below are only the fallback used in the deploy-time yaml."
       },
       "hook": {
-        "_comment": "Ethereum Mainnet MerkleTreeHook + AggregationHookFactory",
+        "_comment": "PRODUCTION AggregationHook [merkleTree + governed IGP], verified on-chain 2026-08-28 (hooks() = [merkle, igp.deployed_address]). Reused automatically when the production IGP is reused — no new hook is deployed. Clear to force a fresh deploy via factory.",
         "merkle_tree": "0x48e6c30B97748d1e2e03bf3e9FbE3890ca5f8CCA",
-        "agg_hook_factory": "0x6D2555A8ba483CcF4409C39013F5e9a3285D3C9E"
+        "agg_hook_factory": "0x6D2555A8ba483CcF4409C39013F5e9a3285D3C9E",
+        "deployed_aggregation": "0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8"
       },
       "igp": {
         "official_address": "0x9e6B1022bE9BBF5aFd152483DAD9b88911bC8611",
@@ -513,7 +514,8 @@
       "hook": {
         "merkle_tree": "0xFDb9Cd5f9daAA2E4474019405A328a88E7484f26",
         "agg_hook_factory": "0xe70E86a7D1e001D419D71F960Cb6CaD59b6A3dB6",
-        "_comment": "BSC Mainnet MerkleTreeHook + AggregationHookFactory"
+        "_comment": "PRODUCTION AggregationHook [merkleTree + governed IGP], verified on-chain 2026-08-28 (hooks() = [merkle, igp.deployed_address]). Reused automatically when the production IGP is reused — no new hook is deployed. Clear to force a fresh deploy via factory.",
+        "deployed_aggregation": "0xD2c82583C261fce94cD3F97f1dFF9B20a9338164"
       },
       "igp": {
         "official_address": "0x78E25e7f84416e69b9339B0A6336EB6EFfF6b451",
