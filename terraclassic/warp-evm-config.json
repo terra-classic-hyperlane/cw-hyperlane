@@ -1,7 +1,7 @@
 {
   "_comment": "Centralized configuration for EVM ↔ Terra Classic Warp Routes",
   "_version": "3.0.0",
-  "_updated": "2026-06-04",
+  "_updated": "2026-08-28",
   "terra_classic": {
     "_comment": "Terra Classic configuration. Each token has its type (native/cw20), mode (collateral/locked) and deployed warp address (for enrollRemoteRouter on the EVM side).",
     "chain_id": "columbus-5",
@@ -392,12 +392,16 @@
       },
       "ism": {
         "type": "messageIdMultisigIsm",
-        "factory": "0xfA21D9628ADce86531854C2B7ef00F07394B0B69",
-        "deployed_address": "",
+        "factory": "0xCB8BC1921f1a2334f7c73D1299F94b97A10bc583",
+        "deployed_address": "0x3ba17675f0D319C89D70722f6eb07790DF0B254B",
         "validators": [
-          "0x71b2b8c36a0c76b74be92eb7915e26a69b3b03eb"
+          "0x71b2b8c36a0c76b74be92eb7915e26a69b3b03eb",
+          "0x1afd3d07abd2aaa19a9f7993f334a926e253b90c",
+          "0xe6bb040164a0ebbcb7e2d584f066c8b57dd74383",
+          "0x5c374754892ebac52702475726b67f822efdfacc"
         ],
-        "threshold": 1
+        "threshold": 3,
+        "_comment": "SHARED MUTABLE ISM (StorageMessageIdMultisigIsm, 2026-08-20, see tc-proof-of-delivery/docs/ISM-VALIDATORS.md). deployed_address = the production 3-of-4 ISM: step 6 points the new warp to it automatically (validator rotation = 1 owner tx for ALL warps). validators/threshold below are only the fallback used in the deploy-time yaml."
       },
       "hook": {
         "_comment": "Ethereum Mainnet MerkleTreeHook + AggregationHookFactory",
@@ -406,13 +410,15 @@
       },
       "igp": {
         "official_address": "0x9e6B1022bE9BBF5aFd152483DAD9b88911bC8611",
-        "gas_oracle": "0xc9a103990A8dB11b4f627bc5CD1D0c2685484Ec5",
+        "gas_oracle": "0x3987cCE8f08037EBF93Ef3a934753540A94196cE",
         "overhead_default": 300000,
         "terra_classic_config": {
           "exchange_rate": 26585078,
           "gas_price_wei": 10000000000,
           "_comment": "exchange_rate: ETH_USD/LUNC_USD = 1803.0/6.782e-05 (2026-06-04)"
-        }
+        },
+        "_comment": "PRODUCTION IGP (beneficiary = relayer-reward-vault; oracle owned by the gas governor, fed by oracle-agent). deployed_address is reused automatically unless you export IGP_ADDRESS/force a new deploy — reusing means the new warp's fees fund the same pool and prices are already governed.",
+        "deployed_address": "0x9650F1f8DB492750323172145e67Df4e89E964Aa"
       },
       "warp_tokens": {
         "wlunc": {
@@ -453,7 +459,7 @@
           "hook_aggregation": "0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8",
           "owner": "0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae",
           "oracle_custom": "0x3987cCE8f08037EBF93Ef3a934753540A94196cE",
-          "ism_custom": ""
+          "ism_custom": "0x3ba17675f0D319C89D70722f6eb07790DF0B254B"
         },
         "xptv": {
           "deployed": false,
@@ -493,12 +499,16 @@
       },
       "ism": {
         "type": "messageIdMultisigIsm",
-        "factory": "0xEb9FcFDC9EfDC17c1EC5E1dc085B98485da213D6",
-        "deployed_address": "",
+        "factory": "0x10067DE13589c3A3380d1B72b04c9b45147A8112",
+        "deployed_address": "0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151",
         "validators": [
-          "0x71b2b8c36a0c76b74be92eb7915e26a69b3b03eb"
+          "0x71b2b8c36a0c76b74be92eb7915e26a69b3b03eb",
+          "0x1afd3d07abd2aaa19a9f7993f334a926e253b90c",
+          "0xe6bb040164a0ebbcb7e2d584f066c8b57dd74383",
+          "0x5c374754892ebac52702475726b67f822efdfacc"
         ],
-        "threshold": 1
+        "threshold": 3,
+        "_comment": "SHARED MUTABLE ISM (StorageMessageIdMultisigIsm, 2026-08-20, see tc-proof-of-delivery/docs/ISM-VALIDATORS.md). deployed_address = the production 3-of-4 ISM: step 6 points the new warp to it automatically (validator rotation = 1 owner tx for ALL warps). validators/threshold below are only the fallback used in the deploy-time yaml."
       },
       "hook": {
         "merkle_tree": "0xFDb9Cd5f9daAA2E4474019405A328a88E7484f26",
@@ -507,7 +517,7 @@
       },
       "igp": {
         "official_address": "0x78E25e7f84416e69b9339B0A6336EB6EFfF6b451",
-        "gas_oracle": "0x91d23D603d60445411C06e6443d81395593B7940",
+        "gas_oracle": "0x7dE950f8F0a037783989a6BE84B3620916552306",
         "overhead_default": 200000,
         "terra_classic_config": {
           "exchange_rate": 9047190,
@@ -515,7 +525,9 @@
           "_comment": "exchange_rate: BNB_USD / LUNC_USD = 617.38 / 0.00006824 (2026-06-04)"
         },
         "gas_oracle_custom": "0x38fC50ecC1D21e45705be7441cc1Ff9bcDDec488",
-        "_note": "gas_oracle_custom é o TerraClassicOracle deployado (owner: deployer). O official gas_oracle (Hyperlane) não tem domain 132556."
+        "_note": "gas_oracle_custom é o TerraClassicOracle deployado (owner: deployer). O official gas_oracle (Hyperlane) não tem domain 132556.",
+        "_comment": "PRODUCTION IGP (beneficiary = relayer-reward-vault; oracle owned by the gas governor, fed by oracle-agent). deployed_address is reused automatically unless you export IGP_ADDRESS/force a new deploy — reusing means the new warp's fees fund the same pool and prices are already governed.",
+        "deployed_address": "0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923"
       },
       "warp_tokens": {
         "wlunc": {
@@ -559,7 +571,7 @@
           "hook_aggregation": "0xD2c82583C261fce94cD3F97f1dFF9B20a9338164",
           "owner": "0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291",
           "oracle_custom": "0x7dE950f8F0a037783989a6BE84B3620916552306",
-          "ism_custom": "0xa82087B8eea0394B1476f716B91c10531025Ef42",
+          "ism_custom": "0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151",
           "_hook_note": "AggregationHook=[MerkleTreeHook+igp_custom]"
         }
       }

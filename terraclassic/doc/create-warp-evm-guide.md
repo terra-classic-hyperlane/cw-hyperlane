@@ -34,6 +34,23 @@
 
 ---
 
+> ## ⚡ Production defaults since 2026-08-28 (read before deploying a new token)
+>
+> The `warp-evm-config.json` now ships with the **current production security/economy
+> defaults**, so a new warp comes out wired like IGORFAKE:
+>
+> | Piece | Default behavior | Where it comes from |
+> |---|---|---|
+> | **ISM** | Step 6 automatically points the new warp to the **shared mutable 3-of-4 ISM** (`StorageMessageIdMultisigIsm`): BSC `0xF6b0cDD3…cD151` · ETH `0x3ba17675…B254B`. Validator rotation is 1 owner tx for ALL warps (`tc-proof-of-delivery/deploy/storage-ism.mjs`). | `ism.deployed_address` |
+> | **IGP** | Step 3 **reuses the production IGP** (BSC `0xEdEd7a4f…4923` · ETH `0x9650F1f8…64Aa`): fees fund the relayer-reward-vault pool and gas prices are already governed by the oracle-agent/governor — no new oracle to wire. Export `IGP_ADDRESS` to override, or clear `igp.deployed_address` to force a fresh deploy. | `igp.deployed_address` |
+> | **Validators (fallback)** | The inline ISM in the generated yaml uses the current 4-validator set with threshold 3 (igorveras · tcv · darksun · burnitall) — only relevant until step 6 re-points to the shared ISM. | `ism.validators` / `ism.threshold` |
+>
+> Post-deploy checklist for a production token: register in the hyperlane-registry
+> (pattern of PR #1559), add the route to the warp UI, and add the new warp's sender
+> to `originSenders` in the oracle-agent `config.json`
+> (`tc-proof-of-delivery`) so the claims sweep recognizes its deliveries.
+> Reference docs: `tc-proof-of-delivery/docs/ISM-VALIDATORS.md` · `docs/install/AUDIT.md`.
+
 ## 1. What the script does
 
 O `create-warp-evm.sh` automatiza o deploy e a configuração completa de um Warp Route Hyperlane no lado EVM, conectado à Terra Classic.

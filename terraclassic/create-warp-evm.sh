@@ -783,6 +783,17 @@ save_state
 # ═════════════════════════════════════════════════════════════════════════════
 log_sep "STEP 3 — CUSTOM IGP DEPLOY"
 
+# Default: reuse the PRODUCTION IGP from config (beneficiary = vault, oracle
+# governed). Export IGP_ADDRESS to override, or clear igp.deployed_address in
+# the JSON to force a fresh IGP deploy.
+if [ -z "${IGP_ADDRESS:-}" ]; then
+    _IGP_CFG=$(cfg "${N}.igp.deployed_address")
+    if [ -n "$_IGP_CFG" ] && [ "$_IGP_CFG" != "null" ] && is_evm "$_IGP_CFG"; then
+        IGP_ADDRESS="$_IGP_CFG"
+        log_ok "Reusing production IGP from config: ${G}${IGP_ADDRESS}${NC} (fees → vault pool)"
+    fi
+fi
+
 if [ -n "${IGP_ADDRESS:-}" ]; then
     log_warn "IGP already set: ${G}${IGP_ADDRESS}${NC}  → Skipping."
 elif [ "$HAVE_FORGE" = "false" ]; then
