@@ -34,7 +34,8 @@ template). Two edits — a **definition** and a **state slot**:
 
 ### 3.1 Define the token — `terra_classic.tokens`
 
-What the token IS and its Terra Classic side. You fill every field yourself:
+What the token IS and its Terra Classic side. **You** fill the identity and type
+fields; the **last line is script-filled state** (like §3.2), so leave it empty:
 
 ```jsonc
 "mytoken": {
@@ -45,7 +46,10 @@ What the token IS and its Terra Classic side. You fill every field yourself:
     "owner": "terra1...",
     "denom": "",                        // fill if native (e.g. "uluna")
     "collateral_address": "terra1...",  // fill if cw20
-    "warp_address": "", "warp_hexed": "", "deployed": false
+    // ↓ SCRIPT-FILLED after it deploys the TC collateral warp — leave as-is:
+    "warp_address": "",                 // the collateral warp address on TC
+    "warp_hexed": "",                   // same address as 32-byte hex (used by enrollRemoteRouter on the EVM side)
+    "deployed": false                   // flips to true after the TC deploy
   }
 }
 ```
