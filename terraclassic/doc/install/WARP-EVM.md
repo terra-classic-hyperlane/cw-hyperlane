@@ -112,7 +112,97 @@ Pick `bsc` in the menu. Expected flow:
 Identical flow picking `ethereum`; the reused addresses are the ETH column of §1.
 Watch mainnet gas — the only expensive tx is the warp deploy itself.
 
-## 5. Test the route
+## 5. Manual deployment — step by step (what the script automates)
+
+Every step below is exactly what `create-warp-evm.sh` runs. Use this to execute
+by hand, to resume one failed step, or to audit what the automation does.
+Example values: BSC (domain 56); swap the addresses for ETH (§1).
+
+### 5.1 Deploy the collateral warp on Terra Classic
+
+```bash
+cd ~/tc-cw-hyperlane        # project root (cw-hpl reads config.yaml + context/ here)
+PRIVATE_KEY="$TERRA_PRIVATE_KEY" yarn cw-hpl warp create <warp-config> -n terraclassic
+# → the new address is recorded in context/terraclassic.json
+#   (.deployments.warp.cw20[] / .native[] — fields address and hexAddress)
+```
+
+Keep the bech32 address (`terra1…`) and its **32-byte hex** (`hexAddress`) — the
+hex is what the EVM side enrolls.
+
+### 5.2 Deploy the synthetic on the EVM chain
+
+Write the deploy config (this is the yaml the script generates — note the ISM is
+the production **address**, so no new ISM is created):
+
+```yaml
+# warp/warp-bsc-mytoken.yaml
+bsc:
+  isNft: false
+  type: synthetic
+  name: "My Token"
+  symbol: "MTK"
+  decimals: 6
+  owner: "0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291"
+  mailbox: "0x2971b9Aec44bE4eb673DF1B88cDB57b96eefe8a4"
+  interchainSecurityModule: "0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151"
+```
+
+```bash
+hyperlane warp deploy --config warp/warp-bsc-mytoken.yaml --key "$ETH_PRIVATE_KEY" --yes
+# → note the deployed warp address (addressOrDenom in the output)
+```
+
+### 5.3 Verify the ISM (set at deploy; fix only if needed)
+
+```bash
+cast call <WARP> "interchainSecurityModule()(address)" --rpc-url <RPC>
+# must print 0xF6b0cDD3… — if not:
+cast send <WARP> "setInterchainSecurityModule(address)" 0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151 \
+  --rpc-url <RPC> --private-key "$ETH_PRIVATE_KEY" --legacy
+```
+
+### 5.4 Set the production hook (merkle + governed IGP)
+
+```bash
+cast send <WARP> "setHook(address)" 0xD2c82583C261fce94cD3F97f1dFF9B20a9338164 \
+  --rpc-url <RPC> --private-key "$ETH_PRIVATE_KEY" --legacy
+```
+
+No IGP deploy and no gas prices to set — the hook's IGP is the production one,
+already governed (fees → vault pool).
+
+### 5.5 Enroll the TC route on the EVM warp
+
+`bytes32` = the TC warp's `hexAddress` from §5.1, left-padded to 64 hex chars:
+
+```bash
+cast send <WARP> "enrollRemoteRouter(uint32,bytes32)" 132556 0x<TC_WARP_HEX_64> \
+  --rpc-url <RPC> --private-key "$ETH_PRIVATE_KEY" --legacy
+```
+
+### 5.6 Enroll the EVM route on the TC warp (set_route)
+
+`route` = the EVM warp address without `0x`, left-padded with zeros to 64 hex chars:
+
+```bash
+terrad tx wasm execute <TC_WARP_ADDRESS> \
+  '{"router":{"set_route":{"set":{"domain":56,"route":"000000000000000000000000<EVM_WARP_40HEX>"}}}}' \
+  --from <tc-key> --keyring-backend file --gas auto --gas-adjustment 1.5 \
+  --gas-prices 28.325uluna --chain-id columbus-5 \
+  --node https://rpc.terra-classic.hexxagon.io:443 -y
+```
+
+Without this step, `transfer_remote` from Terra Classic fails with "route not found".
+
+### 5.7 Verify both directions
+
+```bash
+cast call <WARP> "routers(uint32)(bytes32)" 132556 --rpc-url <RPC>     # → TC warp hex
+curl -s "https://lcd.terra-classic.hexxagon.io/cosmwasm/wasm/v1/contract/<TC_WARP>/smart/$(echo -n '{"router":{"list_routes":{}}}' | base64 -w0)"
+```
+
+## 6. Test the route
 
 ```bash
 # TC → EVM: send via the TC collateral warp (quote the IGP fee first)
@@ -122,7 +212,7 @@ cast send <WARP> "transferRemote(uint32,bytes32,uint256)" 132556 <recipient_byte
 ```
 The relayer delivers automatically; the fee you paid funds the relayer-reward-vault.
 
-## 6. Post-deploy checklist (production tokens)
+## 7. Post-deploy checklist (production tokens)
 
 1. **Registry**: PR to `hyperlane-registry` (pattern of PR #1559 — on-chain mirror,
    `deploy.yaml` without comments).
