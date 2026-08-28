@@ -122,12 +122,12 @@
       "keypair": "/home/lunc/keys/solana-keypair-BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j.json",
       "monorepo_dir": "/home/lunc/hyperlane-monorepo/rust/sealevel",
       "ism": {
-        "_comment": "MultisigISM mainnet — LwNfVYMDzAe5dCJgA5CipTZcT34Eyf74zLr81K91jxk",
+        "_comment": "PRODUCTION mutable MultisigISM (multisig-ism-message-id), verified on-chain 2026-08-28: the IGORFAKE warp's interchain_security_module = 4MzF7HCf… · 4 validators / threshold 3 since 2026-08-20 (tc-proof-of-delivery/docs/ISM-VALIDATORS.md). The script only SETS this existing program on the new warp — nothing is created.",
         "program_id": "4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ",
-        "threshold": 1
+        "threshold": 3
       },
       "igp": {
-        "_comment": "IGP program mainnet + overhead_igp_account (AkeHBb...)",
+        "_comment": "PRODUCTION IGP, verified on-chain 2026-08-28: the IGORFAKE warp uses (program FLZuKRs…, OverheadIgp FXacR73…); inner igp account FPTvDsow… has beneficiary = pod pool PDA (fees fund the relayer-reward-vault) and owner = gov config PDA (prices governed by the oracle-agent). account_type MUST stay 'overhead-igp'. The script only SETS it — nothing is created.",
         "program_id": "FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR",
         "account": "FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ",
         "destination_gas_terra": 3000000,

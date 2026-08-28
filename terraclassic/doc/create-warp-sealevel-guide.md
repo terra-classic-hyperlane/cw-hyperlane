@@ -3,7 +3,26 @@
 > Interactive script to create and configure Hyperlane Warp Routes on **Solana (Sealevel)** connected to Terra Classic.  
 > Supports: Solana Devnet, Testnet, and Mainnet.
 >
-> **Last updated:** 2026-06-05 — Devnet infrastructure deployed; `close-warp-program.sh` added; binary reuse (no recompilation); image URL validation; metadata repo fixed to `terra-classic-hyperlane/cw-hyperlane`.
+> **Last updated:** 2026-08-28 — production defaults verified on-chain (see banner below).
+> Previous: 2026-06-05 — Devnet infrastructure deployed; `close-warp-program.sh` added; binary reuse (no recompilation); image URL validation; metadata repo fixed to `terra-classic-hyperlane/cw-hyperlane`.
+
+---
+
+> ## ⚡ Production defaults (mainnet, verified on-chain 2026-08-28)
+>
+> **Nothing new is created for ISM/IGP** — a new warp only deploys its own token
+> program; steps 2–4 then SET the contracts already in production (values from
+> `warp-sealevel-config.json`, confirmed against the live IGORFAKE warp via
+> `hyperlane-sealevel-client token query`):
+>
+> | Piece | Production value | Notes |
+> |---|---|---|
+> | **ISM** | `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` | mutable MultisigISM, 4 validators / threshold 3 (same set as BSC/ETH — `tc-proof-of-delivery/docs/ISM-VALIDATORS.md`) |
+> | **IGP** | program `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` + **OverheadIgp** `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` | `account_type` must stay `overhead-igp` (plain `igp` would quote gas without overhead). Fees → pod pool PDA (relayer-reward-vault); prices governed by the oracle-agent |
+> | **Destination gas (TC)** | `3000000` | matches the live warp's `destination_gas[132556]` |
+>
+> Post-deploy checklist (production tokens): hyperlane-registry PR, warp UI route,
+> and `originSenders` in the oracle-agent `config.json` (tc-proof-of-delivery).
 
 ---
 

@@ -781,8 +781,12 @@ log_sep "STEP 3 — CONFIGURE IGP (Interchain Gas Paymaster)"
 if [ -n "${SKIP_IGP:-}" ]; then
     log_warn "SKIP_IGP set — skipping IGP configuration."
 else
+    # Account type comes from config (production mainnet account FXacR73… is an
+    # OVERHEAD IGP — setting it as plain "igp" would quote gas without overhead).
+    IGP_TYPE=$(sol_cfg "${N}.igp.account_type")
+    { [ -z "$IGP_TYPE" ] || [ "$IGP_TYPE" = "null" ]; } && IGP_TYPE="igp"
     log_info "IGP Program ID: ${IGP_PROGRAM_ID}"
-    log_info "IGP Account:    ${IGP_ACCOUNT}"
+    log_info "IGP Account:    ${IGP_ACCOUNT} (type: ${IGP_TYPE})"
 
     IGP_TMP=$(mktemp)
     set +e
@@ -793,7 +797,7 @@ else
         --program-id "$WARP_PROGRAM_ID" \
         set \
         "$IGP_PROGRAM_ID" \
-        igp \
+        "$IGP_TYPE" \
         "$IGP_ACCOUNT" 2>&1 \
         | grep -v "^warning:" | grep -v "^note:" | grep -v "^Compiling" \
         | tee -a "$LOG_FILE" "$IGP_TMP"
@@ -809,7 +813,7 @@ else
             log_ok "IGP was already associated."
         else
             log_warn "Error configuring IGP (exit $IGP_EXIT)."
-            log "  Manual: cd $CLIENT_DIR && cargo run --release -- -k $NET_KEYPAIR -u $NET_RPC token igp --program-id $WARP_PROGRAM_ID set $IGP_PROGRAM_ID igp $IGP_ACCOUNT"
+            log "  Manual: cd $CLIENT_DIR && cargo run --release -- -k $NET_KEYPAIR -u $NET_RPC token igp --program-id $WARP_PROGRAM_ID set $IGP_PROGRAM_ID $IGP_TYPE $IGP_ACCOUNT"
         fi
     fi
 fi
