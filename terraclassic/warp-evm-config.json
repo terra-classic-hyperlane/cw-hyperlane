@@ -160,6 +160,25 @@
           "warp_hexed": "0x70fd6184ff0a5ad088c9b199bba6666bf4cb0a35cf92f5d94c27791d4a2da859",
           "deployed": true
         }
+      },
+      "fakefake": {
+        "_comment": "FAKEFAKE CW20 collateral — mirror of IGORFAKE (code 11392), created 2026-08-28 tx DA1D1E02…, warp NOT yet deployed on Terra Classic",
+        "id": "fakefake",
+        "name": "FAKEFAKE",
+        "symbol": "FAKEFAKE",
+        "decimals": 6,
+        "description": "FAKEFAKE Token via Hyperlane Warp Route",
+        "image": "",
+        "terra_warp": {
+          "type": "cw20",
+          "mode": "collateral",
+          "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
+          "denom": "",
+          "collateral_address": "terra1f45rp85m53688ykan8mgjmfyz43d5h7psgawz5n775wde6vrzj5s4tvpwq",
+          "warp_address": "",
+          "warp_hexed": "",
+          "deployed": false
+        }
       }
     },
     "igp": "terra1taunhg629rssf3g939nqr0h594q5mssrzdj5lkx2hygmxmh72ghqeqqnvz",
@@ -265,6 +284,13 @@
           "igp_custom": "",
           "hook_aggregation": "",
           "owner": ""
+        },
+        "fakefake": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
         }
       }
     },
@@ -361,6 +387,13 @@
           "owner": ""
         },
         "igorfake": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
+        },
+        "fakefake": {
           "deployed": false,
           "address": "",
           "igp_custom": "",
@@ -475,6 +508,13 @@
           "igp_custom": "",
           "hook_aggregation": "",
           "owner": ""
+        },
+        "fakefake": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
         }
       }
     },
@@ -575,6 +615,13 @@
           "oracle_custom": "0x7dE950f8F0a037783989a6BE84B3620916552306",
           "ism_custom": "0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151",
           "_hook_note": "AggregationHook=[MerkleTreeHook+igp_custom]"
+        },
+        "fakefake": {
+          "deployed": false,
+          "address": "",
+          "igp_custom": "",
+          "hook_aggregation": "",
+          "owner": ""
         }
       }
     },

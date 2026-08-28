@@ -35,6 +35,7 @@ Complete upload set (store txs and instantiation record:
 | 11389 | **hpl_warp_cw20** → IGORFAKE collateral `terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel` | `25b100c1c1bec141c90f4fc0e556b52025921403d7ae2d25bad8cfec35c74be7` |
 | 11390 | hpl_warp_native | `34b5deb86937f51d4b04ddc572597b95ffd1b3ce094df8a73dc1cf20babc7e55` |
 | 11392 | cw20 (IGORFAKE token) → `terra1lpkaaqjaq8zfwktge3vy0zg46nxxsynsge2wxa7addpweu2w6gmsy3lhkr` | `28506f2a3070291f1f2568f271aa5617f0a9d02ef28d98b6804a8b7ba1506d34` |
+| 11392 | cw20 (FAKEFAKE token, mirror of IGORFAKE) → `terra1f45rp85m53688ykan8mgjmfyz43d5h7psgawz5n775wde6vrzj5s4tvpwq` (tx `DA1D1E0227FDC64E5164661C310867318C8204A850E252DEA69A5CF339A06BD6`, 2026-08-28) | same code — `28506f2a3070291f1f2568f271aa5617f0a9d02ef28d98b6804a8b7ba1506d34` |
 
 **Wiring (all re-verified on-chain 2026-08-28):** mailbox `default_ism` = ISM
 Routing, `default_hook`/`required_hook` = the two Aggregates, inbound ISM validator
