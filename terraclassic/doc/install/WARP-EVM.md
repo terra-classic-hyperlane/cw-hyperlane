@@ -29,10 +29,14 @@ production addresses above.
 
 ## 3. Add your token to the config
 
-Edit `terraclassic/warp-evm-config.json` (guide §4.3 has the full annotated template):
+Edit `terraclassic/warp-evm-config.json` (guide §4.3 has the full annotated
+template). Two edits — a **definition** and a **state slot**:
+
+### 3.1 Define the token — `terra_classic.tokens`
+
+What the token IS and its Terra Classic side. You fill every field yourself:
 
 ```jsonc
-// 1) terra_classic.tokens — the Terra Classic side
 "mytoken": {
   "id": "mytoken", "name": "My Token", "symbol": "MTK", "decimals": 6,
   "terra_warp": {
@@ -44,10 +48,37 @@ Edit `terraclassic/warp-evm-config.json` (guide §4.3 has the full annotated tem
     "warp_address": "", "warp_hexed": "", "deployed": false
   }
 }
-// 2) networks.<bsc|ethereum>.warp_tokens — one empty entry per target chain
+```
+
+### 3.2 Reserve the state slot — `networks.<bsc|ethereum>.warp_tokens`
+
+One **empty** entry per target chain. This is NOT configuration — it is the
+script's **deployment-state record** ("this token will exist here; nothing
+deployed yet"). You only create it empty; **the script fills it** as each step
+completes (persisted back into the JSON via `jq`):
+
+```jsonc
 "mytoken": { "deployed": false, "address": "", "igp_custom": "",
              "hook_aggregation": "", "owner": "" }
 ```
+
+| Field | What it records | Filled by |
+|---|---|---|
+| `deployed` | whether the synthetic already exists on this chain | script, after STEP 2 succeeds (`false` → `true`) |
+| `address` | the synthetic token (HypERC20) address on this chain — e.g. IGORFAKE/BSC = `0x3605D894…` | script, after `hyperlane warp deploy` |
+| `igp_custom` | the IGP associated with this token's route — with production defaults, the shared IGP (BSC `0xEdEd7a4f…`) | script, STEP 3 |
+| `hook_aggregation` | the AggregationHook set on the warp via `setHook` — with defaults, the production one (BSC `0xD2c82583…`) | script, STEP 5 |
+| `owner` | the warp's owner on this chain (derived from `ETH_PRIVATE_KEY`) | script, after deploy |
+
+Why it matters:
+- **Resume after failure** — re-running the script reads these fields and skips
+  what is already done (`address` filled → no second warp deploy; and so on).
+  Nothing is ever deployed twice.
+- **One entry per network** — the same token has different addresses on each
+  chain; `networks.bsc.warp_tokens.mytoken` and
+  `networks.ethereum.warp_tokens.mytoken` are independent records.
+- **Post-deploy source of truth** — after the run, this entry is where you copy
+  the addresses from for [DEPLOY-HASHES.md](DEPLOY-HASHES.md) and the registry PR.
 
 Do **not** touch `ism`, `igp`, `hook` or any price field — production defaults.
 
