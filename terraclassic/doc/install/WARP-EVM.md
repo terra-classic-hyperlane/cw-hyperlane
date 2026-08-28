@@ -35,7 +35,8 @@ template). Two edits — a **definition** and a **state slot**:
 ### 3.1 Define the token — `terra_classic.tokens`
 
 What the token IS and its Terra Classic side. **You** fill the identity and type
-fields; the **last line is script-filled state** (like §3.2), so leave it empty:
+fields; the **last three fields are script-filled state** (like §3.2) — the script
+writes them after it deploys the TC collateral warp, so leave them empty/false:
 
 ```jsonc
 "mytoken": {
