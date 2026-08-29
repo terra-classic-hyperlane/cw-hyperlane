@@ -141,6 +141,13 @@ cast_tx() {
     # corrupt the captured tx hash.
     local n=0 out i
     local args=("$@")
+    # On Ethereum mainnet (chain 1) legacy txs price at eth_gasPrice, which can
+    # fall below the next block's base fee and fail estimation — use EIP-1559.
+    if [ "${NET_CHAIN_ID:-}" = "1" ]; then
+        local filtered=()
+        for i in "${args[@]}"; do [ "$i" = "--legacy" ] || filtered+=("$i"); done
+        args=("${filtered[@]}")
+    fi
     while [ $n -lt 3 ]; do
         out=$(cast send "${args[@]}" 2>&1) && {
             # The receipt prints blockHash BEFORE transactionHash — grab the

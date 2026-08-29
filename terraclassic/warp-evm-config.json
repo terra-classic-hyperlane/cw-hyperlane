@@ -416,8 +416,9 @@
       },
       "rpc_urls": [
         "https://ethereum-rpc.publicnode.com",
-        "https://1rpc.io/eth",
-        "https://eth.drpc.org"
+        "https://eth.drpc.org",
+        "https://rpc.flashbots.net",
+        "https://eth.meowrpc.com"
       ],
       "explorer": "https://etherscan.io",
       "mailbox": {
@@ -510,11 +511,12 @@
           "owner": ""
         },
         "fakefake": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
-          "owner": ""
+          "deployed": true,
+          "address": "0x959DBb6784182ba5995cCEf6Abe4e378620ADA17",
+          "igp_custom": "0x9650F1f8DB492750323172145e67Df4e89E964Aa",
+          "hook_aggregation": "0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8",
+          "owner": "0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae",
+          "oracle_custom": "0x3987cCE8f08037EBF93Ef3a934753540A94196cE"
         }
       }
     },
