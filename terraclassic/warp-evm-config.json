@@ -41,7 +41,10 @@
           "mode": "collateral",
           "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
           "denom": "uusd",
-          "collateral_address": ""
+          "collateral_address": "",
+          "warp_address": "terra1qu3x6vhk4y6w6erhmedzfp2ug53qm5nwpyarxveqa7tvwg0telxqvd3ccf",
+          "warp_hexed": "0x07226d32f6a934ed6477de5a24855c45220dd26e093a333320ef96c721ebcfcc",
+          "deployed": true
         }
       },
       "juris": {
@@ -539,6 +542,8 @@
       },
       "rpc_urls": [
         "https://bsc.publicnode.com",
+        "https://bsc-dataseed.bnbchain.org",
+        "https://bsc-dataseed1.bnbchain.org",
         "https://1rpc.io/bnb"
       ],
       "explorer": "https://bscscan.com",
@@ -586,10 +591,11 @@
           "owner": ""
         },
         "ustc": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "owner": ""
+          "deployed": true,
+          "address": "0xfC067fd98FD123fC2cAd72d040AF60a523274339",
+          "igp_custom": "0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923",
+          "owner": "0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291",
+          "oracle_custom": "0x7dE950f8F0a037783989a6BE84B3620916552306"
         },
         "juris": {
           "deployed": false,

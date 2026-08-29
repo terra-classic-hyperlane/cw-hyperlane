@@ -161,10 +161,14 @@ cast_tx() {
         n=$((n+1))
         log_warn "TX failed ($n/3): $(echo "$out" | tail -1 | cut -c1-200)" >&2
         if [ $n -lt 3 ]; then
-            # From the 2nd attempt on, switch to the alternate RPC if configured
-            if [ -n "${NET_RPC_ALT:-}" ]; then
+            # Rotate through the configured fallback RPCs: attempt 2 uses
+            # rpc_urls[1], attempt 3 uses rpc_urls[2] (when configured).
+            local next_rpc=""
+            [ $n -eq 1 ] && next_rpc="${NET_RPC_ALT:-}"
+            [ $n -eq 2 ] && next_rpc="${NET_RPC_ALT2:-${NET_RPC_ALT:-}}"
+            if [ -n "$next_rpc" ]; then
                 for i in "${!args[@]}"; do
-                    [ "${args[$i]}" = "--rpc-url" ] && args[$((i+1))]="$NET_RPC_ALT"
+                    [ "${args[$i]}" = "--rpc-url" ] && args[$((i+1))]="$next_rpc"
                 done
             fi
             sleep 5
@@ -557,6 +561,7 @@ NET_IS_TEST=$(cfg "${N}.is_testnet")
 NET_NATIVE=$(cfg "${N}.native_token.symbol")
 NET_RPC=$(jq -r "${N}.rpc_urls[0]" "$CONFIG_FILE")
 NET_RPC_ALT=$(jq -r "${N}.rpc_urls[1] // empty" "$CONFIG_FILE" 2>/dev/null || echo "")
+NET_RPC_ALT2=$(jq -r "${N}.rpc_urls[2] // empty" "$CONFIG_FILE" 2>/dev/null || echo "")
 NET_EXPLORER=$(cfg "${N}.explorer")
 
 MAILBOX=$(cfg "${N}.mailbox.address")
