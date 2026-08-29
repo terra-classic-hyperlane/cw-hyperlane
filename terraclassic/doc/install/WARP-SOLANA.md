@@ -159,6 +159,7 @@ $CLIENT -u $RPC token query --program-id <WARP> synthetic
 
 ## 6. Post-deploy checklist (production tokens)
 
-Same as EVM: registry PR · warp UI route · `originSenders` in the oracle-agent
+Same as EVM: registry PR · warp UI route ([WARP-UI-PR.md](WARP-UI-PR.md)) ·
+`originSenders` in the oracle-agent
 config (tc-proof-of-delivery) · append the new addresses + hashes to
 [DEPLOY-HASHES.md](DEPLOY-HASHES.md).

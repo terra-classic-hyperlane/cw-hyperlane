@@ -216,7 +216,8 @@ The relayer delivers automatically; the fee you paid funds the relayer-reward-va
 
 1. **Registry**: PR to `hyperlane-registry` (pattern of PR #1559 — on-chain mirror,
    `deploy.yaml` without comments).
-2. **Warp UI**: add the route (hyperlane-warp-ui-template).
+2. **Warp UI**: add the route to the registry branch the UI reads — fork & PR
+   guide in [WARP-UI-PR.md](WARP-UI-PR.md).
 3. **Claims**: add the new warp's sender to `originSenders` in the oracle-agent
    `config.json` (tc-proof-of-delivery) so deliveries are swept.
 4. **Record hashes**: append the new addresses to

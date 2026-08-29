@@ -44,6 +44,18 @@ mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/create-warp-evm.log"
 STATE_FILE="$SCRIPT_DIR/.warp-evm-state.json"
 
+# Local secrets: terraclassic/.env (gitignored). Vars already exported win.
+if [ -f "$SCRIPT_DIR/.env" ]; then
+    _PRE_ETH_KEY="${ETH_PRIVATE_KEY:-}"
+    _PRE_TERRA_KEY="${TERRA_PRIVATE_KEY:-}"
+    set -a
+    # shellcheck disable=SC1091
+    source "$SCRIPT_DIR/.env"
+    set +a
+    [ -n "$_PRE_ETH_KEY" ]   && ETH_PRIVATE_KEY="$_PRE_ETH_KEY"
+    [ -n "$_PRE_TERRA_KEY" ] && TERRA_PRIVATE_KEY="$_PRE_TERRA_KEY"
+fi
+
 # Auto-detect PROJECT_ROOT (directory that contains package.json and yarn)
 # Required to run: yarn cw-hpl warp create ...
 PROJECT_ROOT="$SCRIPT_DIR"

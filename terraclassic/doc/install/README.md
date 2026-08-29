@@ -4,12 +4,13 @@
 > connected to Terra Classic (columbus-5, domain **132556**). Everything below is
 > current production state, verified on-chain **2026-08-28**.
 
-## The 3 documents
+## The 4 documents
 
 | Document | What it covers |
 |---|---|
 | **[WARP-EVM.md](WARP-EVM.md)** | Create a warp on **BSC** or **Ethereum** with one script (`create-warp-evm.sh`) — examples for both chains |
 | **[WARP-SOLANA.md](WARP-SOLANA.md)** | Create a warp on **Solana** (sealevel) with one script (`create-warp-sealevel.sh`) — full example |
+| **[WARP-UI-PR.md](WARP-UI-PR.md)** | Make a deployed route **appear in the Warp UI** — fork & PR to the registry branch the UI reads (`terra-classic-warp`) |
 | **[DEPLOY-HASHES.md](DEPLOY-HASHES.md)** | Complete deployed-contract inventory with **hashes**: Terra Classic core (code_ids + data_hash), and the synthetics' warp/ISM/IGP/hooks on BSC · ETH · Solana — with the commands to verify each one |
 
 ## The one principle to understand first
