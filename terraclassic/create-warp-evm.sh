@@ -1581,6 +1581,7 @@ for n, a in sorted(evm):
 if sol:
     L.append(f"      - token: sealevel|solanamainnet|{sol['program_id']}")
 L.append(f"    decimals: {t['decimals']}")
+if t.get("image"): L.append(f"    logoURI: {t['image']}")
 L.append(f"    name: {t['name']}")
 L.append("    standard: " + ("CwHypCollateral" if tw.get("type") == "cw20" else "CwHypNative"))
 L.append(f"    symbol: {t['symbol']}")
@@ -1591,6 +1592,7 @@ for n, a in sorted(evm):
     L.append("    connections:")
     L.append(f"      - token: cosmos|terraclassic|{tc_addr}")
     L.append(f"    decimals: {t['decimals']}")
+    if t.get("image"): L.append(f"    logoURI: {t['image']}")
     L.append(f"    name: {t['name']}")
     L.append("    standard: EvmHypSynthetic")
     L.append(f"    symbol: {t['symbol']}")
@@ -1602,6 +1604,7 @@ if sol:
     L.append("    connections:")
     L.append(f"      - token: cosmos|terraclassic|{tc_addr}")
     L.append(f"    decimals: {sol.get('decimals', t['decimals'])}")
+    if t.get("image"): L.append(f"    logoURI: {t['image']}")
     L.append(f"    name: {t['name']}")
     L.append("    standard: SealevelHypSynthetic")
     L.append(f"    symbol: {t['symbol']}")

@@ -11,6 +11,7 @@ tokens:
       - token: ethereum|bsc|0x481095ecEd7A907e7f390b6226F53a66D379e6e2
       - token: ethereum|ethereum|0xA4bc47a4C5461eB0E59A585a21A1222EF7544Ac6
     decimals: 6
+    logoURI: https://raw.githubusercontent.com/classic-terra/assets/refs/heads/master/icon/svg/LUNC.svg
     name: Luna Classic
     standard: CwHypNative
     symbol: LUNC
@@ -19,6 +20,7 @@ tokens:
     connections:
       - token: cosmos|terraclassic|terra1m7jcqxfn4hd7q4sywhw508nxshaf078c4vh83y0ts43y9tlp9dcs50cggy
     decimals: 6
+    logoURI: https://raw.githubusercontent.com/classic-terra/assets/refs/heads/master/icon/svg/LUNC.svg
     name: Luna Classic
     standard: EvmHypSynthetic
     symbol: LUNC
@@ -27,6 +29,7 @@ tokens:
     connections:
       - token: cosmos|terraclassic|terra1m7jcqxfn4hd7q4sywhw508nxshaf078c4vh83y0ts43y9tlp9dcs50cggy
     decimals: 6
+    logoURI: https://raw.githubusercontent.com/classic-terra/assets/refs/heads/master/icon/svg/LUNC.svg
     name: Luna Classic
     standard: EvmHypSynthetic
     symbol: LUNC
