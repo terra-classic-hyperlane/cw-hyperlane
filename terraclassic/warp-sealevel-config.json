@@ -25,16 +25,16 @@
         "destination_gas_terra": 3000000
       },
       "warp_tokens": {
-        "wlunc": {
-          "_comment": "LUNC nativo → token sintético no Solana",
-          "deployed": true,
+        "lunc": {
+          "_comment": "Luna Classic (native LUNC) via Hyperlane Warp Route (Terra Classic ↔ Solana)",
+          "deployed": false,
           "type": "synthetic",
-          "program_id": "5BuTS1oZhUKJgpgwXJyz5VRdTq99SMvHm7hrPMctJk6x",
-          "program_hex": "0x3e39de1edbc0495cee651b3e046f63d01ff9436932bb520e8c0cb4ba5c5c7f1d",
+          "program_id": "",
+          "program_hex": "",
           "mint_address": "",
-          "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata.json",
+          "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/terraclassic/warp/solana/metadata-lunc.json",
           "decimals": 6,
-          "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
+          "owner": "BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j"
         },
         "juris": {
           "_comment": "JURIS CW20 → token sintético no Solana (já deployado)",
@@ -81,15 +81,15 @@
           "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
         },
         "ustc": {
-          "_comment": "USTC nativo → token sintético no Solana",
+          "_comment": "Terra Classic USD (native USTC) via Hyperlane Warp Route (Terra Classic ↔ Solana)",
           "deployed": false,
           "type": "synthetic",
           "program_id": "",
           "program_hex": "",
           "mint_address": "",
-          "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-ustc.json",
+          "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/terraclassic/warp/solana/metadata-ustc.json",
           "decimals": 6,
-          "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
+          "owner": "BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j"
         },
         "igorfake": {
           "deployed": true,
@@ -111,11 +111,10 @@
       "display_name": "Solana Mainnet",
       "environment": "mainnet3",
       "domain": 1399811149,
-      "rpc": "https://mainnet.helius-rpc.com/?api-key=YOUR_HELIUS_API_KEY",
+      "rpc": "https://api.mainnet-beta.solana.com",
       "rpc_fallbacks": [
-        "https://solana-mainnet.rpc.extrnode.com",
-        "https://rpc.ankr.com/solana",
-        "https://mainnet.helius-rpc.com/?api-key=YOUR_HELIUS_API_KEY"
+        "https://solana-rpc.publicnode.com",
+        "https://api.mainnet-beta.solana.com"
       ],
       "mailbox": "E588QtVUvresuXq2KoNEwAmoifCzYGpRBdHByN9KQMbi",
       "explorer": "https://explorer.solana.com",
