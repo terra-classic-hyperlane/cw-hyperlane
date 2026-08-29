@@ -514,6 +514,14 @@
           "hook_aggregation": "0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8",
           "owner": "0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae",
           "oracle_custom": "0x3987cCE8f08037EBF93Ef3a934753540A94196cE"
+        },
+        "lunc": {
+          "address": "0xA4bc47a4C5461eB0E59A585a21A1222EF7544Ac6",
+          "deployed": true,
+          "owner": "0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae",
+          "igp_custom": "0x9650F1f8DB492750323172145e67Df4e89E964Aa",
+          "oracle_custom": "0x3987cCE8f08037EBF93Ef3a934753540A94196cE",
+          "hook_aggregation": "0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8"
         }
       }
     },

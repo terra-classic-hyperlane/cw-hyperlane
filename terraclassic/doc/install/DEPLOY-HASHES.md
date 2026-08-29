@@ -140,7 +140,7 @@ record: unlike the test cw20s, this collateralizes real LUNC.
 | Token type | `native { fungible { denom: "uluna" } }` — mode `collateral` |
 | **Owner** | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` (deployer) — **⚠️ PLANNED: migrate to a multisig account**; owner controls `set_route`/`set_ism`/`set_hook` |
 | Contract admin | *(empty — contract is non-migratable)* |
-| Routes | `56 → 0x…481095ecEd7A907e7f390b6226F53a66D379e6e2` (BSC) — set_route tx `3A012A09C960896EEB22CBC908881A2C9FF0749E24100787C3519ED82936408C` |
+| Routes | `56 → 0x…481095ecEd7A907e7f390b6226F53a66D379e6e2` (BSC) — set_route tx `3A012A09C960896EEB22CBC908881A2C9FF0749E24100787C3519ED82936408C` · `1 → 0x…A4bc47a4C5461eB0E59A585a21A1222EF7544Ac6` (Ethereum) — set_route tx `752F3EA9E3925D3659E50641ADBC6610818FB33E544AC65115CA8B5B93A9BF80` |
 | data_hash (code 11390) | `34b5deb86937f51d4b04ddc572597b95ffd1b3ce094df8a73dc1cf20babc7e55` (see §1) |
 
 ### BSC side (synthetic HypERC20 proxy)
@@ -155,8 +155,21 @@ record: unlike the test cw20s, this collateralizes real LUNC.
 | Router → TC | `132556 → 0xdfa5801933…afe12b71` — enroll tx `0xdcfc2dac…c468f7f` |
 | Bytecode sha256 | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to IGORFAKE/FAKEFAKE proxies) |
 
-Everything re-verified on-chain 2026-08-29 (routes in BOTH directions, hook,
-ISM, owner queries). Note: an older native-uluna warp (**wlunc**,
+### Ethereum side (synthetic HypERC20 proxy)
+
+| Field | Value |
+|---|---|
+| Warp contract | `0xA4bc47a4C5461eB0E59A585a21A1222EF7544Ac6` — "Luna Classic" / LUNC / 6 decimals |
+| **Owner** | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` (deployer) — **⚠️ PLANNED: migrate to a multisig**; owner controls `setHook`/`setInterchainSecurityModule`/`enrollRemoteRouter` and proxy upgrades via its ProxyAdmin |
+| ISM | production 3-of-4 `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` |
+| Hook | production AggregationHook `0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8` [merkle + governed IGP] — setHook tx `0x8e8ca9bf…801b1307` |
+| IGP | production `0x9650F1f8DB492750323172145e67Df4e89E964Aa` (fees → relayer-reward-vault) |
+| Router → TC | `132556 → 0xdfa5801933…afe12b71` — enroll tx `0xe8e1bd4d…02c6001f` |
+| Bytecode sha256 | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to the BSC LUNC / IGORFAKE / FAKEFAKE proxies) |
+
+Everything re-verified on-chain 2026-08-29 (routes in BOTH directions on both
+networks, hook, ISM, owner queries — TC `list_routes` = `{1 → 0xA4bc47a4…,
+56 → 0x481095ec…}`). Note: an older native-uluna warp (**wlunc**,
 `terra1zlm0h2xu…`, owner `terra12awgq…`) exists from a previous generation —
 this LUNC route supersedes it for production use.
 
