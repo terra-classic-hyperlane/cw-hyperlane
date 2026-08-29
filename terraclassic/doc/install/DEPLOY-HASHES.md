@@ -173,7 +173,41 @@ networks, hook, ISM, owner queries — TC `list_routes` = `{1 → 0xA4bc47a4…,
 `terra1zlm0h2xu…`, owner `terra12awgq…`) exists from a previous generation —
 this LUNC route supersedes it for production use.
 
-## 6. Maintaining this document
+## 6. USTC — native coin warp route (complete record, 2026-08-29)
+
+Second native coin of the chain (**uusd**). Same structure and shared
+production infrastructure as the LUNC route (§5).
+
+### Terra Classic side (collateral, code_id 11390 `hpl_warp_native`)
+
+| Field | Value |
+|---|---|
+| Warp contract | `terra1qu3x6vhk4y6w6erhmedzfp2ug53qm5nwpyarxveqa7tvwg0telxqvd3ccf` |
+| bytes32 (hex) | `0x07226d32f6a934ed6477de5a24855c45220dd26e093a333320ef96c721ebcfcc` |
+| Token type | `native { fungible { denom: "uusd" } }` — mode `collateral` |
+| **Owner** | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` (deployer) — **⚠️ PLANNED: migrate to a multisig account**; owner controls `set_route`/`set_ism`/`set_hook` |
+| Contract admin | *(empty — contract is non-migratable)* |
+| Routes | `56 → 0x…fC067fd98FD123fC2cAd72d040AF60a523274339` (BSC) — set_route tx `4F6B9F079D643A44CE6D3E63CA37BBD18C9D7188BD785F97569B18EFE37B0368` |
+| data_hash (code 11390) | `34b5deb86937f51d4b04ddc572597b95ffd1b3ce094df8a73dc1cf20babc7e55` (see §1) |
+
+### BSC side (synthetic HypERC20 proxy)
+
+| Field | Value |
+|---|---|
+| Warp contract | `0xfC067fd98FD123fC2cAd72d040AF60a523274339` — "Terra Classic USD" / USTC / 6 decimals |
+| **Owner** | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` (deployer) — **⚠️ PLANNED: migrate to a multisig**; owner controls `setHook`/`setInterchainSecurityModule`/`enrollRemoteRouter` and proxy upgrades via its ProxyAdmin |
+| ISM | production 3-of-4 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` |
+| Hook | production AggregationHook `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` [merkle + governed IGP] |
+| IGP | production `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` (fees → relayer-reward-vault) |
+| Router → TC | `132556 → 0x07226d32f6…21ebcfcc` — enroll tx `0xbfdfc072…730417b9` |
+| Bytecode sha256 | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to the LUNC / IGORFAKE / FAKEFAKE proxies) |
+
+Re-verified on-chain 2026-08-29: routes in BOTH directions (TC `list_routes` =
+`{56 → 0xfC067fd9…}` · BSC `routers(132556)` = TC warp hex), hook, ISM and
+owner queries. Note: the older **ustc** warp from the previous generation
+(`terra1rnpvpwv…`, owner `terra12awgq…`) is superseded by this route.
+
+## 7. Maintaining this document
 
 When a new warp is deployed (see [WARP-EVM.md](WARP-EVM.md) /
 [WARP-SOLANA.md](WARP-SOLANA.md)): append the new token's addresses + hashes to the

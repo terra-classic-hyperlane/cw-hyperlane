@@ -595,7 +595,8 @@
           "address": "0xfC067fd98FD123fC2cAd72d040AF60a523274339",
           "igp_custom": "0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923",
           "owner": "0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291",
-          "oracle_custom": "0x7dE950f8F0a037783989a6BE84B3620916552306"
+          "oracle_custom": "0x7dE950f8F0a037783989a6BE84B3620916552306",
+          "hook_aggregation": "0xD2c82583C261fce94cD3F97f1dFF9B20a9338164"
         },
         "juris": {
           "deployed": false,

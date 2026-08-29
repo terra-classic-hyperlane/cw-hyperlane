@@ -1,9 +1,8 @@
 {
   "type": "native",
   "mode": "collateral",
-
-  "id": "wwwustc",
-  "owner": "terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze",
+  "id": "ustc",
+  "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
   "config": {
     "collateral": {
       "denom": "uusd"

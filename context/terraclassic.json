@@ -105,6 +105,12 @@
           "type": "hpl_warp_native",
           "address": "terra1m7jcqxfn4hd7q4sywhw508nxshaf078c4vh83y0ts43y9tlp9dcs50cggy",
           "hexed": "0xdfa5801933addbe0560475dd479e6685fa97f8f8ab2e7891eb856242afe12b71"
+        },
+        {
+          "id": "ustc",
+          "type": "hpl_warp_native",
+          "address": "terra1qu3x6vhk4y6w6erhmedzfp2ug53qm5nwpyarxveqa7tvwg0telxqvd3ccf",
+          "hexed": "0x07226d32f6a934ed6477de5a24855c45220dd26e093a333320ef96c721ebcfcc"
         }
       ],
       "cw20": [
