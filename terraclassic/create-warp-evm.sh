@@ -143,7 +143,12 @@ cast_tx() {
     local args=("$@")
     while [ $n -lt 3 ]; do
         out=$(cast send "${args[@]}" 2>&1) && {
-            echo "$out" | grep -oE "0x[0-9a-fA-F]{64}" | head -1
+            # The receipt prints blockHash BEFORE transactionHash — grab the
+            # transactionHash line specifically, or fall back to the last hash.
+            local txh
+            txh=$(echo "$out" | grep -iE "^transactionHash" | grep -oE "0x[0-9a-fA-F]{64}" | head -1)
+            [ -z "$txh" ] && txh=$(echo "$out" | grep -oE "0x[0-9a-fA-F]{64}" | tail -1)
+            echo "$txh"
             return 0
         }
         n=$((n+1))
