@@ -73,6 +73,7 @@ Hash = sha256 of the **live deployed bytecode** (`eth_getCode`).
 | Piece | Address | sha256 (size) |
 |---|---|---|
 | Warp IGORFAKE (HypERC20 proxy) | `0xA687a4C4CA49795999b36fDC8A18d1DDd63eDFB5` | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B) |
+| Warp FAKEFAKE (HypERC20 proxy, 2026-08-28) | `0x959DBb6784182ba5995cCEf6Abe4e378620ADA17` | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to IGORFAKE) |
 | **ISM 3-of-4** (mutable, minimal proxy) | `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` | `b7cdff85f92c8394e47555637814cd106c6d807bb5cba8c3e51e3015b3a03b41` (45 B) |
 | **IGP** (beneficiary = vault `0x04096dCB…`) | `0x9650F1f8DB492750323172145e67Df4e89E964Aa` | `ae76a7148c0989c4d7cd30b2b5faaf7935482e9e751013cb5303de666c18a80b` (6043 B) |
 | Gas oracle (owner = governor) | `0x3987cCE8f08037EBF93Ef3a934753540A94196cE` | `d93c86aa1b584fc0147de6aadc09b78de90f08b0378ef43a2d5118d9b62440d8` (2118 B) |
