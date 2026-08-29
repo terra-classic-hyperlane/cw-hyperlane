@@ -786,9 +786,13 @@ else
 fi
 
 # ═════════════════════════════════════════════════════════════════════════════
-# STEP 3 — CONFIGURE IGP
+# STEP 3 — CONFIGURE IGP (set the EXISTING production IGP — never deploy/edit)
+#   Same rule as create-warp-evm.sh STEP 4: gas prices are GOVERNED (oracle
+#   accounts fed by the oracle-agent/governor). This script only ASSOCIATES the
+#   production IGP from the config with the warp; it never deploys another IGP
+#   nor touches prices — what is on-chain is what the relayer quotes/executes.
 # ═════════════════════════════════════════════════════════════════════════════
-log_sep "STEP 3 — CONFIGURE IGP (Interchain Gas Paymaster)"
+log_sep "STEP 3 — CONFIGURE IGP (set existing production IGP — prices are governed)"
 
 if [ -n "${SKIP_IGP:-}" ]; then
     log_warn "SKIP_IGP set — skipping IGP configuration."
@@ -799,6 +803,7 @@ else
     { [ -z "$IGP_TYPE" ] || [ "$IGP_TYPE" = "null" ]; } && IGP_TYPE="igp"
     log_info "IGP Program ID: ${IGP_PROGRAM_ID}"
     log_info "IGP Account:    ${IGP_ACCOUNT} (type: ${IGP_TYPE})"
+    log_info "Production IGP is only ASSOCIATED here — no deploy, no price edits (governed)."
 
     IGP_TMP=$(mktemp)
     set +e
