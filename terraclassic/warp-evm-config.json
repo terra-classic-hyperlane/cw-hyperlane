@@ -9,42 +9,39 @@
     "rpc": "https://rpc.terra-classic.hexxagon.io",
     "lcd": "https://lcd.terra-classic.hexxagon.io",
     "tokens": {
-      "wlunc": {
+      "lunc": {
         "_comment": "Native LUNC — hpl_warp_native already deployed",
-        "id": "wwwwlunc",
-        "name": "Wrapped Terra Classic LUNC",
+        "id": "lunc",
+        "name": "Luna Classic",
         "symbol": "LUNC",
         "decimals": 6,
-        "description": "Wrapped Terra Classic LUNC via Hyperlane Warp Route",
+        "description": "Wrapped Luna Classic LUNC via Hyperlane Warp Route",
         "image": "https://raw.githubusercontent.com/classic-terra/assets/refs/heads/master/icon/svg/LUNC.svg",
         "terra_warp": {
           "type": "native",
           "mode": "collateral",
-          "owner": "terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze",
+          "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
           "denom": "uluna",
           "collateral_address": "",
-          "warp_address": "terra1zlm0h2xu6rhnjchn29hxnpvr74uxxqetar9y75zcehyx2mqezg9slj09ml",
-          "warp_hexed": "0x17f6fba8dcd0ef3962f3516e698583f57863032be8ca4f5058cdc8656c19120b",
+          "warp_address": "terra1m7jcqxfn4hd7q4sywhw508nxshaf078c4vh83y0ts43y9tlp9dcs50cggy",
+          "warp_hexed": "0xdfa5801933addbe0560475dd479e6685fa97f8f8ab2e7891eb856242afe12b71",
           "deployed": true
         }
       },
       "ustc": {
         "_comment": "Native USTC — hpl_warp_native already deployed",
-        "id": "wwwustc",
-        "name": "Wrapped TerraClassic USD",
+        "id": "ustc",
+        "name": "Terra Classic USD",
         "symbol": "USTC",
         "decimals": 6,
         "description": "Wrapped Terra Classic USTC via Hyperlane Warp Route",
-        "image": "https://raw.githubusercontent.com/classic-terra/assets/refs/heads/master/icon/svg/USTC.svg",
+        "image": "https://raw.githubusercontent.com/classic-terra/assets/refs/heads/master/icon/svg/Terra/UST.svg",
         "terra_warp": {
           "type": "native",
           "mode": "collateral",
-          "owner": "terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze",
+          "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
           "denom": "uusd",
-          "collateral_address": "",
-          "warp_address": "terra1rnpvpwvqcf94keldtm2udt4tqhwthpw5cu94m443rz5ue7rvvkjq9nklml",
-          "warp_hexed": "0x1cc2c0b980c24b5b67ed5ed5c6aeab05dcbb85d4c70b5dd6b118a9ccf86c65a4",
-          "deployed": true
+          "collateral_address": ""
         }
       },
       "juris": {
@@ -625,6 +622,14 @@
           "hook_aggregation": "0xD2c82583C261fce94cD3F97f1dFF9B20a9338164",
           "owner": "0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291",
           "oracle_custom": "0x7dE950f8F0a037783989a6BE84B3620916552306"
+        },
+        "lunc": {
+          "address": "0x481095ecEd7A907e7f390b6226F53a66D379e6e2",
+          "deployed": true,
+          "owner": "0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291",
+          "igp_custom": "0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923",
+          "oracle_custom": "0x7dE950f8F0a037783989a6BE84B3620916552306",
+          "hook_aggregation": "0xD2c82583C261fce94cD3F97f1dFF9B20a9338164"
         }
       }
     },

@@ -99,7 +99,14 @@
       }
     },
     "warp": {
-      "native": [],
+      "native": [
+        {
+          "id": "lunc",
+          "type": "hpl_warp_native",
+          "address": "terra1m7jcqxfn4hd7q4sywhw508nxshaf078c4vh83y0ts43y9tlp9dcs50cggy",
+          "hexed": "0xdfa5801933addbe0560475dd479e6685fa97f8f8ab2e7891eb856242afe12b71"
+        }
+      ],
       "cw20": [
         {
           "id": "igorfake",

@@ -1,0 +1,11 @@
+{
+  "type": "native",
+  "mode": "collateral",
+  "id": "lunc",
+  "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
+  "config": {
+    "collateral": {
+      "denom": "uluna"
+    }
+  }
+}

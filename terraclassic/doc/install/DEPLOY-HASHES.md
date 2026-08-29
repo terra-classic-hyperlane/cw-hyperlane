@@ -126,7 +126,41 @@ solana program dump <PROGRAM_ID> /tmp/p.so -u mainnet-beta && sha256sum /tmp/p.s
   -u https://api.mainnet-beta.solana.com token query --program-id EPJNrrpCeZGqDPoFtdV9u9uDWBNW3Xqh84LfM7345zcL synthetic
 ```
 
-## 5. Maintaining this document
+## 5. LUNC — native coin warp route (complete record, 2026-08-29)
+
+The warp route for the chain's **native coin (uluna)**. Deserves its own full
+record: unlike the test cw20s, this collateralizes real LUNC.
+
+### Terra Classic side (collateral, code_id 11390 `hpl_warp_native`)
+
+| Field | Value |
+|---|---|
+| Warp contract | `terra1m7jcqxfn4hd7q4sywhw508nxshaf078c4vh83y0ts43y9tlp9dcs50cggy` |
+| bytes32 (hex) | `0xdfa5801933addbe0560475dd479e6685fa97f8f8ab2e7891eb856242afe12b71` |
+| Token type | `native { fungible { denom: "uluna" } }` — mode `collateral` |
+| **Owner** | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` (deployer) — **⚠️ PLANNED: migrate to a multisig account**; owner controls `set_route`/`set_ism`/`set_hook` |
+| Contract admin | *(empty — contract is non-migratable)* |
+| Routes | `56 → 0x…481095ecEd7A907e7f390b6226F53a66D379e6e2` (BSC) — set_route tx `3A012A09C960896EEB22CBC908881A2C9FF0749E24100787C3519ED82936408C` |
+| data_hash (code 11390) | `34b5deb86937f51d4b04ddc572597b95ffd1b3ce094df8a73dc1cf20babc7e55` (see §1) |
+
+### BSC side (synthetic HypERC20 proxy)
+
+| Field | Value |
+|---|---|
+| Warp contract | `0x481095ecEd7A907e7f390b6226F53a66D379e6e2` — "Luna Classic" / LUNC / 6 decimals |
+| **Owner** | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` (deployer) — **⚠️ PLANNED: migrate to a multisig**; owner controls `setHook`/`setInterchainSecurityModule`/`enrollRemoteRouter` and proxy upgrades via its ProxyAdmin |
+| ISM | production 3-of-4 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` |
+| Hook | production AggregationHook `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` [merkle + governed IGP] — setHook tx `0x84da30aa…ece36b2` |
+| IGP | production `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` (fees → relayer-reward-vault) |
+| Router → TC | `132556 → 0xdfa5801933…afe12b71` — enroll tx `0xdcfc2dac…c468f7f` |
+| Bytecode sha256 | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to IGORFAKE/FAKEFAKE proxies) |
+
+Everything re-verified on-chain 2026-08-29 (routes in BOTH directions, hook,
+ISM, owner queries). Note: an older native-uluna warp (**wlunc**,
+`terra1zlm0h2xu…`, owner `terra12awgq…`) exists from a previous generation —
+this LUNC route supersedes it for production use.
+
+## 6. Maintaining this document
 
 When a new warp is deployed (see [WARP-EVM.md](WARP-EVM.md) /
 [WARP-SOLANA.md](WARP-SOLANA.md)): append the new token's addresses + hashes to the
