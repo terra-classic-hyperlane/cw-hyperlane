@@ -1,0 +1,14 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Warp Route: BSC Mainnet ↔ Terra Classic
+# Token:      FAKEFAKE (FAKEFAKE)
+# Generated:  2026-08-28 22:00:17
+# ─────────────────────────────────────────────────────────────────────────────
+bsc:
+  isNft: false
+  type: synthetic
+  name: "FAKEFAKE"
+  symbol: "FAKEFAKE"
+  decimals: 6
+  owner: "0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291"
+  mailbox: "0x2971b9Aec44bE4eb673DF1B88cDB57b96eefe8a4"
+  interchainSecurityModule: "0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151"

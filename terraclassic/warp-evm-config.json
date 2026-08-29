@@ -175,9 +175,9 @@
           "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
           "denom": "",
           "collateral_address": "terra1f45rp85m53688ykan8mgjmfyz43d5h7psgawz5n775wde6vrzj5s4tvpwq",
-          "warp_address": "",
-          "warp_hexed": "",
-          "deployed": false
+          "warp_address": "terra1zkkk9km8f6gf5vgn4zf66ep0djztqqkvns8jws8c9f85v4tfxrvq9n2wlk",
+          "warp_hexed": "0x15ad62db674e909a3113a893ad642f6c84b002cc9c0f2740f82a4f46556930d8",
+          "deployed": true
         }
       }
     },
@@ -617,11 +617,12 @@
           "_hook_note": "AggregationHook=[MerkleTreeHook+igp_custom]"
         },
         "fakefake": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
-          "owner": ""
+          "deployed": true,
+          "address": "0x07289a10E1c4E8218AE2ACC599FfC29C68f32C47",
+          "igp_custom": "0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923",
+          "hook_aggregation": "0xD2c82583C261fce94cD3F97f1dFF9B20a9338164",
+          "owner": "0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291",
+          "oracle_custom": "0x7dE950f8F0a037783989a6BE84B3620916552306"
         }
       }
     },

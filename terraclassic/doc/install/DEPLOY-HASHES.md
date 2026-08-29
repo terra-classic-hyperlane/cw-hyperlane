@@ -33,6 +33,7 @@ Complete upload set (store txs and instantiation record:
 | 11387 | hpl_test_mock_msg_receiver | `aa7fca1213b164cb1e8a1beefe32dce6d31f7ebe8add4b568db49283bbdb43af` |
 | 11388 | **hpl_igp_oracle** → `terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d` | `3b0143755d322a7a8bcd2e6081c8a22f817644c557c85cfd4d570d69e08de1fc` |
 | 11389 | **hpl_warp_cw20** → IGORFAKE collateral `terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel` | `25b100c1c1bec141c90f4fc0e556b52025921403d7ae2d25bad8cfec35c74be7` |
+| 11389 | hpl_warp_cw20 → FAKEFAKE collateral `terra1zkkk9km8f6gf5vgn4zf66ep0djztqqkvns8jws8c9f85v4tfxrvq9n2wlk` (2026-08-28; routes: 56 ↔ BSC warp) | same code — `25b100c1c1bec141c90f4fc0e556b52025921403d7ae2d25bad8cfec35c74be7` |
 | 11390 | hpl_warp_native | `34b5deb86937f51d4b04ddc572597b95ffd1b3ce094df8a73dc1cf20babc7e55` |
 | 11392 | cw20 (IGORFAKE token) → `terra1lpkaaqjaq8zfwktge3vy0zg46nxxsynsge2wxa7addpweu2w6gmsy3lhkr` | `28506f2a3070291f1f2568f271aa5617f0a9d02ef28d98b6804a8b7ba1506d34` |
 | 11392 | cw20 (FAKEFAKE token, mirror of IGORFAKE) → `terra1f45rp85m53688ykan8mgjmfyz43d5h7psgawz5n775wde6vrzj5s4tvpwq` (tx `DA1D1E0227FDC64E5164661C310867318C8204A850E252DEA69A5CF339A06BD6`, 2026-08-28) | same code — `28506f2a3070291f1f2568f271aa5617f0a9d02ef28d98b6804a8b7ba1506d34` |
@@ -59,6 +60,7 @@ Hash = sha256 of the **live deployed bytecode** (`eth_getCode`).
 | Piece | Address | sha256 (size) |
 |---|---|---|
 | Warp IGORFAKE (HypERC20 proxy) | `0x3605D8946FC6F5A75d89d92173100F59743B5318` | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B) |
+| Warp FAKEFAKE (HypERC20 proxy, 2026-08-28) | `0x07289a10E1c4E8218AE2ACC599FfC29C68f32C47` | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to IGORFAKE) |
 | **ISM 3-of-4** (mutable, minimal proxy) | `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` | `ebabd1533007ed187cdd35cbea521be162e818a8a859f251d6f0cc6a9d69efaf` (45 B) |
 | **IGP** (beneficiary = vault `0x34E06a77…`) | `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` | `ae76a7148c0989c4d7cd30b2b5faaf7935482e9e751013cb5303de666c18a80b` (6043 B) |
 | Gas oracle (owner = governor) | `0x7dE950f8F0a037783989a6BE84B3620916552306` | `d93c86aa1b584fc0147de6aadc09b78de90f08b0378ef43a2d5118d9b62440d8` (2118 B) |

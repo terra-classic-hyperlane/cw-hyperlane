@@ -106,6 +106,12 @@
           "type": "hpl_warp_cw20",
           "address": "terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel",
           "hexed": "0x70fd6184ff0a5ad088c9b199bba6666bf4cb0a35cf92f5d94c27791d4a2da859"
+        },
+        {
+          "id": "fakefake",
+          "type": "hpl_warp_cw20",
+          "address": "terra1zkkk9km8f6gf5vgn4zf66ep0djztqqkvns8jws8c9f85v4tfxrvq9n2wlk",
+          "hexed": "0x15ad62db674e909a3113a893ad642f6c84b002cc9c0f2740f82a4f46556930d8"
         }
       ]
     }
