@@ -656,6 +656,33 @@ if [ "$HAVE_CAST" = "true" ] && [ -n "${WALLET:-}" ]; then
     BAL_WEI=$(cast balance "$WALLET" --rpc-url "$NET_RPC" 2>/dev/null || echo "0")
     BAL=$(cast to-unit "$BAL_WEI" ether 2>/dev/null || echo "?")
     log_info "Balance: ${G}${BAL} ${NET_NATIVE}${NC}"
+
+    # Pre-check: a FULL new deploy (proxyAdmin + implementation + proxy +
+    # setHook + enroll) needs ~5M gas. Estimate against the CURRENT gas price
+    # with 50% headroom and refuse to start underfunded — a dropped/stuck tx
+    # mid-deploy is much harder to debug than this message.
+    if [ -z "${WARP_ADDRESS:-}" ]; then
+        GP_NOW=$(cast gas-price --rpc-url "$NET_RPC" 2>/dev/null || echo "0")
+        if [ "${GP_NOW:-0}" != "0" ] && [ "${BAL_WEI:-0}" != "0" ]; then
+            NEED_WEI=$(awk "BEGIN{printf \"%.0f\", $GP_NOW*5000000*1.5}")
+            if awk "BEGIN{exit !($BAL_WEI < $NEED_WEI)}"; then
+                NEED_ETH=$(cast to-unit "$NEED_WEI" ether 2>/dev/null || echo "?")
+                log ""
+                log_err "SALDO INSUFICIENTE para o deploy completo nesta rede!"
+                log "  Necessário (estimado agora): ${Y}~${NEED_ETH} ${NET_NATIVE}${NC}  (5M gás × preço atual × 1.5)"
+                log "  Disponível:                  ${R}${BAL} ${NET_NATIVE}${NC}"
+                log ""
+                log "  ${W}➡ Deposite ${NET_NATIVE} na carteira:${NC} ${C}${WALLET}${NC}"
+                log "    (rede ${NET_DISPLAY} — chain id ${NET_CHAIN_ID})"
+                log ""
+                log "  Com saldo baixo a tx é assinada com fee mínima e tende a ser"
+                log "  DESCARTADA do mempool (timeout de confirmação no meio do deploy)."
+                echo -ne "  ${W}▶ Continuar mesmo assim? [y/N]: ${NC}"
+                read -r CONT_LOWBAL 2>/dev/null || CONT_LOWBAL="n"
+                [[ ! "${CONT_LOWBAL:-n}" =~ ^[sSyY]$ ]] && { log "  Abortado — deposite e rode de novo."; exit 1; }
+            fi
+        fi
+    fi
 fi
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -768,8 +795,23 @@ else
             log_warn "Hyperlane CLI is outdated and does not recognize a protocol."
             log "  Update with: ${C}npm install -g @hyperlane-xyz/cli@latest${NC}"
         fi
-        # Hint for missing private key
-        if echo "$DEPLOY_OUT" | grep -q "too_small\|private.key\|signer"; then
+        # Insufficient balance / dropped tx — the most common mainnet failure.
+        # The CLI itself warns ("low balance ... recommended") and a timeout
+        # waiting for confirmations usually means the underfunded tx was
+        # dropped from the mempool.
+        if echo "$DEPLOY_OUT" | grep -qiE "low balance|insufficient funds|insufficient balance|Timeout \([0-9]+ms\) waiting for [0-9]+ block"; then
+            RECOMMENDED=$(echo "$DEPLOY_OUT" | grep -oE "At least [0-9.]+ [A-Za-z]+ recommended" | head -1)
+            log_err "CAUSA PROVÁVEL: SALDO INSUFICIENTE na carteira do deploy."
+            log "  Carteira:  ${C}${WALLET:-derive de ETH_PRIVATE_KEY}${NC}"
+            log "  Saldo:     ${R}${BAL:-?} ${NET_NATIVE}${NC}"
+            [ -n "$RECOMMENDED" ] && log "  CLI pediu: ${Y}${RECOMMENDED}${NC}"
+            log ""
+            log "  ${W}➡ Deposite ${NET_NATIVE} nessa carteira (rede ${NET_DISPLAY}) e rode o script de novo.${NC}"
+            log "  Nada ficou pela metade: tx descartada não gasta saldo e o deploy recomeça limpo."
+        fi
+        # Hint for missing/invalid private key (narrow match — 'signer' alone
+        # also appears in the SUCCESS line 'Ethereum signer is valid')
+        if echo "$DEPLOY_OUT" | grep -qiE "invalid private key|too_small|No signer configured"; then
             log_warn "Check if ETH_PRIVATE_KEY is exported correctly."
             log "  ${C}export ETH_PRIVATE_KEY='0xYOUR_KEY'${NC}"
         fi
