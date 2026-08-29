@@ -137,14 +137,26 @@ wait_sec() {
 }
 
 cast_tx() {
-    local n=0 out
+    # NOTE: callers capture stdout — warnings MUST go to stderr (>&2) or they
+    # corrupt the captured tx hash.
+    local n=0 out i
+    local args=("$@")
     while [ $n -lt 3 ]; do
-        out=$(cast send "$@" 2>&1) && {
+        out=$(cast send "${args[@]}" 2>&1) && {
             echo "$out" | grep -oE "0x[0-9a-fA-F]{64}" | head -1
             return 0
         }
         n=$((n+1))
-        [ $n -lt 3 ] && { log_warn "TX failed ($n/3), waiting 5s..."; sleep 5; }
+        log_warn "TX failed ($n/3): $(echo "$out" | tail -1 | cut -c1-200)" >&2
+        if [ $n -lt 3 ]; then
+            # From the 2nd attempt on, switch to the alternate RPC if configured
+            if [ -n "${NET_RPC_ALT:-}" ]; then
+                for i in "${!args[@]}"; do
+                    [ "${args[$i]}" = "--rpc-url" ] && args[$((i+1))]="$NET_RPC_ALT"
+                done
+            fi
+            sleep 5
+        fi
     done
     return 1
 }
@@ -907,151 +919,42 @@ jq ".networks.\"${NET_KEY}\".warp_tokens.\"${TOKEN_KEY}\".igp_custom = \"${IGP_A
 save_state
 
 # ═════════════════════════════════════════════════════════════════════════════
-# STEP 4 — CONFIGURE GAS ORACLE: exchange rate and gas price for Terra Classic
+# STEP 4 — GAS ORACLE (READ-ONLY CHECK — prices are governed)
+#   Prices on the production IGP/oracle are managed by the oracle-agent and the
+#   gas governor. This script NEVER deploys a new oracle nor edits prices:
+#   what is on-chain is exactly what the relayer quotes and executes.
+#   Here we only VERIFY that the oracle has data for the Terra Classic domain.
 # ═════════════════════════════════════════════════════════════════════════════
-log_sep "STEP 4 — CONFIGURE GAS ORACLE (setRemoteGasData)"
+log_sep "STEP 4 — GAS ORACLE (read-only check — prices are governed)"
 
-log "  Gas Oracle:    ${G}${GAS_ORACLE}${NC}"
-log "  Domain Terra:  ${G}${TERRA_DOMAIN}${NC}"
-log "  Exchange Rate: ${G}${IGP_EXCHANGE_RATE}${NC}"
-log "  Gas Price:     ${G}${IGP_GAS_PRICE} wei${NC}"
-[ -n "${ORACLE_ADDRESS:-}" ] && log "  Custom Oracle: ${G}${ORACLE_ADDRESS}${NC}  ${G}(already deployed)${NC}"
-log ""
-log "  ${INFO} setRemoteGasData is called on the GAS ORACLE (not on the IGP)."
-log "  ${INFO} If the official oracle is not writable (not owner), a custom"
-log "           TerraClassicOracle is deployed automatically and the IGP is updated."
+log "  Gas Oracle:   ${G}${GAS_ORACLE}${NC}  (governed — never edited by this script)"
+log "  Domain Terra: ${G}${TERRA_DOMAIN}${NC}"
 log ""
 
 if [ "$HAVE_CAST" = "false" ]; then
-    log_warn "cast not available — run manually:"
-    log "  cast send ${GAS_ORACLE} \"setRemoteGasData(uint32,uint128,uint128)\" \\"
-    log "    ${TERRA_DOMAIN} ${IGP_EXCHANGE_RATE} ${IGP_GAS_PRICE} \\"
-    log "    --rpc-url ${NET_RPC} --private-key \$ETH_PRIVATE_KEY --legacy"
-    log "  # If not owner, deploy TerraClassicOracle.sol and call setGasOracle on IGP"
+    log_warn "cast not available — verify manually:"
+    log "  cast call ${GAS_ORACLE} \"getExchangeRateAndGasPrice(uint32)(uint128,uint128)\" ${TERRA_DOMAIN} --rpc-url ${NET_RPC}"
 else
-    # ── 1. Try official Hyperlane oracle first ───────────────────────────
     CURRENT_RATE=$(cast call "$GAS_ORACLE" \
         "getExchangeRateAndGasPrice(uint32)(uint128,uint128)" \
         "$TERRA_DOMAIN" --rpc-url "$NET_RPC" 2>/dev/null | head -1 || echo "0")
 
-    if [ "${CURRENT_RATE}" != "0" ] && [ "${CURRENT_RATE}" != "null" ]; then
-        log_ok "Official oracle already has data for Terra Classic (domain ${TERRA_DOMAIN}): rate=${CURRENT_RATE}"
-        log_info "Updating with new values..."
-    fi
-
-    TX=$(cast_tx "$GAS_ORACLE" \
-        "setRemoteGasData(uint32,uint128,uint128)" \
-        "$TERRA_DOMAIN" "$IGP_EXCHANGE_RATE" "$IGP_GAS_PRICE" \
-        --rpc-url "$NET_RPC" \
-        --private-key "$ETH_PRIVATE_KEY" \
-        --legacy) || TX=""
-
-    if [ -n "$TX" ]; then
-        log_ok "Official Gas Oracle configured for Terra Classic!"
-        log "   TX: ${B}${NET_EXPLORER}/tx/${TX}${NC}"
+    if [ -n "$CURRENT_RATE" ] && [ "$CURRENT_RATE" != "0" ] && [ "$CURRENT_RATE" != "null" ]; then
+        log_ok "Governed oracle has data for domain ${TERRA_DOMAIN}: rate=${CURRENT_RATE}"
     else
-        # ── 2. Official oracle not writable → deploy custom TerraClassicOracle ──
-        log_warn "Official oracle not writable (not owner) — switching to TerraClassicOracle..."
-
-        if [ -n "${ORACLE_ADDRESS:-}" ]; then
-            log_ok "Custom oracle already deployed: ${G}${ORACLE_ADDRESS}${NC}"
-            log_info "Updating rates on custom oracle..."
-            TX_UPD=$(cast_tx "$ORACLE_ADDRESS" \
-                "setRemoteGasData(uint32,uint128,uint128)" \
-                "$TERRA_DOMAIN" "$IGP_EXCHANGE_RATE" "$IGP_GAS_PRICE" \
-                --rpc-url "$NET_RPC" \
-                --private-key "$ETH_PRIVATE_KEY" \
-                --legacy) || true
-            [ -n "${TX_UPD:-}" ] && log_ok "Rates updated on custom oracle. TX: ${B}${NET_EXPLORER}/tx/${TX_UPD}${NC}"
-
-        elif [ "$HAVE_FORGE" = "false" ]; then
-            log_warn "forge not available — deploy TerraClassicOracle.sol manually via Remix:"
-            log "  Contrato:    ${C}${ORACLE_SOL}${NC}"
-            log "  Constructor: (_exchangeRate=${IGP_EXCHANGE_RATE}, _gasPrice=${IGP_GAS_PRICE})"
-            log "  Após deploy, execute:"
-            log "    ${C}export ORACLE_ADDRESS='0x...'${NC}"
-            log "    ${C}./create-warp-evm.sh${NC}"
-        else
-            [ ! -f "$ORACLE_SOL" ] && { log_err "TerraClassicOracle.sol not found: $ORACLE_SOL"; exit 1; }
-
-            TMP_ORACLE="/tmp/oracle-deploy-$$"
-            mkdir -p "$TMP_ORACLE/src"
-            cp "$ORACLE_SOL" "$TMP_ORACLE/src/TerraClassicOracle.sol"
-            cd "$TMP_ORACLE"
-            forge init --no-git --force . >> "$LOG_FILE" 2>&1
-            log_info "Compiling TerraClassicOracle..."
-            forge build >> "$LOG_FILE" 2>&1 || { log_err "Oracle compilation failed!"; cd "$SCRIPT_DIR"; rm -rf "$TMP_ORACLE"; exit 1; }
-
-            ORACLE_ARTIFACT="$TMP_ORACLE/out/TerraClassicOracle.sol/TerraClassicOracle.json"
-            [ ! -f "$ORACLE_ARTIFACT" ] && { log_err "Oracle artifact not found: $ORACLE_ARTIFACT"; cd "$SCRIPT_DIR"; rm -rf "$TMP_ORACLE"; exit 1; }
-
-            ORACLE_BYTECODE=$(jq -r '.bytecode.object' "$ORACLE_ARTIFACT" 2>/dev/null || echo "")
-            [ -z "$ORACLE_BYTECODE" ] || [ "$ORACLE_BYTECODE" = "null" ] && { log_err "Empty oracle bytecode!"; cd "$SCRIPT_DIR"; rm -rf "$TMP_ORACLE"; exit 1; }
-
-            ORACLE_CTOR=$(cast abi-encode "constructor(uint128,uint128)" \
-                "$IGP_EXCHANGE_RATE" "$IGP_GAS_PRICE" 2>/dev/null || echo "")
-            [ -z "$ORACLE_CTOR" ] && { log_err "Failed to encode oracle constructor!"; cd "$SCRIPT_DIR"; rm -rf "$TMP_ORACLE"; exit 1; }
-
-            log_info "Deploying TerraClassicOracle on ${NET_DISPLAY}..."
-            ORACLE_CAST_OUT=$(cast send \
-                --rpc-url "$NET_RPC" \
-                --private-key "$ETH_PRIVATE_KEY" \
-                --legacy \
-                --create "${ORACLE_BYTECODE}${ORACLE_CTOR:2}" 2>&1 | tee -a "$LOG_FILE")
-
-            ORACLE_ADDRESS=$(echo "$ORACLE_CAST_OUT" | grep -i "^contractAddress" | awk '{print $2}' | tr -d '[:space:]' || echo "")
-            [ -z "$ORACLE_ADDRESS" ] && \
-                ORACLE_ADDRESS=$(echo "$ORACLE_CAST_OUT" | grep -i "contractAddress" | grep -oiE '0x[0-9a-fA-F]{40}' | head -1 || echo "")
-
-            cd "$SCRIPT_DIR"; rm -rf "$TMP_ORACLE"
-
-            if [ -z "$ORACLE_ADDRESS" ] || [ "$ORACLE_ADDRESS" = "null" ]; then
-                log_err "TerraClassicOracle deploy failed!"
-                log "${Y}Set the oracle manually: export ORACLE_ADDRESS='0x...' and re-run.${NC}"
-                ORACLE_ADDRESS=""
-            else
-                log_ok "TerraClassicOracle deployed: ${G}${ORACLE_ADDRESS}${NC}"
-                export ORACLE_ADDRESS
-            fi
-        fi
-
-        # ── 3. Point IGP to the custom oracle ───────────────────────────
-        if [ -n "${ORACLE_ADDRESS:-}" ] && [ -n "${IGP_ADDRESS:-}" ]; then
-            CURRENT_IGP_ORACLE=$(cast call "$IGP_ADDRESS" "gasOracle()(address)" \
-                --rpc-url "$NET_RPC" 2>/dev/null || echo "")
-
-            if [ "${CURRENT_IGP_ORACLE,,}" = "${ORACLE_ADDRESS,,}" ]; then
-                log_ok "IGP already using custom oracle."
-            else
-                log_info "Updating IGP to use TerraClassicOracle..."
-                TX_SETORACLE=$(cast_tx "$IGP_ADDRESS" \
-                    "setGasOracle(address,uint96)" "$ORACLE_ADDRESS" "$GAS_OVERHEAD" \
-                    --rpc-url "$NET_RPC" \
-                    --private-key "$ETH_PRIVATE_KEY" \
-                    --legacy) || TX_SETORACLE=""
-
-                if [ -n "${TX_SETORACLE:-}" ]; then
-                    log_ok "IGP now using custom oracle!"
-                    log "   TX: ${B}${NET_EXPLORER}/tx/${TX_SETORACLE}${NC}"
-                else
-                    # FATAL: sem o oracle custom o IGP fica no oficial (sem o domain TC) → quote 0 ou revert →
-                    # a VOLTA (synthetic→TC) NÃO funciona ou despacha SEM pagar o relayer (mensagem presa).
-                    # Causa comum: RPC público instável (retry com outro --rpc-url) ou wallet não-owner do IGP.
-                    log_err "setGasOracle FAILED — the RETURN route will NOT work. Fix before continuing:"
-                    log "  cast send $IGP_ADDRESS \"setGasOracle(address,uint96)\" $ORACLE_ADDRESS $GAS_OVERHEAD \\"
-                    log "    --rpc-url <OUTRO_RPC> --private-key \$ETH_PRIVATE_KEY --legacy"
-                    exit 1
-                fi
-            fi
-
-            # Persist oracle address in warp-evm-config.json
-            TMP_CFG=$(mktemp)
-            jq ".networks.\"${NET_KEY}\".warp_tokens.\"${TOKEN_KEY}\".oracle_custom = \"${ORACLE_ADDRESS}\"" \
-                "$CONFIG_FILE" > "$TMP_CFG" && mv "$TMP_CFG" "$CONFIG_FILE"
-            log_ok "oracle_custom saved in warp-evm-config.json"
-        fi
+        log_err "Oracle has NO data for domain ${TERRA_DOMAIN} — the return route would fail."
+        log "  Fix via governance/oracle-agent (tc-proof-of-delivery) — NOT by deploying an oracle."
+        exit 1
     fi
+
+    ORACLE_ADDRESS="$GAS_ORACLE"
+    export ORACLE_ADDRESS
+    TMP_CFG=$(mktemp)
+    jq ".networks.\"${NET_KEY}\".warp_tokens.\"${TOKEN_KEY}\".oracle_custom = \"${ORACLE_ADDRESS}\"" \
+        "$CONFIG_FILE" > "$TMP_CFG" && mv "$TMP_CFG" "$CONFIG_FILE"
 fi
+
+save_state
 
 # ═════════════════════════════════════════════════════════════════════════════
 # STEP 5 — CONFIGURE WARP ROUTE HOOK (AggregationHook = MerkleTree + IGP)
