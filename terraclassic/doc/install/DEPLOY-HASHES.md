@@ -105,10 +105,20 @@ cast call <ISM> "validatorsAndThreshold(bytes)(address[],uint8)" 0x --rpc-url <r
 
 Hash = sha256 of `solana program dump` output (the deployed program bytes; size shown).
 
+> ⚠️ **IGORFAKE Solana warp CLOSED on 2026-08-29** — program
+> `EPJNrrpCeZGqDPoFtdV9u9uDWBNW3Xqh84LfM7345zcL` was closed
+> (`solana program close`, 2.221 SOL rent reclaimed) to fund the LUNC/USTC
+> Solana deploys. The program id is now permanently unusable and the TC↔Solana
+> IGORFAKE route is discontinued; ~345 synthetic IGORFAKE that were in
+> circulation are stranded. The shared ISM/IGP/mailbox rows below are
+> production infra and stay live. **Registry cleanup pending**: remove the
+> `sealevel|solanamainnet|EPJNrr…` connection from the IGORFAKE route file in
+> the registry fork (branch `terra-classic-warp`) and in the Warp UI.
+
 | Piece | Program / account | sha256 (size) |
 |---|---|---|
-| Warp IGORFAKE (token program) | `EPJNrrpCeZGqDPoFtdV9u9uDWBNW3Xqh84LfM7345zcL` | `d6f2fc9fed82c5079ce2cb1728d5f833d61c70e6d5f2f2a40d5df6d1bdb33419` (318,944 B) |
-| SPL mint | `CeLHx5Wm9AzuWRnP4URMfNqNa9kDDrnsNGoATCS96QwD` | — (account) |
+| Warp IGORFAKE (token program) — **CLOSED 2026-08-29** | ~~`EPJNrrpCeZGqDPoFtdV9u9uDWBNW3Xqh84LfM7345zcL`~~ | `d6f2fc9fed82c5079ce2cb1728d5f833d61c70e6d5f2f2a40d5df6d1bdb33419` (318,944 B) |
+| SPL mint (IGORFAKE, orphaned) | `CeLHx5Wm9AzuWRnP4URMfNqNa9kDDrnsNGoATCS96QwD` | — (account) |
 | **ISM** (mutable MultisigISM, 3-of-4) | `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` | `7c97cfedfbce7321229b811af0e36a9d6e888904964f239eb6058d769f33a53d` (161,280 B) |
 | **IGP program** | `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` | `4321c4263c37317baafdb99e133ddcded8fca470c86b16383e681e9cecc08c6d` (231,824 B) |
 | OverheadIgp account (set on the warp) | `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` | — (account; wraps the inner IGP below) |
