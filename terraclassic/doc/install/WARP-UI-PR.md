@@ -93,6 +93,23 @@ canonical reference):
 - If the token's chain is new to the registry, its `chains/<chain>/metadata.yaml`
   must exist on the branch too (terraclassic/bsc/ethereum/solanamainnet already do).
 
+## 2.1 Test the route in the live UI BEFORE the PR (copy & paste)
+
+You can validate the YAML and the route end-to-end in the production UI at
+**<https://terraclassic-bridge.xyz/>** without touching the registry:
+
+1. Open the bridge and click the **“+”** button (right-hand side) — the
+   **“Add Warp Route Configs”** dialog opens;
+2. Paste the FULL content of the generated
+   `warp/registry-<token>-config.yaml` into the text box;
+3. Click **“Add Config”** — the route appears listed at the bottom of the
+   dialog (e.g. `FAKEFAKE/bsc`) and the token becomes selectable in the form;
+4. Run a real transfer in BOTH directions to confirm the route works.
+
+⚠️ Routes added this way live **only in your own browser** (localStorage) —
+nobody else sees them. That's exactly what makes it a safe pre-PR test: once
+the transfers work, open the PR (below) so the route appears for everyone.
+
 ## 3. Fork & PR, step by step
 
 ```bash
