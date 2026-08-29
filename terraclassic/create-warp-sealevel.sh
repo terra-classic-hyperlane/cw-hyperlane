@@ -45,6 +45,18 @@ mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/create-warp-sealevel.log"
 STATE_FILE="$SCRIPT_DIR/.warp-sealevel-state.json"
 
+# Local secrets: terraclassic/.env (gitignored). Vars already exported win.
+if [ -f "$SCRIPT_DIR/.env" ]; then
+    _PRE_ETH_KEY="${ETH_PRIVATE_KEY:-}"
+    _PRE_TERRA_KEY="${TERRA_PRIVATE_KEY:-}"
+    set -a
+    # shellcheck disable=SC1091
+    source "$SCRIPT_DIR/.env"
+    set +a
+    [ -n "$_PRE_ETH_KEY" ]   && ETH_PRIVATE_KEY="$_PRE_ETH_KEY"
+    [ -n "$_PRE_TERRA_KEY" ] && TERRA_PRIVATE_KEY="$_PRE_TERRA_KEY"
+fi
+
 # Auto-detect PROJECT_ROOT (for node_modules / cosmjs)
 PROJECT_ROOT="$SCRIPT_DIR"
 while [ ! -f "$PROJECT_ROOT/package.json" ] && [ "$PROJECT_ROOT" != "/" ]; do
