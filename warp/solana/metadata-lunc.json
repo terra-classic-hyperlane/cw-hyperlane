@@ -2,6 +2,6 @@
   "name": "Luna Classic",
   "symbol": "LUNC",
   "description": "Luna Classic (native LUNC) via Hyperlane Warp Route (Terra Classic ↔ Solana)",
-  "image": "https://raw.githubusercontent.com/classic-terra/assets/refs/heads/master/icon/svg/LUNC.svg",
+  "image": "https://raw.githubusercontent.com/classic-terra/assets/refs/heads/master/icon/600/Luna.png",
   "attributes": []
 }

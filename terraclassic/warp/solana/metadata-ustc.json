@@ -2,6 +2,6 @@
   "name": "Terra Classic USD",
   "symbol": "USTC",
   "description": "Terra Classic USD (native USTC) via Hyperlane Warp Route (Terra Classic ↔ Solana)",
-  "image": "https://raw.githubusercontent.com/classic-terra/assets/refs/heads/master/icon/svg/Terra/UST.svg",
+  "image": "https://raw.githubusercontent.com/classic-terra/assets/refs/heads/master/icon/600/UST.png",
   "attributes": []
 }
