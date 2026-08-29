@@ -528,7 +528,7 @@ else
     WARP_SOL_DIR="$PROJECT_ROOT/warp/solana"
     LOCAL_META_FILE="$WARP_SOL_DIR/metadata-${TOKEN_KEY}.json"
     # Expected URL on GitHub (project standard)
-    GITHUB_META_URI="https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-${TOKEN_KEY}.json"
+    GITHUB_META_URI="https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-${TOKEN_KEY}.json"
 
     # If metadata_uri empty or null → try using the GitHub default
     if [ -z "$SOL_META_URI" ] || [ "$SOL_META_URI" = "null" ]; then
