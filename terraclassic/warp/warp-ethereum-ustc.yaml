@@ -1,0 +1,14 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Warp Route: Ethereum Mainnet ↔ Terra Classic
+# Token:      Terra Classic USD (USTC)
+# Generated:  2026-08-29 01:05:44
+# ─────────────────────────────────────────────────────────────────────────────
+ethereum:
+  isNft: false
+  type: synthetic
+  name: "Terra Classic USD"
+  symbol: "USTC"
+  decimals: 6
+  owner: "0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae"
+  mailbox: "0xc005dc82818d67AF737725bD4bf75435d065D239"
+  interchainSecurityModule: "0x3ba17675f0D319C89D70722f6eb07790DF0B254B"

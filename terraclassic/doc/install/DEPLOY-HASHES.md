@@ -187,7 +187,7 @@ production infrastructure as the LUNC route (§5).
 | Token type | `native { fungible { denom: "uusd" } }` — mode `collateral` |
 | **Owner** | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` (deployer) — **⚠️ PLANNED: migrate to a multisig account**; owner controls `set_route`/`set_ism`/`set_hook` |
 | Contract admin | *(empty — contract is non-migratable)* |
-| Routes | `56 → 0x…fC067fd98FD123fC2cAd72d040AF60a523274339` (BSC) — set_route tx `4F6B9F079D643A44CE6D3E63CA37BBD18C9D7188BD785F97569B18EFE37B0368` |
+| Routes | `56 → 0x…fC067fd98FD123fC2cAd72d040AF60a523274339` (BSC) — set_route tx `4F6B9F079D643A44CE6D3E63CA37BBD18C9D7188BD785F97569B18EFE37B0368` · `1 → 0x…f49408beb319aeCe3E8B3550a5C750C19b3F1e51` (Ethereum) — set_route tx `20BA313D1E3D74C49781123E0422EEE1DB0B0DD18DB7DF998EE9316DE516D1F3` |
 | data_hash (code 11390) | `34b5deb86937f51d4b04ddc572597b95ffd1b3ce094df8a73dc1cf20babc7e55` (see §1) |
 
 ### BSC side (synthetic HypERC20 proxy)
@@ -202,10 +202,23 @@ production infrastructure as the LUNC route (§5).
 | Router → TC | `132556 → 0x07226d32f6…21ebcfcc` — enroll tx `0xbfdfc072…730417b9` |
 | Bytecode sha256 | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to the LUNC / IGORFAKE / FAKEFAKE proxies) |
 
-Re-verified on-chain 2026-08-29: routes in BOTH directions (TC `list_routes` =
-`{56 → 0xfC067fd9…}` · BSC `routers(132556)` = TC warp hex), hook, ISM and
-owner queries. Note: the older **ustc** warp from the previous generation
-(`terra1rnpvpwv…`, owner `terra12awgq…`) is superseded by this route.
+### Ethereum side (synthetic HypERC20 proxy)
+
+| Field | Value |
+|---|---|
+| Warp contract | `0xf49408beb319aeCe3E8B3550a5C750C19b3F1e51` — "Terra Classic USD" / USTC / 6 decimals |
+| **Owner** | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` (deployer) — **⚠️ PLANNED: migrate to a multisig**; owner controls `setHook`/`setInterchainSecurityModule`/`enrollRemoteRouter` and proxy upgrades via its ProxyAdmin |
+| ISM | production 3-of-4 `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` |
+| Hook | production AggregationHook `0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8` [merkle + governed IGP] — setHook tx `0x0c3641cf…1e0930e7` |
+| IGP | production `0x9650F1f8DB492750323172145e67Df4e89E964Aa` (fees → relayer-reward-vault) |
+| Router → TC | `132556 → 0x07226d32f6…21ebcfcc` — enroll tx `0x15c5eb8c…f3e36fb9` |
+| Bytecode sha256 | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to the other HypERC20 proxies) |
+
+Re-verified on-chain 2026-08-29: routes in BOTH directions on both networks —
+TC `list_routes` = `{1 → 0xf49408be…, 56 → 0xfC067fd9…}`, `routers(132556)` on
+each synthetic = TC warp hex — plus hook, ISM and owner queries. Note: the
+older **ustc** warp from the previous generation (`terra1rnpvpwv…`, owner
+`terra12awgq…`) is superseded by this route.
 
 ## 7. Maintaining this document
 
