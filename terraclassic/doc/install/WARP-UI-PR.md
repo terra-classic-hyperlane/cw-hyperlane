@@ -29,6 +29,12 @@ The UI fetches that branch **at runtime** (GithubRegistry via
 
 ## 2. What you add: one config file per token
 
+> 💡 **You don't have to write this file by hand**: `create-warp-evm.sh`
+> generates it at the end of every run (STEP 9) as
+> `warp/registry-<token>-config.yaml` — TC collateral plus every mainnet
+> synthetic already deployed (EVM + Solana). Review it, copy it to the registry
+> path below, and open the PR.
+
 One folder per symbol under `deployments/warp_routes/`, one YAML listing every
 chain the token lives on. Follow the naming of the existing IGORFAKE file:
 
