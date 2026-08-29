@@ -147,10 +147,10 @@
         },
         "lunc": {
           "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-lunc.json",
-          "program_id": "4SA1eK3vp9Ez2HvTftyh5k1vL6zkXJyMe6UCaRipECmR",
-          "program_hex": "0x3304c516d096f3071664f14434da2d96b14426727834cec9049a1bbdbef380b4",
-          "mint_address": "3NmtMEbRTTLiaaT5UDSyJCssETkGs4vUByVoT5Rv7kws",
-          "deployed": true
+          "program_id": null,
+          "program_hex": null,
+          "mint_address": null,
+          "deployed": false
         },
         "ustc": {
           "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-ustc.json"
