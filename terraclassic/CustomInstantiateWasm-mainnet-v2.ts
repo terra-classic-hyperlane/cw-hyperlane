@@ -89,7 +89,7 @@ async function main() {
   if (!PRIVATE_KEY_HEX) {
     console.error("ERROR: Set the PRIVATE_KEY environment variable.");
     console.error("Run from the project root:");
-    console.error('  PRIVATE_KEY="0x..." yarn tsx terraclassic/CustomInstantiateWasm-mainnet.ts');
+    console.error('  PRIVATE_KEY="0x..." yarn tsx terraclassic/CustomInstantiateWasm-mainnet-v2.ts');
     process.exit(1);
   }
 

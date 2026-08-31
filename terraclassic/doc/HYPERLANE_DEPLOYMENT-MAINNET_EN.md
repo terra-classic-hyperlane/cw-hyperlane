@@ -284,7 +284,7 @@ terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n
 ### Script: `CustomInstantiateWasm-mainnet-v2.ts`
 
 > **v2 — 2026-06-09:** Re-deployed with **domainId 132556** (replaces 1325 which conflicted with testnet).
-> Original deploy (2026-06-03, domain 1325) is preserved in `CustomInstantiateWasm-mainnet.ts` for reference.
+> Original deploy (2026-06-03, domain 1325) is preserved in `archive/scripts/CustomInstantiateWasm-mainnet.ts` for reference.
 
 This script instantiates **all 13 contracts** AND performs the post-instantiation configuration (ISM validators + mailbox hooks + IGP oracle) in a single run.
 

@@ -1,0 +1,11 @@
+{
+  "type": "cw20",
+  "mode": "collateral",
+  "id": "fakefake",
+  "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
+  "config": {
+    "collateral": {
+      "address": "terra1f45rp85m53688ykan8mgjmfyz43d5h7psgawz5n775wde6vrzj5s4tvpwq"
+    }
+  }
+}
