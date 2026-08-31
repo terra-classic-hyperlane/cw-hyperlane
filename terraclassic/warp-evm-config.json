@@ -1,7 +1,7 @@
 {
   "_comment": "Centralized configuration for EVM ↔ Terra Classic Warp Routes",
   "_version": "3.0.0",
-  "_updated": "2026-08-28",
+  "_updated": "2026-08-31",
   "terra_classic": {
     "_comment": "Terra Classic configuration. Each token has its type (native/cw20), mode (collateral/locked) and deployed warp address (for enrollRemoteRouter on the EVM side).",
     "chain_id": "columbus-5",
@@ -65,120 +65,6 @@
           "warp_hexed": "0x82f91c7fdbbae1856d25c078beb92dd3359af553b6ef70def5f7e031c65ab2da",
           "deployed": true
         }
-      },
-      "xpto": {
-        "_comment": "XPTO CW20 collateral — new token, warp NOT yet deployed on Terra Classic",
-        "id": "xpto",
-        "name": "XPTO Token",
-        "symbol": "XPTO",
-        "decimals": 6,
-        "description": "XPTO Token via Hyperlane Warp Route",
-        "image": "",
-        "terra_warp": {
-          "type": "cw20",
-          "mode": "collateral",
-          "owner": "terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze",
-          "denom": "",
-          "collateral_address": "terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch",
-          "warp_address": "terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm",
-          "warp_hexed": "0xd03fafd53ce350f49ba3c6ebcb1bee7cbbf453f261ec8d5ce9f36c55ab3e26a1",
-          "deployed": true
-        }
-      },
-      "xptv": {
-        "_comment": "XPTV CW20 collateral — new token, warp NOT yet deployed on Terra Classic",
-        "id": "xptv",
-        "name": "XPTV Token",
-        "symbol": "XPTV",
-        "decimals": 6,
-        "description": "XPTV Token via Hyperlane Warp Route",
-        "image": "",
-        "terra_warp": {
-          "type": "cw20",
-          "mode": "collateral",
-          "owner": "terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze",
-          "denom": "",
-          "collateral_address": "terra19ujvy60tjeyehjrwlrdpqlp0gxmtt4qv452nwjqc6w6m38pm8xmq22lux3",
-          "warp_address": "terra1n8y4sj9lrqq66pf7je0nm7s6nhln5z4s3accw9g2aassdh8dzqts9y0928",
-          "warp_hexed": "0x99c95848bf1801ad053e965f3dfa1a9dff3a0ab08f7187150aef6106dced1017",
-          "deployed": true
-        }
-      },
-      "xpv": {
-        "_comment": "XPV CW20 collateral — new token, warp NOT yet deployed on Terra Classic",
-        "id": "xpv",
-        "name": "XPV Token",
-        "symbol": "XPV",
-        "decimals": 6,
-        "description": "XPV Token via Hyperlane Warp Route",
-        "image": "",
-        "terra_warp": {
-          "type": "cw20",
-          "mode": "collateral",
-          "owner": "terra12awgqgwm2evj05ndtgs0xa35uunlpc76d85pze",
-          "denom": "",
-          "collateral_address": "terra1f2jw36hc7fzeu7dz2fhk250ezec7e80c2s6uxt3ry5ujjjslf9nqwvpu88",
-          "warp_address": "terra1dnflusc7slapvals97em3fj4vrfyx90npr3znq6y45qjy7hhd6jqchqsgx",
-          "warp_hexed": "0x6cd3fe431e87fa1677f02fb3b8a65560d24315f308e2298344ad01227af76ea4",
-          "deployed": true
-        }
-      },
-      "ztt": {
-        "_comment": "ZTT CW20 collateral — warp NOT yet deployed on Terra Classic",
-        "id": "ztt",
-        "name": "ZTT Token",
-        "symbol": "ZTT",
-        "decimals": 6,
-        "description": "ZTT Token via Hyperlane Warp Route",
-        "image": "",
-        "terra_warp": {
-          "type": "cw20",
-          "mode": "collateral",
-          "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
-          "denom": "",
-          "collateral_address": "terra1f5kkww45wrece8syntffgaaek999x4827tpus9jv86kq3vt24ztsxyc8u9",
-          "warp_address": "terra13uhhpfzfxx0t0w2adxm75vkufe4f4m8stmv23nc806gahw6jd3psadyjl2",
-          "warp_hexed": "0x8f2f70a449319eb7b95d69b7ea32dc4e6a9aecf05ed8a8cf077e91dbbb526c43",
-          "deployed": true
-        }
-      },
-      "igorfake": {
-        "_comment": "IGORFAKE CW20 collateral — mainnet columbus-5",
-        "id": "igorfake",
-        "name": "IGORFAKE",
-        "symbol": "IGORFAKE",
-        "decimals": 6,
-        "description": "IGORFAKE Token via Hyperlane Warp Route",
-        "image": "",
-        "terra_warp": {
-          "type": "cw20",
-          "mode": "collateral",
-          "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
-          "denom": "",
-          "collateral_address": "terra1lpkaaqjaq8zfwktge3vy0zg46nxxsynsge2wxa7addpweu2w6gmsy3lhkr",
-          "warp_address": "terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel",
-          "warp_hexed": "0x70fd6184ff0a5ad088c9b199bba6666bf4cb0a35cf92f5d94c27791d4a2da859",
-          "deployed": true
-        }
-      },
-      "fakefake": {
-        "_comment": "FAKEFAKE CW20 collateral — mirror of IGORFAKE (code 11392), created 2026-08-28 tx DA1D1E02…, warp NOT yet deployed on Terra Classic",
-        "id": "fakefake",
-        "name": "FAKEFAKE",
-        "symbol": "FAKEFAKE",
-        "decimals": 6,
-        "description": "FAKEFAKE Token via Hyperlane Warp Route",
-        "image": "",
-        "terra_warp": {
-          "type": "cw20",
-          "mode": "collateral",
-          "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
-          "denom": "",
-          "collateral_address": "terra1f45rp85m53688ykan8mgjmfyz43d5h7psgawz5n775wde6vrzj5s4tvpwq",
-          "warp_address": "terra1zkkk9km8f6gf5vgn4zf66ep0djztqqkvns8jws8c9f85v4tfxrvq9n2wlk",
-          "warp_hexed": "0x15ad62db674e909a3113a893ad642f6c84b002cc9c0f2740f82a4f46556930d8",
-          "deployed": true
-        }
       }
     },
     "igp": "terra1taunhg629rssf3g939nqr0h594q5mssrzdj5lkx2hygmxmh72ghqeqqnvz",
@@ -236,13 +122,6 @@
         }
       },
       "warp_tokens": {
-        "_comment": "Warp Route state per token on this network. Fill in after deploy",
-        "wlunc": {
-          "deployed": true,
-          "address": "0x224a4419D7FA69D3bEbAbce574c7c84B48D829b4",
-          "igp_custom": "0xe0f137448c96b5f17759bce44c020db6bdc8e261",
-          "owner": "0x133fD7F7094DBd17b576907d052a5aCBd48dB526"
-        },
         "ustc": {
           "deployed": false,
           "address": "",
@@ -254,43 +133,6 @@
           "address": "0xc2Da334D32724B97D5990229a9752a0d31087bC9",
           "igp_custom": "0xBc699827EA28494C64CD52586B366ef806429730",
           "owner": "0x8BD456605473ad4727ACfDCA0040a0dBD4be2DEA"
-        },
-        "xpto": {
-          "deployed": true,
-          "address": "0xbF43aA4878f5Ad0fcAC12Cd3A835DD3506981048",
-          "igp_custom": "0xf285D5769db5AE6E79Bb3179d03082f6bc47055f",
-          "hook_aggregation": "0x1a13d7A50b76d4527a611e507B3f73058eCa5eAC",
-          "_hook_note": "AggregationHook=[MerkleTreeHook+igp_custom]. Set via setHook() on Warp. Required for messages to enter the validator's merkle tree.",
-          "owner": "0x133fD7F7094DBd17b576907d052a5aCBd48dB526"
-        },
-        "xptv": {
-          "deployed": true,
-          "address": "0x7d92c2E01933F1C651845152DBd4222d475Bd9f0",
-          "igp_custom": "0xf285D5769db5AE6E79Bb3179d03082f6bc47055f",
-          "hook_aggregation": "0x1a13d7A50b76d4527a611e507B3f73058eCa5eAC",
-          "_hook_note": "AggregationHook=[MerkleTreeHook+igp_custom]. Same AggHook as XPTO.",
-          "owner": "0x133fD7F7094DBd17b576907d052a5aCBd48dB526"
-        },
-        "ztt": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
-          "owner": ""
-        },
-        "igorfake": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
-          "owner": ""
-        },
-        "fakefake": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
-          "owner": ""
         }
       }
     },
@@ -343,13 +185,6 @@
         }
       },
       "warp_tokens": {
-        "wlunc": {
-          "deployed": true,
-          "address": "0x2144Be4477202ba2d50c9A8be3181241878cf7D8",
-          "igp_custom": "",
-          "hook_aggregation": "",
-          "owner": "0x133fD7F7094DBd17b576907d052a5aCBd48dB526"
-        },
         "ustc": {
           "deployed": false,
           "address": "",
@@ -358,42 +193,6 @@
           "owner": ""
         },
         "juris": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
-          "owner": ""
-        },
-        "xpto": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
-          "owner": ""
-        },
-        "xpv": {
-          "deployed": true,
-          "address": "0x11D6aa52d60611a513ab783842Dc397C86E7fff0",
-          "igp_custom": "0x7d17d237c74Fa1bA3B5B56d94E414a4eAa41cE1e",
-          "hook_aggregation": "0x3F11a590B50F959E52a660567865f1B65C913C5D",
-          "_hook_note": "AggregationHook=[MerkleTreeHook+igp_custom]. Set via setHook() on Warp. Required for messages to enter the validator's merkle tree.",
-          "owner": "0x8BD456605473ad4727ACfDCA0040a0dBD4be2DEA"
-        },
-        "ztt": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
-          "owner": ""
-        },
-        "igorfake": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
-          "owner": ""
-        },
-        "fakefake": {
           "deployed": false,
           "address": "",
           "igp_custom": "",
@@ -456,12 +255,6 @@
         "deployed_address": "0x9650F1f8DB492750323172145e67Df4e89E964Aa"
       },
       "warp_tokens": {
-        "wlunc": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "owner": ""
-        },
         "ustc": {
           "deployed": true,
           "address": "0xf49408beb319aeCe3E8B3550a5C750C19b3F1e51",
@@ -475,50 +268,6 @@
           "address": "",
           "igp_custom": "",
           "owner": ""
-        },
-        "xpto": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "owner": ""
-        },
-        "ztt": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
-          "owner": ""
-        },
-        "igorfake": {
-          "deployed": true,
-          "address": "0xA687a4C4Ca49795999b36fDC8A18D1ddD63EdfB5",
-          "igp_custom": "0x9650F1f8DB492750323172145e67Df4e89E964Aa",
-          "hook_aggregation": "0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8",
-          "owner": "0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae",
-          "oracle_custom": "0x3987cCE8f08037EBF93Ef3a934753540A94196cE",
-          "ism_custom": "0x3ba17675f0D319C89D70722f6eb07790DF0B254B"
-        },
-        "xptv": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
-          "owner": ""
-        },
-        "xpv": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
-          "owner": ""
-        },
-        "fakefake": {
-          "deployed": true,
-          "address": "0x959DBb6784182ba5995cCEf6Abe4e378620ADA17",
-          "igp_custom": "0x9650F1f8DB492750323172145e67Df4e89E964Aa",
-          "hook_aggregation": "0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8",
-          "owner": "0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae",
-          "oracle_custom": "0x3987cCE8f08037EBF93Ef3a934753540A94196cE"
         },
         "lunc": {
           "address": "0xA4bc47a4C5461eB0E59A585a21A1222EF7544Ac6",
@@ -586,12 +335,6 @@
         "deployed_address": "0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923"
       },
       "warp_tokens": {
-        "wlunc": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "owner": ""
-        },
         "ustc": {
           "deployed": true,
           "address": "0xfC067fd98FD123fC2cAd72d040AF60a523274339",
@@ -605,40 +348,6 @@
           "address": "",
           "igp_custom": "",
           "owner": ""
-        },
-        "xpto": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "owner": ""
-        },
-        "ztt": {
-          "_comment": "BSC mainnet synthetic ZTT — deploy pendente",
-          "deployed": true,
-          "address": "0x6AB3EaF4dC64496BB435D221563C5e3e1132A592",
-          "igp_custom": "0x5Ea49420DFCa83ca8E7eddA9160A3009F6aE6a7B",
-          "hook_aggregation": "0x0Eb97DFC380fD71F62C9d42498CC0C1135A910b7",
-          "owner": "0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291",
-          "ism_custom": "0xa82087B8eea0394B1476f716B91c10531025Ef42",
-          "oracle_custom": "0x38fC50ecC1D21e45705be7441cc1Ff9bcDDec488"
-        },
-        "igorfake": {
-          "deployed": true,
-          "address": "0x3605d8946fC6f5a75D89D92173100F59743b5318",
-          "igp_custom": "0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923",
-          "hook_aggregation": "0xD2c82583C261fce94cD3F97f1dFF9B20a9338164",
-          "owner": "0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291",
-          "oracle_custom": "0x7dE950f8F0a037783989a6BE84B3620916552306",
-          "ism_custom": "0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151",
-          "_hook_note": "AggregationHook=[MerkleTreeHook+igp_custom]"
-        },
-        "fakefake": {
-          "deployed": true,
-          "address": "0x07289a10E1c4E8218AE2ACC599FfC29C68f32C47",
-          "igp_custom": "0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923",
-          "hook_aggregation": "0xD2c82583C261fce94cD3F97f1dFF9B20a9338164",
-          "owner": "0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291",
-          "oracle_custom": "0x7dE950f8F0a037783989a6BE84B3620916552306"
         },
         "lunc": {
           "address": "0x481095ecEd7A907e7f390b6226F53a66D379e6e2",
@@ -690,12 +399,6 @@
         }
       },
       "warp_tokens": {
-        "wlunc": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "owner": ""
-        },
         "ustc": {
           "deployed": false,
           "address": "",
@@ -706,26 +409,6 @@
           "deployed": false,
           "address": "",
           "igp_custom": "",
-          "owner": ""
-        },
-        "xpto": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "owner": ""
-        },
-        "ztt": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
-          "owner": ""
-        },
-        "igorfake": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
           "owner": ""
         }
       }
@@ -770,12 +453,6 @@
         }
       },
       "warp_tokens": {
-        "wlunc": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "owner": ""
-        },
         "ustc": {
           "deployed": false,
           "address": "",
@@ -786,26 +463,6 @@
           "deployed": false,
           "address": "",
           "igp_custom": "",
-          "owner": ""
-        },
-        "xpto": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "owner": ""
-        },
-        "ztt": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
-          "owner": ""
-        },
-        "igorfake": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
           "owner": ""
         }
       }
@@ -850,12 +507,6 @@
         }
       },
       "warp_tokens": {
-        "wlunc": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "owner": ""
-        },
         "ustc": {
           "deployed": false,
           "address": "",
@@ -866,26 +517,6 @@
           "deployed": false,
           "address": "",
           "igp_custom": "",
-          "owner": ""
-        },
-        "xpto": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "owner": ""
-        },
-        "ztt": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
-          "owner": ""
-        },
-        "igorfake": {
-          "deployed": false,
-          "address": "",
-          "igp_custom": "",
-          "hook_aggregation": "",
           "owner": ""
         }
       }
@@ -898,25 +529,6 @@
     "rpc": "https://rpc.luncblaze.com",
     "lcd": "https://lcd.luncblaze.com",
     "tokens": {
-      "wlunc": {
-        "_comment": "rebel-2 warp NOT yet deployed — fill collateral_address (cw20) + warp_address/warp_hexed, set deployed=true",
-        "id": "wwwwlunc",
-        "name": "Wrapped Terra Classic LUNC",
-        "symbol": "LUNC",
-        "decimals": 6,
-        "description": "Wrapped Terra Classic LUNC via Hyperlane Warp Route",
-        "image": "https://raw.githubusercontent.com/classic-terra/assets/refs/heads/master/icon/svg/LUNC.svg",
-        "terra_warp": {
-          "type": "native",
-          "mode": "collateral",
-          "owner": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
-          "denom": "uluna",
-          "collateral_address": "",
-          "warp_address": "",
-          "warp_hexed": "",
-          "deployed": false
-        }
-      },
       "ustc": {
         "_comment": "rebel-2 warp NOT yet deployed — fill collateral_address (cw20) + warp_address/warp_hexed, set deployed=true",
         "id": "wwwustc",
@@ -943,101 +555,6 @@
         "symbol": "JURIS",
         "decimals": 6,
         "description": "Juris governance token via Hyperlane Warp Route",
-        "image": "",
-        "terra_warp": {
-          "type": "cw20",
-          "mode": "collateral",
-          "owner": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
-          "denom": "",
-          "collateral_address": "",
-          "warp_address": "",
-          "warp_hexed": "",
-          "deployed": false
-        }
-      },
-      "xpto": {
-        "_comment": "rebel-2 warp NOT yet deployed — fill collateral_address (cw20) + warp_address/warp_hexed, set deployed=true",
-        "id": "xpto",
-        "name": "XPTO Token",
-        "symbol": "XPTO",
-        "decimals": 6,
-        "description": "XPTO Token via Hyperlane Warp Route",
-        "image": "",
-        "terra_warp": {
-          "type": "cw20",
-          "mode": "collateral",
-          "owner": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
-          "denom": "",
-          "collateral_address": "",
-          "warp_address": "",
-          "warp_hexed": "",
-          "deployed": false
-        }
-      },
-      "xptv": {
-        "_comment": "rebel-2 warp NOT yet deployed — fill collateral_address (cw20) + warp_address/warp_hexed, set deployed=true",
-        "id": "xptv",
-        "name": "XPTV Token",
-        "symbol": "XPTV",
-        "decimals": 6,
-        "description": "XPTV Token via Hyperlane Warp Route",
-        "image": "",
-        "terra_warp": {
-          "type": "cw20",
-          "mode": "collateral",
-          "owner": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
-          "denom": "",
-          "collateral_address": "",
-          "warp_address": "",
-          "warp_hexed": "",
-          "deployed": false
-        }
-      },
-      "xpv": {
-        "_comment": "rebel-2 warp NOT yet deployed — fill collateral_address (cw20) + warp_address/warp_hexed, set deployed=true",
-        "id": "xpv",
-        "name": "XPV Token",
-        "symbol": "XPV",
-        "decimals": 6,
-        "description": "XPV Token via Hyperlane Warp Route",
-        "image": "",
-        "terra_warp": {
-          "type": "cw20",
-          "mode": "collateral",
-          "owner": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
-          "denom": "",
-          "collateral_address": "",
-          "warp_address": "",
-          "warp_hexed": "",
-          "deployed": false
-        }
-      },
-      "ztt": {
-        "_comment": "rebel-2 warp NOT yet deployed — fill collateral_address (cw20) + warp_address/warp_hexed, set deployed=true",
-        "id": "ztt",
-        "name": "ZTT Token",
-        "symbol": "ZTT",
-        "decimals": 6,
-        "description": "ZTT Token via Hyperlane Warp Route",
-        "image": "",
-        "terra_warp": {
-          "type": "cw20",
-          "mode": "collateral",
-          "owner": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
-          "denom": "",
-          "collateral_address": "",
-          "warp_address": "",
-          "warp_hexed": "",
-          "deployed": false
-        }
-      },
-      "igorfake": {
-        "_comment": "rebel-2 warp NOT yet deployed — fill collateral_address (cw20) + warp_address/warp_hexed, set deployed=true",
-        "id": "igorfake",
-        "name": "IGORFAKE",
-        "symbol": "IGORFAKE",
-        "decimals": 6,
-        "description": "IGORFAKE Token via Hyperlane Warp Route",
         "image": "",
         "terra_warp": {
           "type": "cw20",
