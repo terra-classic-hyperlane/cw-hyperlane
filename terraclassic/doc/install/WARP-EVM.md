@@ -22,10 +22,63 @@ production addresses above.
 
 ## 2. Prerequisites
 
-- Node.js 20+, `jq`, Foundry (`cast`); the script installs `@hyperlane-xyz/cli` if missing.
-- **Keys** (env only, never in files): the EVM owner key of the target chain and,
-  for the automatic Terra Classic side, the TC owner key.
-- Gas: ~0.01 BNB (BSC) / ~0.02 ETH (mainnet, varies) + ~200 LUNC for the TC side.
+### 2.1 Tools — with install commands
+
+| Tool | Min version | Install |
+|---|---|---|
+| Node.js | 20+ | `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh \| bash && nvm install 20` |
+| yarn | 1+ | `npm install -g yarn` |
+| jq | 1.6+ | `sudo apt install jq` |
+| python3 | 3.8+ | native on Linux |
+| **Foundry** (`forge` + `cast` — the "eth CLI") | 1.x | `curl -L https://foundry.paradigm.xyz \| bash` then `foundryup` (restart the shell first) |
+| hyperlane CLI | **26+** | `npm install -g @hyperlane-xyz/cli@latest` *(the script installs/updates it automatically if missing)* |
+| terrad | current columbus-5 build | only needed for the **manual** TC steps (§5.6) — the script uses `@cosmjs` via yarn instead |
+
+> ⚠️ **Foundry is required up front** — the script checks for `forge`/`cast` and
+> aborts without them. The only tool it installs by itself is the hyperlane CLI.
+
+Verify:
+
+```bash
+node -v && yarn -v && jq --version && cast --version && forge --version && hyperlane --version
+```
+
+### 2.2 Repo setup (once)
+
+```bash
+cd ~/tc-cw-hyperlane
+yarn install        # installs cw-hpl + @cosmjs deps used for the TC side
+```
+
+### 2.3 Keys — env vars only, never in files
+
+```bash
+# EVM owner key (generate a fresh one if needed):
+cast wallet new                          # prints address + private key
+export ETH_PRIVATE_KEY="0x…"
+
+# Terra Classic owner key, hex without 0x (signs the TC collateral deploy + set_route):
+terrad keys export <key-name> --unarmored-hex --unsafe
+export TERRA_PRIVATE_KEY="hex_no_0x"     # optional — without it, STEP TC is skipped
+                                         # and the script prints the manual command
+```
+
+Never commit keys and avoid `export` lines in shell history on shared machines
+(prefix the command with a space, or use `HISTCONTROL=ignorespace`).
+
+### 2.4 Funding
+
+| Chain | Needed | For |
+|---|---|---|
+| BSC | ~0.01 BNB | synthetic deploy + setHook + enroll |
+| Ethereum | ~0.02 ETH (varies with gas) | same — the warp deploy is the only expensive tx |
+| Terra Classic | ~200 LUNC | collateral warp instantiate + set_route |
+
+### 2.5 RPCs
+
+Defaults come from `warp-evm-config.json` (`networks.<chain>.rpc`). Public BSC/ETH
+RPCs rate-limit during deploys — if STEP 2 hangs or 429s, point the network's
+`rpc` at a keyed endpoint (any provider) and re-run; the script resumes.
 
 ## 3. Add your token to the config
 
@@ -222,3 +275,19 @@ The relayer delivers automatically; the fee you paid funds the relayer-reward-va
    `config.json` (tc-proof-of-delivery) so deliveries are swept.
 4. **Record hashes**: append the new addresses to
    [DEPLOY-HASHES.md](DEPLOY-HASHES.md) with their verified hashes.
+
+## 8. Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Script aborts asking for `forge`/`cast` | Foundry not installed | §2.1 — `curl -L https://foundry.paradigm.xyz \| bash && foundryup` |
+| `invalid_enum_value` from the hyperlane CLI | CLI older than v26 | `npm install -g @hyperlane-xyz/cli@latest` |
+| STEP 2 hangs / HTTP 429 | public RPC rate-limits the deploy | keyed RPC in `networks.<chain>.rpc` (§2.5), re-run — the script resumes |
+| `route not found` when sending TC → EVM | TC warp has no route for the EVM domain | `TERRA_PRIVATE_KEY` was unset during the run — re-run, or `./enroll-terra-router.sh`, or the manual §5.6 |
+| `quoteGasPayment` reverts / returns 0 | wrong hook or oracle on the warp | verify §5.3–§5.4: hook must be the production AggregationHook of §1 |
+| Re-run repeats a finished step / uses stale addresses | leftover deployment state | the script resumes from `warp-evm-config.json` state (§3.2) — inspect the token's entry; clear only the fields of the step you want redone |
+| Wrong chain picked | the network menu is **alphabetical**, not config order | read the prompt before confirming |
+
+Deep-dive (every config field, every internal step):
+[`../archive/create-warp-evm-guide.md`](../archive/create-warp-evm-guide.md).
+Live examples to compare against: [WARP-LUNC.md](WARP-LUNC.md) · [WARP-USTC.md](WARP-USTC.md).

@@ -2,6 +2,8 @@
 
 > Interactive script to create and configure Hyperlane Warp Routes on EVM networks connected to Terra Classic.  
 > Fully portable — just copy the `terraclassic/` folder to any `cw-hyperlane` project.
+>
+> **Last updated:** 2026-08-31 — live LUNC/USTC mainnet routes; paths updated after the repo reorganization (retired scripts in `../../archive/scripts/`, this guide archived).
 
 ---
 
@@ -80,27 +82,43 @@ Para cada par **token + rede EVM** escolhido, o script executa de forma automati
 |---|---|---|
 | `bash` | 4+ | nativo no Linux/macOS |
 | `jq` | 1.6+ | `sudo apt install jq` |
-| `node` / `npm` | 18+ | [nodejs.org](https://nodejs.org/) |
+| `node` / `npm` | 20+ | via nvm: `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh \| bash && nvm install 20` |
 | `yarn` | 1+ | `npm install -g yarn` |
 | `python3` | 3.6+ | `sudo apt install python3` |
-| `hyperlane CLI` | **26+** | `npm install -g @hyperlane-xyz/cli` |
+| `hyperlane CLI` | **26+** | `npm install -g @hyperlane-xyz/cli@latest` |
+| `forge` + `cast` (Foundry 1.x) | 1.x | `curl -L https://foundry.paradigm.xyz \| bash && foundryup` |
 
-> ⚠️ **A versão mínima do Hyperlane CLI é v26.** Versões anteriores falham com `invalid_enum_value` ao processar o protocolo `tron`. O script detecta isso e atualiza automaticamente.
+> ⚠️ **A versão mínima do Hyperlane CLI é v26.** Versões anteriores falham com `invalid_enum_value` ao processar o protocolo `tron`. O script detecta isso e atualiza automaticamente — o **hyperlane CLI é a única ferramenta que o script auto-instala**; `forge`/`cast` (Foundry) precisam estar instalados antes.
 
-### Recommended tools (automatic IGP deploy)
+### Repo setup (one-time)
 
-| Tool | Installation |
-|---|---|
-| `forge` (Foundry 1.x) | `curl -L https://foundry.paradigm.xyz \| bash && foundryup` |
-| `cast` (Foundry 1.x) | Instalado junto com `forge` |
+```bash
+cd ~/tc-cw-hyperlane
+yarn install          # dependências do cw-hpl CLI (deploy do lado Terra Classic)
+```
+
+### Keys
+
+```bash
+# EVM (owner do warp na chain de destino) — gera par novo:
+cast wallet new
+# → exporte a private key:  export ETH_PRIVATE_KEY="0x…"
+
+# Terra Classic (owner do warp TC) — hex SEM prefixo 0x:
+terrad keys export <key-name> --unarmored-hex --unsafe
+# → export TERRA_PRIVATE_KEY="hex_sem_0x"
+```
 
 > **Sem o Foundry**, o script pausa na Etapa 3 e exibe instruções para deploy manual via **Remix IDE** (veja [Seção 8](#8-deploy-manual-do-igp-via-remix)).
 
 ### Minimum balance
 
-| Network | Recommended balance | Faucet |
+| Network | Recommended balance | Source |
 |---|---|---|
-| Sepolia | 0.1 ETH | [sepoliafaucet.com](https://sepoliafaucet.com) |
+| BSC mainnet | ~0.01 BNB | — |
+| Ethereum mainnet | ~0.02 ETH (varia com o gas) | — |
+| Terra Classic | ~200 LUNC | — |
+| Sepolia (testnet) | 0.1 ETH | [sepoliafaucet.com](https://sepoliafaucet.com) |
 | BSC Testnet | 0.1 BNB | [testnet.binance.org/faucet-smart](https://testnet.binance.org/faucet-smart) |
 
 ---
@@ -114,7 +132,7 @@ terraclassic/
 │
 ├── create-warp-evm.sh                     ← script principal de deploy (executável)
 ├── enroll-terra-router.sh                 ← vincula rota EVM no Warp Terra Classic
-├── transfer-cw20-terra.sh                 ← transfere tokens CW20 na Terra Classic
+├── archive/scripts/transfer-cw20-terra.sh ← transfere tokens CW20 na TC (arquivado 2026-08-31)
 ├── warp-evm-config.json                   ← configuração de redes e tokens (EDITE AQUI)
 ├── TerraClassicIGPStandalone-Sepolia.sol  ← contrato IGP (compilado/deployado automaticamente)
 ├── config.yaml                            ← configuração Terra Classic para o cw-hpl CLI
@@ -133,9 +151,11 @@ terraclassic/
 │   ├── create-warp-evm.log                ← log completo de execução
 │   └── WARP-<REDE>-<TOKEN>.txt            ← relatórios de deploy
 │
-└── docs/
-    ├── create-warp-evm-guide.md           ← este documento
-    └── enroll-terra-router-guide.md       ← guia do enroll-terra-router.sh
+└── doc/
+    ├── install/                           ← guias atuais de criação de warp (WARP-EVM.md etc.)
+    └── archive/
+        ├── create-warp-evm-guide.md       ← este documento (arquivado)
+        └── enroll-terra-router-guide.md   ← guia do enroll-terra-router.sh (arquivado)
 ```
 
 **Files automatically generated during execution:**
@@ -188,14 +208,13 @@ Defines each token with its Terra Classic configuration.
 }
 ```
 
-#### Pre-configured tokens
+#### Pre-configured tokens (config cleaned 2026-08-31 — only these three remain)
 
 | ID | Type | Terra Classic Warp | Status |
 |---|---|---|---|
-| `wlunc` | `native/collateral` (uluna) | `terra1zlm0h...` | ✅ Deployed |
-| `ustc` | `native/collateral` (uusd) | `terra1rnpvp...` | ✅ Deployed |
-| `juris` | `cw20/collateral` | `terra1stu3c...` | ✅ Deployed |
-| `mytoken` | `cw20/collateral` | `terra1...` | ✅ Deployed |
+| `lunc` | `native/collateral` (uluna) | `terra1m7jcqxf…50cggy` | ✅ Deployed — live mainnet route (BSC · ETH · Solana) |
+| `ustc` | `native/collateral` (uusd) | `terra1qu3x6vh…d3ccf` | ✅ Deployed — live mainnet route (BSC · ETH · Solana) |
+| `juris` | `cw20/collateral` | `terra1stu3c…cfe2l` | ✅ Deployed (testnet-era) |
 
 ---
 
@@ -388,21 +407,24 @@ The script presents two interactive menus:
 
 ```
 STEP 1 — SELECT TOKEN (Terra Classic)
-   [1]  wlunc  — Wrapped Terra Classic LUNC  (native/collateral)  ✅ terra warp deployed
-   [2]  ustc   — Wrapped TerraClassic USD    (native/collateral)  ✅ terra warp deployed
-   [3]  juris  — Juris Token                 (cw20/collateral)    ✅ terra warp deployed
-   [4]  mytoken — MyToken                     (cw20/collateral)    ✅ terra warp deployed
+   [1]  juris  — Juris Token                 (cw20/collateral)    ✅ terra warp deployed
+   [2]  lunc   — Luna Classic (LUNC)         (native/collateral)  ✅ terra warp deployed
+   [3]  ustc   — Terra Classic USD (USTC)    (native/collateral)  ✅ terra warp deployed
 
-  Choose the token [1-4]: 4
+  Choose the token [1-3]: 2
 
 STEP 2 — SELECT EVM NETWORK
-   [1]  bsctestnet — BSC Testnet             [testnet] [new deploy]
-   [2]  sepolia    — Ethereum Sepolia Testnet [testnet] [warp already deployed]
+   [1]  bsc      — BSC Mainnet               [warp already deployed]
+   [2]  ethereum — Ethereum Mainnet          [warp already deployed]
+   ...
 
-  Choose the network [1-2]: 2
-
-▶ Proceed with MYTOKEN deploy on Ethereum Sepolia Testnet? [s/N]: s
+  Choose the network: …
 ```
+
+> O menu é gerado das chaves de `terra_classic.tokens` — desde a limpeza de
+> 2026-08-31 o config traz apenas `juris`, `lunc` e `ustc` (os tokens de teste
+> XPTO/XPTV/XPV/ZTT/IGORFAKE/FAKEFAKE foram removidos). Para um token novo,
+> adicione a entrada dele (§4.3) e ele aparece no menu.
 
 ---
 
@@ -850,7 +872,7 @@ The script presents interactive menus to select token and network, shows the ope
 
 ---
 
-### `transfer-cw20-terra.sh` — Transfer CW20 tokens on Terra Classic
+### `transfer-cw20-terra.sh` — Transfer CW20 tokens on Terra Classic *(archived 2026-08-31 — now at `archive/scripts/transfer-cw20-terra.sh`)*
 
 Performs a simple CW20 token transfer between accounts on Terra Classic.
 
@@ -868,12 +890,12 @@ cd ~/cw-hyperlane/terraclassic
 export TERRA_PRIVATE_KEY="sua_chave_terra_hex"
 
 # Default transfer (100 MYTOKEN)
-./transfer-cw20-terra.sh
+./archive/scripts/transfer-cw20-terra.sh
 
 # Or with custom values
 export AMOUNT="50000000000"
 export RECIPIENT_ADDRESS="terra1OUTRO..."
-./transfer-cw20-terra.sh
+./archive/scripts/transfer-cw20-terra.sh
 ```
 
 The script displays balances before and after, saves report in `log/TRANSFER-CW20-<timestamp>.txt`.
@@ -1367,6 +1389,20 @@ export IGP_ADDRESS="0xSEU_IGP"
 ## 15. Deployed address reference
 
 Addresses of all active contracts in this project, for quick reference and manual diagnosis.
+
+### Mainnet (live routes — 2026-08-31)
+
+| Token | BSC (56) | Ethereum (1) | Terra Classic (132556) |
+|---|---|---|---|
+| **LUNC** | `0x481095ecEd7A907e7f390b6226F53a66D379e6e2` | `0xA4bc47a4C5461eB0E59A585a21A1222EF7544Ac6` | `terra1m7jcqxfn4hd7q4sywhw508nxshaf078c4vh83y0ts43y9tlp9dcs50cggy` |
+| **USTC** | `0xfC067fd98FD123fC2cAd72d040AF60a523274339` | `0xf49408beb319aeCe3E8B3550a5C750C19b3F1e51` | `terra1qu3x6vhk4y6w6erhmedzfp2ug53qm5nwpyarxveqa7tvwg0telxqvd3ccf` |
+
+Infra compartilhada de produção — ISM 3-de-4 (BSC `0xF6b0cDD3…cD151` · ETH
+`0x3ba17675…B254B`), IGP (BSC `0xEdEd7a4f…4923` · ETH `0x9650F1f8…64Aa`),
+AggregationHook (BSC `0xD2c82583…8164` · ETH `0x912c4d91…0aA8`).
+Registro completo com hashes e txs: [`../install/WARP-LUNC.md`](../install/WARP-LUNC.md) ·
+[`../install/WARP-USTC.md`](../install/WARP-USTC.md) ·
+[`../install/DEPLOY-HASHES.md`](../install/DEPLOY-HASHES.md).
 
 ### Sepolia (chain 11155111 / domain 11155111)
 

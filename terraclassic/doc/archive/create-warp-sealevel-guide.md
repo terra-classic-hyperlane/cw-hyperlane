@@ -3,7 +3,8 @@
 > Interactive script to create and configure Hyperlane Warp Routes on **Solana (Sealevel)** connected to Terra Classic.  
 > Supports: Solana Devnet, Testnet, and Mainnet.
 >
-> **Last updated:** 2026-08-28 — production defaults verified on-chain (see banner below).
+> **Last updated:** 2026-08-31 — live LUNC/USTC mainnet routes; paths updated after the repo reorganization (retired scripts in `../../archive/scripts/`, this guide archived). **Mainnet deploy flow corrected**: STEP 1 is a pure `solana program deploy` + STEP 1B atomic init via `jito-warp-init.js` — the old `warp-route deploy` path is BROKEN on mainnet (see §9 Step 1).
+> Previous: 2026-08-28 — production defaults verified on-chain (see banner below).
 > Previous: 2026-06-05 — Devnet infrastructure deployed; `close-warp-program.sh` added; binary reuse (no recompilation); image URL validation; metadata repo fixed to `terra-classic-hyperlane/cw-hyperlane`.
 
 ---
@@ -63,12 +64,15 @@ For each chosen **token + Solana network** pair, the script automatically execut
 
 | Step | Component | What it is | Why it is needed |
 |-------|-----------|---------|---------------------|
-| 1 | **Warp Route (Program)** | Solana SPL program deployed via `warp-route deploy` | Entry/exit point on Solana |
+| 1 | **Warp program deploy** | Pure `solana program deploy` of `hyperlane_sealevel_token.so` under a NEW program keypair | Entry/exit point on Solana |
+| 1B | **Atomic token init** | `jito-warp-init.js` — `warp_init` + `InitializeMetadataPointer` + `InitializeMint2` in ONE transaction (MEV-safe), then Token-2022 metadata + mint authority → the mint PDA itself | Creates the mint without the broken `warp-route deploy` path |
 | 2 | **ISM** | MultisigISM (`multisig-ism-message-id`) | Validates that messages came from Terra Classic |
-| 3 | **IGP** | Interchain Gas Paymaster (Overhead IGP) | Estimates and charges gas for execution on Terra Classic |
-| 4 | **Destination Gas** | `set-destination-gas-amount` | Configures gas cost for the Terra Classic domain |
+| 3 | **IGP** | Interchain Gas Paymaster (Overhead IGP, type from config) | Estimates and charges gas for execution on Terra Classic |
+| 4 | **Destination Gas** | `set-destination-gas-amount` = 3000000 | Configures gas cost for the Terra Classic domain |
 | 5 | **enrollRemoteRouter** | Enrolls the Terra Classic Warp on Solana | Authorizes Solana to accept messages from Terra Classic |
-| 6 | **set_route (Terra)** | Calls `router.set_route` on the Terra Classic Warp | Authorizes Terra Classic to send to Solana |
+| 6 | **set_route (Terra)** | Calls `router.set_route` on the Terra Classic Warp (needs `TERRA_PRIVATE_KEY`) | Authorizes Terra Classic to send to Solana |
+| 7–8 | **Verification** | `token query` + final on-chain checks (terrad with timeout) | Confirms ISM/IGP/gas/routes on both sides |
+| 9 | **Registry YAML** | Generates `warp/registry-<token>-config.yaml` | Ready-to-PR route file for the Warp UI registry fork |
 
 ---
 
@@ -76,7 +80,7 @@ For each chosen **token + Solana network** pair, the script automatically execut
 
 | Aspect | EVM (Sepolia, BSC...) | Sealevel (Solana) |
 |---------|----------------------|-------------------|
-| Warp Deploy | `hyperlane warp deploy` (TS CLI) | `warp-route deploy` (Rust client) |
+| Warp Deploy | `hyperlane warp deploy` (TS CLI) | `solana program deploy` + atomic init via `jito-warp-init.js` (the Rust client's `warp-route deploy` is broken on mainnet — see §9 Step 1) |
 | Router address | 20-byte hex address (EVM address) | Program ID base58 (32 bytes) |
 | Hook | AggregationHook = MerkleTree + IGP | No AggregationHook — IGP configured directly |
 | ISM | `messageIdMultisigIsm` (EVM contract) | `multisig-ism-message-id` (Solana program) |
@@ -100,7 +104,7 @@ For each chosen **token + Solana network** pair, the script automatically execut
 | `python3` | 3.8+ | native on Linux |
 | `node` + `npm` | Node 18+ | `nvm install 18` |
 | `cargo` (Rust) | **1.86+** | `curl https://sh.rustup.rs -sSf \| sh` |
-| `solana` CLI | **3.0+** (Agave) | `agave-install init 3.0.14` (used for building programs) |
+| `solana` CLI | **3.0+** (Agave) | `agave-install init 3.0.14` — or `sh -c "$(curl -sSfL https://release.solana.com/stable/install)"` |
 
 ### Required Node.js packages
 
@@ -126,6 +130,11 @@ cargo build --release
 cd /home/lunc/hyperlane-monorepo/rust/sealevel/programs
 bash build-programs.sh token
 # Output: ../target/deploy/hyperlane_sealevel_token.so (+ collateral, native)
+#
+# OR skip the build: copy the community's verified prebuilt binary
+# (sha256 d6f2fc9fed82c5079ce2cb1728d5f833d61c70e6d5f2f2a40d5df6d1bdb33419):
+#   cp ~/tc-cw-hyperlane/terraclassic/warp/reference-program/solanamainnet/hyperlane_sealevel_token.so \
+#      /home/lunc/hyperlane-monorepo/rust/sealevel/target/deploy/
 
 # 3. Build core programs (mailbox, ISM, IGP — needed for devnet setup)
 bash build-programs.sh core
@@ -161,12 +170,21 @@ $SEALEVEL_BIN -k $KEYPAIR -u https://api.devnet.solana.com \
 
 ### Solana Keypair
 
-You need a Solana keypair JSON file with sufficient balance (minimum ~1 SOL for deploy):
+You need a Solana keypair JSON file with sufficient balance — **mainnet: keep at
+least ~3 SOL** (the program deploy locks ~2.221 SOL of rent + 0.05 SOL for the
+ATA payer + fees, and the CLI requires rent **plus** the estimated priority fee
+upfront, which can exceed 2.8 SOL when the network is busy):
 
 ```bash
 solana-keygen new --outfile /home/lunc/keys/solana-keypair-MEU_PUBKEY.json
-solana airdrop 2 --url https://api.testnet.solana.com MEU_PUBKEY
+solana airdrop 2 --url https://api.testnet.solana.com MEU_PUBKEY   # testnet only
 ```
+
+### Mainnet RPC (required)
+
+The public RPC (`api.mainnet-beta.solana.com`) rate-limits (`429`) and breaks
+program deploys — **use a private RPC** (Helius free tier is enough). Set it in
+`warp-sealevel-config.json` → `networks.solanamainnet.rpc` or via `NET_RPC=…`.
 
 ### Terra Classic private key
 
@@ -183,10 +201,11 @@ export TERRA_PRIVATE_KEY="your_terra_private_key_in_hex"
 ```
 terraclassic/
 ├── create-warp-sealevel.sh        ← Main deploy script (interactive)
-├── close-warp-program.sh          ← Close program + recover SOL + reset config
-├── deploy-warp-solana-buffer.sh   ← Manual buffer deploy (alternative)
+├── jito-warp-init.js              ← Atomic MEV-safe token init (called by STEP 1B)
+├── close-warp-program.sh          ← Close program + recover SOL + reset config (⚠️ permanent)
+├── archive/scripts/deploy-warp-solana-buffer.sh ← old alternative flow (archived 2026-08-31)
 ├── warp-sealevel-config.json      ← Solana networks + warp tokens
-├── warp-evm-config.json           ← Terra Classic tokens (shared with EVM)
+├── warp-evm-config.json           ← Terra Classic tokens (shared with EVM; only lunc/ustc/juris since 2026-08-31)
 ├── .warp-sealevel-state.json      ← Last deploy state (auto-generated, delete to restart)
 ├── log/
 │   ├── create-warp-sealevel.log
@@ -487,41 +506,49 @@ rm -f ~/cw-hyperlane/terraclassic/.warp-sealevel-state.json
 
 ## 9. What the script configures — Detailed steps
 
-### Step 1 — Deploy Warp Route on Solana
+### Step 1 — Deploy the warp program (pure `solana program deploy`)
 
-The script generates a `token-config.json` and calls:
+> ⚠️ **The old path is BROKEN on mainnet.** The Rust client's `warp-route deploy`
+> fails with `IncorrectProgramId` when creating the mint PDA and leaves the
+> program **half-initialized** (token storage without mint) — an unrecoverable
+> state whose only remedy is `solana program close` + a redeploy under a **new**
+> keypair (a closed program id can NEVER be reused). Since 2026-08-29 the script
+> deploys the program directly and initializes the token atomically (Step 1B).
+
+The script generates a **new program keypair** and runs a plain program deploy
+of the verified binary:
 
 ```bash
-hyperlane-sealevel-client \
-  -k /caminho/keypair.json \
-  -u https://api.testnet.solana.com \
-  warp-route deploy \
-  --warp-route-name TOKEN \
-  --environment testnet \
-  --environments-dir .../environments \
-  --token-config-file .../token-config.json \
-  --built-so-dir .../target/deploy \
-  --registry ~/.hyperlane/registry \
-  --ata-payer-funding-amount 5000000
+solana program deploy hyperlane_sealevel_token.so \
+  -k /caminho/keypair.json --url <PRIVATE_RPC> \
+  --upgrade-authority /caminho/keypair.json \
+  --program-id <new-program-keypair.json> \
+  --buffer <buffer-keypair.json> \
+  --max-sign-attempts 200 \
+  --use-rpc --with-compute-unit-price <CU_PRICE>
 ```
 
-**Result:** Program ID + Mint Address of the SPL token.
+Built-in resilience: the priority fee is sampled from the network (override with
+`DEPLOY_CU_PRICE=200000` when the network is calm), the **buffer is reused
+between attempts** (no re-upload from scratch), each attempt has a timeout and
+retries rotate the RPC while doubling the fee; `--max-sign-attempts 200` keeps
+re-signing write txs past blockhash expiry (the default of 5 aborts with
+`Max retries exceeded` on throttled RPCs). On insufficient funds the script
+aborts immediately instead of doubling the fee. Cost: ~2.221 SOL of program
+rent (recoverable only by closing, which kills the id) + fees.
 
-The generated `token-config.json` has the format:
+### Step 1B — Atomic token init (`jito-warp-init.js`, MEV-safe)
 
-```json
-{
-  "solanatestnet": {
-    "type": "synthetic",
-    "name": "MyToken",
-    "symbol": "MYTOKEN",
-    "decimals": 6,
-    "totalSupply": "0",
-    "interchainGasPaymaster": "E9i32KsKGQZMYTguZ81VHUueNvpTGh7nb9J5bRif4xT1",
-    "uri": "https://raw.githubusercontent.com/..."
-  }
-}
-```
+One single transaction performs `warp_init` + `InitializeMetadataPointer` +
+`InitializeMint2` — no window for MEV between program init and mint creation.
+It then funds the ATA payer (+0.05 SOL), initializes the Token-2022 metadata
+(name/symbol/uri) and transfers the **mint authority to the mint PDA itself**.
+
+**Result:** Program ID + Mint Address (Token-2022). Live examples:
+LUNC `Dd3ajD8WbEyx7z3HqPnDyvUgFqEBzvF1VePjYd1NGnbr` / mint
+`8dxTo5reLtvRDx3Q8WEP33Uj2C5u6372EygJdNbsLFKG`; USTC
+`7CUdBt1Qn2R2StE7MDPhQW2EhmnGg8zKK8oJXwAGEoyf` / mint
+`GNUbsF5mrurtDzNc65HipN5Fyzzzqbj5UonLNhj9frjF`.
 
 ### Step 2 — Configure ISM
 
@@ -646,6 +673,28 @@ After a successful deploy, **update `warp-sealevel-config.json`** to record the 
 Save to: `environments/testnet/warp-routes/TOKEN/token-config.json`
 
 ### 11.2 Deploy Solana Warp
+
+> ⚠️ **Mainnet:** do NOT use `warp-route deploy` — it is broken (see §9 Step 1:
+> `IncorrectProgramId` on the mint PDA, half-initialized program, only remedy is
+> close + redeploy with a NEW keypair). On mainnet do the two manual steps the
+> script automates:
+>
+> ```bash
+> # 1) Program deploy under a fresh keypair
+> solana-keygen new --no-bip39-passphrase -o program-keypair.json
+> solana program deploy ./target/deploy/hyperlane_sealevel_token.so \
+>   -k /caminho/keypair.json --url <PRIVATE_RPC> \
+>   --upgrade-authority /caminho/keypair.json \
+>   --program-id program-keypair.json \
+>   --max-sign-attempts 200 --use-rpc --with-compute-unit-price 200000
+>
+> # 2) Atomic init (warp_init + metadata pointer + mint in ONE tx)
+> cd ~/tc-cw-hyperlane/terraclassic
+> WARP_PROGRAM_ID=<PROGRAM_ID> TOKEN_KEY=<token> NET_KEY=solanamainnet \
+>   node jito-warp-init.js
+> ```
+
+The command below (old flow) still works on **testnet/devnet** only:
 
 ```bash
 cd /home/lunc/hyperlane-monorepo/rust/sealevel
@@ -1067,6 +1116,9 @@ rm -f ~/cw-hyperlane/terraclassic/.warp-sealevel-state.json
 
 ### ❌ `warp-route deploy failed (exit 101)`
 
+> ⚠️ On **mainnet** this command is not used anymore (broken — see §9 Step 1);
+> this entry applies to testnet/devnet runs only.
+
 **Cause:** Could be:
 1. Insufficient balance in the Solana keypair
 2. Invalid `token-config.json` file
@@ -1306,7 +1358,10 @@ export TERRA_PRIVATE_KEY="your_private_key_hex_without_0x"
 - ISM: `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` (3-of-4)
 - IGP: `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` / OverheadIgp: `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ`
 
-Full record (hashes, txs, owners): `doc/install/DEPLOY-HASHES.md` §5.
+Full record (hashes, txs, owners): `doc/install/DEPLOY-HASHES.md` §5/§6 ·
+per-token audit references: `doc/install/WARP-LUNC.md` · `doc/install/WARP-USTC.md`.
+Token binary sha256: `d6f2fc9fed82c5079ce2cb1728d5f833d61c70e6d5f2f2a40d5df6d1bdb33419`
+(byte-identical for both programs).
 
 ---
 
