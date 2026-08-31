@@ -16,6 +16,8 @@ lifecycle:
 | [`install/WARP-SOLANA.md`](install/WARP-SOLANA.md) | Create a warp on **Solana** (sealevel) with one script (`create-warp-sealevel.sh`) |
 | [`install/WARP-UI-PR.md`](install/WARP-UI-PR.md) | Make a deployed route appear in the **Warp UI** (registry fork, branch `terra-classic-warp`) |
 | [`install/DEPLOY-HASHES.md`](install/DEPLOY-HASHES.md) | **Live inventory** of every deployed contract with verifiable hashes — TC core, and the LUNC/USTC warp + ISM/IGP/hooks on BSC · ETH · Solana |
+| [`install/WARP-LUNC.md`](install/WARP-LUNC.md) | The live **LUNC** route per chain (TC · BSC · ETH · Solana): contracts, hashes, owners, routes + query/audit commands |
+| [`install/WARP-USTC.md`](install/WARP-USTC.md) | The live **USTC** route — same per-chain audit & developer reference |
 
 ### 2. Core deployment record → [`HYPERLANE_DEPLOYMENT-MAINNET_EN.md`](HYPERLANE_DEPLOYMENT-MAINNET_EN.md)
 
