@@ -30,7 +30,7 @@
 #    local  → reuse an already-compiled target/deploy/*.so (built by you)
 #
 #  Pinned toolchain + reference SHA-256 for community verification:
-#    doc/WARP-SOLANA-BINARY-REFERENCE.md
+#    doc/archive/WARP-SOLANA-BINARY-REFERENCE.md
 #
 #  Usage:
 #    export TERRA_PRIVATE_KEY="your_hex_private_key"

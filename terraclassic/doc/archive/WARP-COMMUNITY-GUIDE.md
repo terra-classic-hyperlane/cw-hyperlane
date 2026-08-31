@@ -102,19 +102,19 @@ rodar `cargo build-sbf` (15-20 min) — use `BINARY_SOURCE=local`.
 
 | Binário | SHA-256 | Deploy de referência (exemplo verificável) |
 |---------|---------|--------------------------------------------|
-| `hyperlane_sealevel_token.so` | `d6f2fc9fed82c5079ce2cb1728d5f833d61c70e6d5f2f2a40d5df6d1bdb33419` | `EPJNrrpCeZGqDPoFtdV9u9uDWBNW3Xqh84LfM7345zcL` — hex32 `0xc6de5b1fd8d285c06fa3967440530edfec35e907464599e3b485c5f273437f95` |
+| `hyperlane_sealevel_token.so` | `d6f2fc9fed82c5079ce2cb1728d5f833d61c70e6d5f2f2a40d5df6d1bdb33419` | `Dd3ajD8WbEyx7z3HqPnDyvUgFqEBzvF1VePjYd1NGnbr` (warp LUNC, 29/08/2026) — hex32 `0xbb8812381e07b070e8d37945ae659b8ad17ff2c5c36f019f351f332d45a3b261` |
 
 ```bash
 # conferir o binário de referência on-chain
-solana program dump EPJNrrpCeZGqDPoFtdV9u9uDWBNW3Xqh84LfM7345zcL token.so --url "$RPC"
+solana program dump Dd3ajD8WbEyx7z3HqPnDyvUgFqEBzvF1VePjYd1NGnbr token.so --url "$RPC"
 sha256sum token.so   # deve retornar d6f2fc9fed82c5079ce2cb1728d5f833d61c70e6d5f2f2a40d5df6d1bdb33419
 ```
 
 > ⚠️ **Cada warp route é um programa PRÓPRIO** — no Sealevel o storage/mint são PDAs de
 > seed fixo derivadas do `program_id`, ou seja **um programa = uma rota (singleton)**.
 > Você deploya a **sua** instância, com **seu** Program ID. O que se compartilha é o
-> **binário** (mesmo bytecode, hash `d6f2fc…`). O `EPJNrr…` é só um exemplo de
-> referência — **não** é um programa multi-token.
+> **binário** (mesmo bytecode, hash `d6f2fc…`). O `Dd3ajD8W…` (warp LUNC) é só um
+> exemplo de referência — **não** é um programa multi-token.
 
 **⚡ Caminho mais rápido para criar sua warp:** use `deploy-warp-solana-buffer.sh` com
 `BINARY_SOURCE=local`. Numa tacada ele reusa o `.so` prebuilt (sem compilar), deploya o
@@ -298,28 +298,31 @@ Docs relacionados: `TRANSFER-SOLANA-OWNERSHIP.md`, `WARP-SOLANA-GUIDE.md`,
 
 ---
 
-## 11. Exemplo completo — `igorfake` (mainnet, token de teste)
+## 11. Exemplo completo — `lunc` (mainnet)
 
-> `igorfake` é um **token FALSO**, criado só para **validar o fluxo em mainnet**. Use
-> este exemplo como **template** para a warp de qualquer projeto — troque o token, os
-> metadados e o owner. Todos os endereços abaixo são reais (Solana Mainnet).
+> Warp route **viva** do LUNC nativo (Terra Classic ↔ Solana Mainnet), deployada em
+> 29/08/2026 com transferências bidirecionais testadas no mesmo dia. Use este exemplo
+> como **template** para a warp de qualquer projeto — troque o token, os metadados e o
+> owner. Todos os endereços abaixo são reais (Solana Mainnet). O fluxo foi validado
+> originalmente com um token de teste, hoje descontinuado.
 
 ### Endereços finais
 
 | Item | Endereço |
 |------|----------|
-| Warp program | `EPJNrrpCeZGqDPoFtdV9u9uDWBNW3Xqh84LfM7345zcL` |
-| Program hex32 (p/ `set_route` no TC) | `0xc6de5b1fd8d285c06fa3967440530edfec35e907464599e3b485c5f273437f95` |
-| Mint (Token-2022) | `CeLHx5Wm9AzuWRnP4URMfNqNa9kDDrnsNGoATCS96QwD` |
+| Warp program | `Dd3ajD8WbEyx7z3HqPnDyvUgFqEBzvF1VePjYd1NGnbr` |
+| Program hex32 (p/ `set_route` no TC) | `0xbb8812381e07b070e8d37945ae659b8ad17ff2c5c36f019f351f332d45a3b261` |
+| Mint (Token-2022) | `8dxTo5reLtvRDx3Q8WEP33Uj2C5u6372EygJdNbsLFKG` |
 | ISM (comunitário) | `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` |
 | IGP account (comunitário) | `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` |
 | Owner (bootstrap) | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` (deployer → multisig no handoff) |
-| Terra Classic warp | `terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel` |
+| Terra Classic warp (native `uluna`) | `terra1m7jcqxfn4hd7q4sywhw508nxshaf078c4vh83y0ts43y9tlp9dcs50cggy` |
 | TC warp owner (assina o `set_route`) | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` |
 | SHA-256 do binário | `d6f2fc9fed82c5079ce2cb1728d5f833d61c70e6d5f2f2a40d5df6d1bdb33419` |
 
-**Status: rota BIDIRECIONAL ✅** — Solana→TC (enroll-remote-router) e TC→Solana
-(`set_route`) ambos configurados.
+**Status: rota BIDIRECIONAL ✅ (29/08/2026)** — Solana→TC (enroll-remote-router) e
+TC→Solana (`set_route`) configurados, com transferências reais testadas nas duas
+direções. Registro completo: `doc/install/DEPLOY-HASHES.md` §5.
 
 ### Processo (3 passos)
 
@@ -328,14 +331,14 @@ Docs relacionados: `TRANSFER-SOLANA-OWNERSHIP.md`, `WARP-SOLANA-GUIDE.md`,
 NET_RPC="https://mainnet.helius-rpc.com/?api-key=<KEY>" \
 NET_KEY=solanamainnet BINARY_SOURCE=local \
 ./create-warp-program-solana.sh
-# → reporta Program ID (ex.: EPJNrr…) + hex32 + SHA-256 (~2,2 SOL)
+# → reporta Program ID (ex.: Dd3ajD8W…) + hex32 + SHA-256 (~2,2 SOL)
 ```
 
 **2. Warp init + wiring** — liga o programa à rota (init MEV-safe + ISM/IGP/gas/enroll):
 ```bash
 NET_RPC="https://mainnet.helius-rpc.com/?api-key=<KEY>" \
-WARP_PROGRAM_ID=EPJNrrpCeZGqDPoFtdV9u9uDWBNW3Xqh84LfM7345zcL \
-TOKEN_KEY=igorfake NET_KEY=solanamainnet BINARY_SOURCE=local \
+WARP_PROGRAM_ID=Dd3ajD8WbEyx7z3HqPnDyvUgFqEBzvF1VePjYd1NGnbr \
+TOKEN_KEY=lunc NET_KEY=solanamainnet BINARY_SOURCE=local \
 ./deploy-warp-solana-buffer.sh
 ```
 Faz: init atômico (mint + metadata) → set **ISM** (`4MzF7HCf`) → set **IGP**
@@ -348,16 +351,16 @@ owner-gated. Rode só este passo com os `SKIP_*` (pula o que já está pronto):
 ```bash
 export TERRA_PRIVATE_KEY='<hex_do_owner_TC>'    # não commite / não exponha
 NET_RPC="https://mainnet.helius-rpc.com/?api-key=<KEY>" \
-WARP_PROGRAM_ID=EPJNrrpCeZGqDPoFtdV9u9uDWBNW3Xqh84LfM7345zcL \
+WARP_PROGRAM_ID=Dd3ajD8WbEyx7z3HqPnDyvUgFqEBzvF1VePjYd1NGnbr \
 SKIP_INIT=1 SKIP_ISM=1 SKIP_IGP=1 SKIP_GAS=1 SKIP_ENROLL=1 \
-TOKEN_KEY=igorfake NET_KEY=solanamainnet BINARY_SOURCE=local \
+TOKEN_KEY=lunc NET_KEY=solanamainnet BINARY_SOURCE=local \
 ./deploy-warp-solana-buffer.sh
 ```
-Registra no TC: `domain 1399811149 → route c6de5b1f…`. É idempotente.
-Exemplo executado: TX `4ABD9993…C75AE1`
-(`finder.hexxagon.io/columbus-5/tx/4ABD9993520AAA7F2BE88939424C39D7BF810C0EADC8E58E320D39F3C8C75AE1`).
+Registra no TC: `domain 1399811149 → route bb881238…`. É idempotente.
+Exemplo executado: TX `14C2BF10…D65D9DA`
+(`finder.hexxagon.io/columbus-5/tx/14C2BF10D2288940F2D65F3BD3017967B9563CF4CC98E8C314799C72ED65D9DA`).
 
-> Alternativa manual: `terrad tx wasm execute <TC_WARP> '{"router":{"set_route":{"set":{"domain":1399811149,"route":"c6de5b1f…"}}}}' --from <KEY> --chain-id columbus-5 --node <TC_RPC> --gas auto --gas-adjustment 1.5 --fees 12000000uluna --yes` (route **sem** `0x`).
+> Alternativa manual: `terrad tx wasm execute <TC_WARP> '{"router":{"set_route":{"set":{"domain":1399811149,"route":"bb881238…"}}}}' --from <KEY> --chain-id columbus-5 --node <TC_RPC> --gas auto --gas-adjustment 1.5 --fees 12000000uluna --yes` (route **sem** `0x`).
 
 ### Lições aprendidas (valem para qualquer deploy)
 
@@ -436,7 +439,7 @@ solana balance <SIGNER_SOLANA_DO_RELAYER> --url "$RPC"       # se 0 -> financie!
 journalctl -u hyperlane-relayer | grep <MSGID>              # InclusionStage / Finalized
 ```
 
-**Causas reais já encontradas (deploy igorfake mainnet):**
+**Causas reais já encontradas (validação do fluxo em mainnet, 2026):**
 1. **Bucket S3 compartilhado testnet+mainnet** → checkpoints `domain 1325` poluíram o
    bucket de mainnet → relayer travou. *Fix:* apagar os checkpoints 1325 do bucket +
    corrigir `checkpoint_latest_index` + bucket separado para testnet.

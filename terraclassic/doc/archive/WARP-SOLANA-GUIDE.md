@@ -114,13 +114,13 @@ Controls all Solana network configurations and per-token warp route settings.
         "destination_gas_terra": 3000000
       },
       "warp_tokens": {
-        "igorfake": {
+        "mytoken": {
           "deployed": false,
           "type": "synthetic",
           "program_id": "",
           "program_hex": "",
           "mint_address": "",
-          "metadata_uri": "https://raw.githubusercontent.com/.../metadata-igorfake.json",
+          "metadata_uri": "https://raw.githubusercontent.com/.../metadata-mytoken.json",
           "decimals": 6,
           "owner": "BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j"
         }
@@ -168,9 +168,9 @@ Contains Terra Classic chain configuration and per-token Terra Classic warp cont
     "chain_id": "columbus-5",
     "rpc": "https://rpc.terra-classic.hexxagon.io",
     "tokens": {
-      "igorfake": {
-        "name": "IGORFAKE",
-        "symbol": "IGORFAKE",
+      "mytoken": {
+        "name": "MyToken",
+        "symbol": "MYTOKEN",
         "decimals": 6,
         "description": "Test token for Hyperlane warp route",
         "image": "https://...",
@@ -215,7 +215,7 @@ export TERRA_PRIVATE_KEY="your_terra_private_key_hex"
 ```
 
 The interactive menu will ask you to select:
-1. **Token** — which token to deploy (e.g., `igorfake`)
+1. **Token** — which token to deploy (e.g., `lunc`)
 2. **Network** — which Solana network (e.g., `solanamainnet`)
 
 Then it runs all steps automatically.

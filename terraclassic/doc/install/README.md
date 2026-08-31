@@ -34,8 +34,10 @@ ISM/IGP contracts left behind.
 
 - Install scripts: `../../create-warp-evm.sh` · `../../create-warp-sealevel.sh`
   (configs: `../../warp-evm-config.json` · `../../warp-sealevel-config.json`)
-- Deep-dive guides (every field, every step): `../create-warp-evm-guide.md` ·
-  `../create-warp-sealevel-guide.md` · `../WARP-GAS-CONFIG.md`
+- Core deployment record (code_ids, hashes, governance, mailbox wiring):
+  [`../HYPERLANE_DEPLOYMENT-MAINNET_EN.md`](../HYPERLANE_DEPLOYMENT-MAINNET_EN.md)
+- Historical deep-dives and superseded guides: [`../archive/`](../archive/)
+  (reference only — do not follow for new deploys)
 - Relayer payment system (vaults, oracle-agent, operator setup):
   [`tc-proof-of-delivery/docs/install/`](https://github.com/terra-classic-hyperlane/proof-of-delivery/tree/main/docs/install)
   — its `AUDIT.md` covers the vault/governor contracts and their hashes

@@ -66,11 +66,11 @@ The script:
 ### Check if data is in the config:
 
 ```bash
-# XPTO token — check if warp_address is filled
-jq '.terra_classic.tokens.xpto.terra_warp' terraclassic/warp-evm-config.json
+# MYTOKEN token — check if warp_address is filled
+jq '.terra_classic.tokens.mytoken.terra_warp' terraclassic/warp-evm-config.json
 
-# Sepolia network — check if xpto warp is deployed
-jq '.networks.sepolia.warp_tokens.xpto' terraclassic/warp-evm-config.json
+# Sepolia network — check if mytoken warp is deployed
+jq '.networks.sepolia.warp_tokens.mytoken' terraclassic/warp-evm-config.json
 ```
 
 ---
@@ -100,7 +100,7 @@ export TERRA_PRIVATE_KEY="your_hex_key"   # without 0x prefix
 
 📌 Select the TOKEN to link:
 
-  [1] XPTO — terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm
+  [1] MYTOKEN — terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm
   [2] JURIS — terra1stu3c...
 
 ▶ Enter the number: 1
@@ -112,7 +112,7 @@ export TERRA_PRIVATE_KEY="your_hex_key"   # without 0x prefix
 ▶ Enter the number: 1
 
 📋 Operation parameters:
-   Token         : XPTO (xpto)
+   Token         : MYTOKEN (mytoken)
    Terra Warp    : terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm
    EVM Network   : Ethereum Sepolia Testnet (domain 11155111)
    EVM Warp      : 0xbF43aA4878f5Ad0fcAC12Cd3A835DD3506981048
@@ -253,7 +253,7 @@ Before running the script, check if the route is already configured:
 ```bash
 cd ~/cw-hyperlane
 
-# Query all routes registered on the XPTO Terra Classic Warp
+# Query all routes registered on the MYTOKEN Terra Classic Warp
 node --no-warnings -e "
 const p=require('path'), nm=p.join(process.cwd(),'node_modules');
 const {CosmWasmClient}=require(p.join(nm,'@cosmjs/cosmwasm-stargate'));
@@ -296,7 +296,7 @@ domain 11155111 → null
 **Solution:** Fill in the Terra Classic Warp address after the deploy:
 
 ```json
-"xpto": {
+"mytoken": {
   "terra_warp": {
     "warp_address": "terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm",
     "warp_hexed":   "0xd03fafd53ce350f49ba3c6ebcb1bee7cbbf453f261ec8d5ce9f36c55ab3e26a1",
@@ -315,7 +315,7 @@ domain 11155111 → null
 
 ```json
 "warp_tokens": {
-  "xpto": {
+  "mytoken": {
     "deployed": true,
     "address":  "0xbF43aA4878f5Ad0fcAC12Cd3A835DD3506981048"
   }

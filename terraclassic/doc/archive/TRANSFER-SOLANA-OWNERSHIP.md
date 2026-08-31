@@ -6,7 +6,7 @@ os papéis de owner/admin do deployment Hyperlane na Solana da autoridade atual
 
 **Escopo de cada execução:** a **infra compartilhada** (IGP + overhead IGP + ISM,
 com seus owners e upgrade authorities) **mais um warp token que você informa**
-(ex.: `igorfake`). Os demais tokens **não** são tocados. Assim você entrega a
+(ex.: `lunc`). Os demais tokens **não** são tocados. Assim você entrega a
 infra junto com o warp específico em que está trabalhando, sem afetar os outros.
 
 ## Objetivo e as duas fases
@@ -65,17 +65,17 @@ O **token é obrigatório** (o warp que você quer transferir junto com a infra)
 Se você não passar, o script lista os tokens deployados e sai.
 
 ```bash
-# DRY-RUN (não executa nada) — testnet, infra + warp 'igorfake', destino EMAYGf
-./transfer-solana-ownership.sh igorfake
+# DRY-RUN (não executa nada) — testnet, infra + warp 'lunc', destino EMAYGf
+./transfer-solana-ownership.sh lunc
 
 # Executar de verdade (pede confirmação 'TRANSFERIR')
-./transfer-solana-ownership.sh igorfake --execute
+./transfer-solana-ownership.sh lunc --execute
 
 # Mainnet (dry-run)
-NET_KEY=solanamainnet ./transfer-solana-ownership.sh igorfake
+NET_KEY=solanamainnet ./transfer-solana-ownership.sh lunc
 
 # Fase 2 — entregar ao multisig dos validadores da Hyperlane
-NEW_OWNER=<SQUADS_VAULT> NET_KEY=solanamainnet ./transfer-solana-ownership.sh igorfake --execute
+NEW_OWNER=<SQUADS_VAULT> NET_KEY=solanamainnet ./transfer-solana-ownership.sh lunc --execute
 ```
 
 > ⚠️ A **infra compartilhada (IGP/ISM)** é transferida em qualquer execução. Se
@@ -139,13 +139,13 @@ OWNER_KEYPAIR=$HOME/keys/solana-keypair-EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ
 | IGP account (inner) | `2dtsRyohVAgB2U6UxaK4EgQLPcGQK1d1K8CNCpzPRPkD` |
 | Overhead IGP account | `FgsCd3gFPaUuzU7jH9rSp9YQ4mNrvxo9SxDs75FRgtny` |
 | ISM program | `FQXMB763C9EMKGsGgjjkvtZvUakV9RieMpRwx11gRbja` |
-| Warp `igorfake` program | `GfwnLrBJtG161xgN7fnoVnDFFzgwE9p1YGzE4CBNgz9N` |
+| Warp do token de teste (testnet; rota descontinuada 29/08/2026) | `GfwnLrBJtG161xgN7fnoVnDFFzgwE9p1YGzE4CBNgz9N` |
 | **Deployer** (autoridade inicial) | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
 | **Owner de teste** (Fase 1) | `EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd` |
 
 ## Ensaio realizado e verificado (testnet)
 
-Comando: `./transfer-solana-ownership.sh igorfake --execute` (defaults: `BirXd4Q → EMAYGf`).
+Comando: `./transfer-solana-ownership.sh <token> --execute` (ensaio feito com o token de teste; defaults: `BirXd4Q → EMAYGf`).
 Todas as 8 transferências passaram, na ordem segura, e foram **confirmadas on-chain**:
 
 | # | Papel | Objeto | Depois |
@@ -156,7 +156,7 @@ Todas as 8 transferências passaram, na ordem segura, e foram **confirmadas on-c
 | 4 | ISM owner | `FQXMB763` | ✅ `EMAYGf` |
 | 5 | Upgrade authority IGP | `ESag6` | ✅ `EMAYGf` |
 | 6 | Upgrade authority ISM | `FQXMB763` | ✅ `EMAYGf` |
-| 7 | Warp route owner | igorfake | ✅ `EMAYGf` |
+| 7 | Warp route owner | warp de teste | ✅ `EMAYGf` |
 | 8 | Upgrade authority WARP | `GfwnLr` | ✅ `EMAYGf` |
 
 Conclusão: o fluxo de handoff está **validado ponta a ponta**. Para produção, basta
@@ -181,7 +181,7 @@ Se você rodar o **revert antes do forward**, os papéis de infra vão falhar co
 
 **Esses erros são a proteção funcionando** — significam "você não é a autoridade
 atual". Nada é alterado, exceto os papéis que a keypair de fato controlava (ex.: no
-nosso caso, o revert prematuro só conseguiu puxar o *route owner* do igorfake de
+nosso caso, o revert prematuro só conseguiu puxar o *route owner* do warp de teste de
 volta, porque era a única coisa que o `EMAYGf` já possuía).
 
 > 💡 Regra de ouro: **assine sempre com a chave que é a autoridade ATUAL** do que

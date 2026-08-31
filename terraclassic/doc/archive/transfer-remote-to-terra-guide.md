@@ -107,21 +107,17 @@ cd ~/cw-hyperlane/terraclassic
 Select the token and source network:
 
   [1]   LUNC ← Ethereum Sepolia Testnet  (domain 11155111)
-  [2]   XPTO ← Ethereum Sepolia Testnet  (domain 11155111)
-  [3]   XPTV ← Ethereum Sepolia Testnet  (domain 11155111)
-  [4]   LUNC ← BSC Testnet               (domain 97)
-  [5]   XPV  ← BSC Testnet               (domain 97)
-  [6]   LUNC ← Solana Testnet            (domain 1399811150)
-  [7]   JURIS ← Solana Testnet           (domain 1399811150)
-  [8]   XPTO ← Solana Testnet            (domain 1399811150)
+  [2]   LUNC ← BSC Testnet               (domain 97)
+  [3]   LUNC ← Solana Testnet            (domain 1399811150)
+  [4]   JURIS ← Solana Testnet           (domain 1399811150)
 
-  Option [1-8]:
+  Option [1-4]:
 ```
 
 The script asks sequentially:
 1. **Option** — token/network number
 2. **Recipient** — Terra Classic address (`terra1...`)
-3. **Amount** — in minimum units (e.g.: `1000000` = 1 XPTO with 6 decimals)
+3. **Amount** — in minimum units (e.g.: `1000000` = 1 JURIS with 6 decimals)
 4. **Gas fee** — queried automatically; if it fails, asks manually
 5. **Private key** — EVM (`ETH_PRIVATE_KEY`) or Solana keypair path
 6. **Confirmation** — `[y/N]` before sending
@@ -139,7 +135,7 @@ cd ~/cw-hyperlane/terraclassic
 
 export ETH_PRIVATE_KEY="0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxab"
 
-TOKEN_KEY=xpto \
+TOKEN_KEY=wlunc \
 SOURCE_NETWORK=sepolia \
 RECIPIENT="terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k" \
 AMOUNT=1000000 \
@@ -152,7 +148,7 @@ AUTO_CONFIRM=s \
 ```bash
 cd ~/cw-hyperlane/terraclassic
 
-TOKEN_KEY=xpto \
+TOKEN_KEY=juris \
 SOURCE_NETWORK=solanatestnet \
 RECIPIENT="terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k" \
 AMOUNT=1000000 \
@@ -169,7 +165,7 @@ AUTO_CONFIRM=s \
 
 | Variable | Required | Description |
 |----------|-------------|-----------|
-| `TOKEN_KEY` | No (interactive) | Token key in config, e.g.: `xpto`, `wlunc`, `xpv` |
+| `TOKEN_KEY` | No (interactive) | Token key in config, e.g.: `juris`, `wlunc` |
 | `SOURCE_NETWORK` | No (interactive) | Source network, e.g.: `sepolia`, `bsctestnet`, `solanatestnet` |
 | `RECIPIENT` | No (interactive) | Destination Terra Classic address (`terra1...`) |
 | `AMOUNT` | No (interactive) | Value in minimum units (no decimals), e.g.: `1000000` |
@@ -199,10 +195,7 @@ AUTO_CONFIRM=s \
 | Network | Token | Warp Contract | Domain |
 |------|-------|--------------|--------|
 | Sepolia | LUNC | `0x224a4419D7FA69D3bEbAbce574c7c84B48D829b4` | 11155111 |
-| Sepolia | XPTO | `0xbF43aA4878f5Ad0fcAC12Cd3A835DD3506981048` | 11155111 |
-| Sepolia | XPTV | `0x7d92c2E01933F1C651845152DBd4222d475Bd9f0` | 11155111 |
 | BSC Testnet | LUNC | `0x2144Be4477202ba2d50c9A8be3181241878cf7D8` | 97 |
-| BSC Testnet | XPV  | `0x11D6aa52d60611a513ab783842Dc397C86E7fff0` | 97 |
 
 ### Convert Terra Classic address to bytes32 manually
 
@@ -235,8 +228,8 @@ cast call 0x11D6aa52d60611a513ab783842Dc397C86E7fff0 \
 ### Check EVM token balance (HypERC20 Synthetic)
 
 ```bash
-# XPTO balance on Sepolia
-cast call 0xbF43aA4878f5Ad0fcAC12Cd3A835DD3506981048 \
+# LUNC balance on Sepolia
+cast call 0x224a4419D7FA69D3bEbAbce574c7c84B48D829b4 \
     "balanceOf(address)(uint256)" \
     "0xYOUR_EVM_WALLET" \
     --rpc-url https://ethereum-sepolia-rpc.publicnode.com
@@ -264,14 +257,13 @@ The `RECIPIENT_B32` is the `terra1...` address converted to 64-character hex (wi
 | Network | Token | Program ID | Mint Address |
 |------|-------|-----------|-------------|
 | Solana Testnet | JURIS | `G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y` | `ExzEij8z7xc71kvjuMHmejRkmM4ACgKjDWuEaXdDubRa` |
-| Solana Testnet | XPTO  | `jNkiNLXQetj9L2tDX6xTgx9QP1tgtNgYXamouNbbwx9` | `Db8VbMerYxksYwSSdetpy6Jhp2BrE4hk9Sh9dYJT5dQ2` |
 
 ### Check SPL balance before sending
 
 ```bash
-# XPTO (SPL) token balance on Solana Testnet
+# JURIS (SPL) token balance on Solana Testnet
 # Correct syntax: <MINT_ADDRESS> --owner <OWNER> --url <RPC>
-spl-token balance Db8VbMerYxksYwSSdetpy6Jhp2BrE4hk9Sh9dYJT5dQ2 \
+spl-token balance ExzEij8z7xc71kvjuMHmejRkmM4ACgKjDWuEaXdDubRa \
     --owner BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j \
     --url https://api.testnet.solana.com
 
@@ -376,7 +368,7 @@ chmod 600 /home/lunc/keys/solana-keypair-BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRW
 
 #### Why use a Phantom wallet instead of a CLI-generated one?
 
-A wallet created with `solana-keygen new` starts empty — it has no token accounts created for any SPL token. To send XPTO from Solana → TC, the wallet **must have XPTO** previously received (via a TC → Solana transfer). A Phantom wallet that has already received tokens has the token accounts created and the balance available to burn in the cross-chain transfer.
+A wallet created with `solana-keygen new` starts empty — it has no token accounts created for any SPL token. To send a token from Solana → TC, the wallet **must have that token** previously received (via a TC → Solana transfer). A Phantom wallet that has already received tokens has the token accounts created and the balance available to burn in the cross-chain transfer.
 
 ---
 
@@ -425,9 +417,9 @@ terrad query wasm contract-state smart \
 ### Step 4 — Check CW20 balance at destination
 
 ```bash
-# XPTO balance at the recipient address
+# JURIS balance at the recipient address
 terrad query wasm contract-state smart \
-    terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch \
+    terra1w7d0jqehn0ja3hkzsm0psk6z2hjz06lsq0nxnwkzkkq4fqwgq6tqa5te8e \
     '{"balance":{"address":"terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k"}}' \
     --node https://rpc.terra-classic.hexxagon.dev
 ```
@@ -445,10 +437,10 @@ terrad query wasm contract-state smart \
     --node https://rpc.terra-classic.hexxagon.dev
 ```
 
-**Real example — XPTO:**
+**Real example — JURIS:**
 ```bash
 terrad query wasm contract-state smart \
-    terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch \
+    terra1w7d0jqehn0ja3hkzsm0psk6z2hjz06lsq0nxnwkzkkq4fqwgq6tqa5te8e \
     '{"balance":{"address":"terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k"}}' \
     --node https://rpc.terra-classic.hexxagon.dev
 ```
@@ -473,9 +465,6 @@ WALLET="terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k"
 NODE="https://rpc.terra-classic.hexxagon.dev"
 
 declare -A TOKENS=(
-    ["XPTO"]="terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch"
-    ["XPTV"]="terra1dnflusc7slapvals97em3fj4vrfyx90npr3znq6y45qjy7hhd6jqchqsgx"
-    ["XPV"]="terra1d6e9mxaupf2zx2jj5kcayr5epz3q6g2fzm2u83w9fjqvzgz7v34qqdspxx"
     ["JURIS"]="terra1e8zhvt5g5vzy9d8x3dkxr0uxnfhk3lgaqx6l22szecpf4kxt3c4qktzknm"
 )
 
@@ -490,9 +479,9 @@ done
 ### SPL balance on Solana Testnet
 
 ```bash
-# XPTO (SPL) balance
+# JURIS (SPL) balance
 spl-token balance \
-    --address Db8VbMerYxksYwSSdetpy6Jhp2BrE4hk9Sh9dYJT5dQ2 \
+    --address ExzEij8z7xc71kvjuMHmejRkmM4ACgKjDWuEaXdDubRa \
     --owner <YOUR_SOLANA_WALLET> \
     --url https://api.testnet.solana.com
 
@@ -516,7 +505,7 @@ After each successful execution, the script writes:
 ```
 TRANSFER REMOTE — SEPOLIA → Terra Classic
 Date           : Thu Mar 12 15:30:00 UTC 2026
-Token          : XPTO / XPTO
+Token          : MYTOKEN / MYTOKEN
 Source         : SEPOLIA  (evm, domain 11155111)
 Destination    : Terra Classic  (domain 132556)
 Recipient TC   : terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k
@@ -549,10 +538,7 @@ ls ~/cw-hyperlane/terraclassic/log/TRANSFER-TO-TERRA-*.txt
 | ISM Routing | `terra1h4sd8fyxhde7dc9w9y9zhc2epphgs75q7zzfg3tfynm8qvpe3jlsd7sauh` |
 | IGP | `terra1e7fkst7mzsucl0jka2yf5vw9h07s9uvf2yy53z4r4mshqnkktl8q78h0zd` |
 | Warp LUNC (native) | `terra1zlm0h2xu6rhnjchn29hxnpvr74uxxqetar9y75zcehyx2mqezg9slj09ml` |
-| Warp XPTO (CW20) | `terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm` |
-| Warp XPTV (CW20) | `terra1vd8lgn2l38dzl2xhd4fph5cdtflm3e0exls9aeyl30d9e52sfpaq9zzp4c` |
-| CW20 XPTO | `terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch` |
-| CW20 XPTV | `terra1dnflusc7slapvals97em3fj4vrfyx90npr3znq6y45qjy7hhd6jqchqsgx` |
+*(warps de tokens de teste descontinuados em 29/08/2026)*
 
 ### Useful links
 
@@ -629,13 +615,13 @@ spl-token balance Db8VbMerYxksYwSSdetpy6Jhp2BrE4hk9Sh9dYJT5dQ2 \
 **Fix:** First send tokens from Terra Classic to Solana:
 ```bash
 # Step 1: TC → Solana (mint tokens in the Solana wallet)
-TOKEN_KEY=xpto DEST_NETWORK=solanatestnet \
+TOKEN_KEY=juris DEST_NETWORK=solanatestnet \
   RECIPIENT="BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j" \
   AMOUNT=2000000 AUTO_CONFIRM=s \
   ./transfer-remote-terra.sh
 
 # Step 2: after arriving (~2-5 min), send Solana → TC
-TOKEN_KEY=xpto SOURCE_NETWORK=solanatestnet \
+TOKEN_KEY=juris SOURCE_NETWORK=solanatestnet \
   RECIPIENT="terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k" \
   AMOUNT=1000000 AUTO_CONFIRM=s \
   ./transfer-remote-to-terra.sh
@@ -702,11 +688,11 @@ The values of `TOKEN_KEY` and `SOURCE_NETWORK` must exactly match the keys in th
 
 | `SOURCE_NETWORK` | Available `TOKEN_KEY` values |
 |------------------|------------------------|
-| `sepolia` | `wlunc`, `xpto`, `xptv` |
-| `bsctestnet` | `wlunc`, `xpv` |
+| `sepolia` | `wlunc` |
+| `bsctestnet` | `wlunc` |
 
 **Valid values for Sealevel (`warp-sealevel-config.json`):**
 
 | `SOURCE_NETWORK` | Available `TOKEN_KEY` values |
 |------------------|------------------------|
-| `solanatestnet` | `wlunc`, `juris`, `xpto` |
+| `solanatestnet` | `wlunc`, `juris` |

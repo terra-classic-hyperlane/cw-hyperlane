@@ -36,7 +36,7 @@ The UI fetches that branch **at runtime** (GithubRegistry via
 > path below, and open the PR.
 
 One folder per symbol under `deployments/warp_routes/`, one YAML listing every
-chain the token lives on. Follow the naming of the existing IGORFAKE file:
+chain the token lives on. Follow the naming of the existing LUNC file:
 
 ```
 deployments/warp_routes/<SYMBOL>/terraclassic-<evm/solana chains>-config.yaml
@@ -75,7 +75,7 @@ options:
       addressOrDenom: uluna
 ```
 
-Rules the file must follow (see the IGORFAKE file in the same folder as the
+Rules the file must follow (see the LUNC file in the same folder as the
 canonical reference):
 
 - **`addressOrDenom`** = the *warp* contract (TC: `terra1…` warp, EVM: HypERC20

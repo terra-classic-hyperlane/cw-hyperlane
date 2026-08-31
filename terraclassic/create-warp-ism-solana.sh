@@ -18,7 +18,7 @@
 #    6. (optional) Point an existing warp token at this ISM
 #
 #  This REPLACES dumping bytecode from a third-party ISM: you build your own binary,
-#  publish its SHA-256, and everyone can verify it.  See doc/WARP-SOLANA-BINARY-REFERENCE.md
+#  publish its SHA-256, and everyone can verify it.  See doc/archive/WARP-SOLANA-BINARY-REFERENCE.md
 #
 #  Usage:
 #    ./create-warp-ism-solana.sh

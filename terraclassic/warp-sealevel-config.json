@@ -113,9 +113,9 @@
       "domain": 1399811149,
       "rpc": "https://mainnet.helius-rpc.com/?api-key=218d5087-58fa-43fa-a95e-7857106517db",
       "rpc_fallbacks": [
-        "https://solana-rpc.publicnode.com",
         "https://api.mainnet-beta.solana.com"
       ],
+      "_rpc_fallbacks_note": "publicnode removido 29/08/2026: responde 403 Forbidden a sendTransaction (bloqueia deploys), desperdiçava tentativas do retry",
       "mailbox": "E588QtVUvresuXq2KoNEwAmoifCzYGpRBdHByN9KQMbi",
       "explorer": "https://explorer.solana.com",
       "keypair": "/home/lunc/keys/solana-keypair-BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j.json",
@@ -147,13 +147,18 @@
         },
         "lunc": {
           "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-lunc.json",
-          "program_id": null,
-          "program_hex": null,
-          "mint_address": null,
-          "deployed": false
+          "program_id": "Dd3ajD8WbEyx7z3HqPnDyvUgFqEBzvF1VePjYd1NGnbr",
+          "program_hex": "0xbb8812381e07b070e8d37945ae659b8ad17ff2c5c36f019f351f332d45a3b261",
+          "mint_address": "8dxTo5reLtvRDx3Q8WEP33Uj2C5u6372EygJdNbsLFKG",
+          "deployed": true,
+          "_closed": "Program 4SA1eK3v… closed 2026-08-29 12:11 (close-warp-program.sh) BEFORE the 12:18 re-run; a closed program id can NEVER be redeployed — generate a NEW program keypair. Old mint PDA 3NmtMEbR… (supply 0) and token storage 6z89VFfZ… are orphaned."
         },
         "ustc": {
-          "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-ustc.json"
+          "metadata_uri": "https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-ustc.json",
+          "program_id": "7CUdBt1Qn2R2StE7MDPhQW2EhmnGg8zKK8oJXwAGEoyf",
+          "program_hex": "0x5c16beb39b4cce694d11540723116126a83611921f0746efdc2133a3d0ab1966",
+          "mint_address": "GNUbsF5mrurtDzNc65HipN5Fyzzzqbj5UonLNhj9frjF",
+          "deployed": true
         }
       },
       "validator_announce": "pRgs5vN4Pj7WvFbxf6QDHizo2njq2uksqEUbaSghVA8"

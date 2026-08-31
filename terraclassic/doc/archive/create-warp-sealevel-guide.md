@@ -12,7 +12,7 @@
 >
 > **Nothing new is created for ISM/IGP** — a new warp only deploys its own token
 > program; steps 2–4 then SET the contracts already in production (values from
-> `warp-sealevel-config.json`, confirmed against the live IGORFAKE warp via
+> `warp-sealevel-config.json`, confirmed against the live LUNC warp via
 > `hyperlane-sealevel-client token query`):
 >
 > | Piece | Production value | Notes |
@@ -197,10 +197,10 @@ terraclassic/
     └── create-warp-sealevel-guide.md
 
 warp/solana/
-├── metadata-igorfake.json    ← Token-2022 metadata (name, symbol, image, uri)
+├── metadata-lunc.json        ← Token-2022 metadata (name, symbol, image, uri)
 ├── metadata-ustc.json        ← image: .../Terra/UST.svg (corrected URL)
 ├── metadata-juris.json
-├── metadata-xpto.json
+├── metadata-mytoken.json
 └── metadata.json             ← wLUNC
 ```
 
@@ -259,13 +259,13 @@ This file centralizes all configuration for Solana networks and deployed Warp to
 
 ```json
 "warp_tokens": {
-  "xpto": {
+  "mytoken": {
     "deployed": true,
     "type": "synthetic",
     "program_id": "FNzjjdex7mx5CpcA5NmWtUcL4wZ1J2xctT4qbQ1RrSrq",
     "program_hex": "0xd5a618e0c5bcb84675444410b4981e512af1bf3e04ac9dbdbe3618e0496c11b6",
     "mint_address": "FmSCs8FcQPwXdw5Y4uvAPLfGAXqg8iQpwuiqUxosiu4M",
-    "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-xpto.json",
+    "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-mytoken.json",
     "decimals": 6,
     "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
   }
@@ -360,9 +360,9 @@ Relevant structure for Sealevel:
     "rpc": "https://rpc.terra-classic.hexxagon.dev",
     "lcd": "https://terra-classic-lcd.publicnode.com",
     "tokens": {
-      "xpto": {
-        "name": "XPTO Token",
-        "symbol": "XPTO",
+      "mytoken": {
+        "name": "MyToken",
+        "symbol": "MYTOKEN",
         "decimals": 6,
         "image": "https://...",
         "terra_warp": {
@@ -388,13 +388,13 @@ Relevant structure for Sealevel:
 
 The Rust client validates the metadata when deploying the SPL token. The file must be available via HTTP(S).
 
-### File format (`warp/solana/metadata-xpto.json`)
+### File format (`warp/solana/metadata-mytoken.json`)
 
 ```json
 {
-  "name": "XPTO Token",
-  "symbol": "XPTO",
-  "description": "XPTO Token via Hyperlane Warp Route",
+  "name": "MyToken",
+  "symbol": "MYTOKEN",
+  "description": "MyToken via Hyperlane Warp Route",
   "image": "",
   "attributes": []
 }
@@ -513,8 +513,8 @@ The generated `token-config.json` has the format:
 {
   "solanatestnet": {
     "type": "synthetic",
-    "name": "XPTO Token",
-    "symbol": "XPTO",
+    "name": "MyToken",
+    "symbol": "MYTOKEN",
     "decimals": 6,
     "totalSupply": "0",
     "interchainGasPaymaster": "E9i32KsKGQZMYTguZ81VHUueNvpTGh7nb9J5bRif4xT1",
@@ -609,13 +609,13 @@ Registers the Solana Warp as an authorized route on the Terra Classic Warp (via 
 After a successful deploy, **update `warp-sealevel-config.json`** to record the addresses:
 
 ```json
-"xpto": {
+"mytoken": {
   "deployed": true,
   "type": "synthetic",
   "program_id": "jNkiNLXQetj9L2tDX6xTgx9QP1tgtNgYXamouNbbwx9",
   "program_hex": "0x0adafdae59c217a1b7409f65ca81505f9991c257be80af8902ebed96d8801ba6",
   "mint_address": "Db8VbMerYxksYwSSdetpy6Jhp2BrE4hk9Sh9dYJT5dQ2",
-  "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-xpto.json",
+  "metadata_uri": "https://raw.githubusercontent.com/igorv43/cw-hyperlane/refs/heads/main/warp/solana/metadata-mytoken.json",
   "decimals": 6,
   "owner": "EMAYGfEyhywUyEX6kfG5FZZMfznmKXM8PbWpkJhJ9Jjd"
 }
@@ -915,7 +915,7 @@ terrad query wasm contract-state smart \
   --node https://rpc.terra-classic.hexxagon.dev:443
 ```
 
-**Real example (XPTO):**
+**Real example (MYTOKEN):**
 
 ```bash
 terrad query wasm contract-state smart \
@@ -923,7 +923,7 @@ terrad query wasm contract-state smart \
   '{"balance":{"address":"terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k"}}' \
   --node https://rpc.terra-classic.hexxagon.dev:443
 # Output: data: { balance: "99515999100" }
-#         = 99,515.999 XPTO (divide by 10^6 for decimals=6)
+#         = 99,515.999 MYTOKEN (divide by 10^6 for decimals=6)
 ```
 
 **Verify via Explorer:**
@@ -946,7 +946,7 @@ spl-token accounts --owner DESTINATARIO_PUBKEY --url https://api.testnet.solana.
 spl-token balance --owner DESTINATARIO_PUBKEY MINT_ADDRESS --url https://api.testnet.solana.com
 ```
 
-**Real example (XPTO):**
+**Real example (MYTOKEN):**
 
 ```bash
 spl-token balance \
@@ -1277,11 +1277,7 @@ export TERRA_PRIVATE_KEY="your_private_key_hex_without_0x"
 | **IGP Overhead Account** | `DZviyMfWebpQep9fyiPNeH2tgwYNmBsdArNbodj9FzMq` |
 | **Validator Announce** | `FM1hB4GMPHCBP9xMy44hwZAXw3x97fVUrsnognBVEGYf` |
 
-**Devnet Warp Routes:**
-
-| Token | Program ID | Mint (Token-2022) |
-|---|---|---|
-| **IGORFAKE** | `FmnESgcwTHQw9X6ksR98AMtdu8qRCLsB4fVpt1q8ht9D` | `EekKVLr528bsfuiVSUoq6fULWstw75vVShjvyv8Nt88L` |
+**Devnet Warp Routes:** *(nenhuma rota ativa — tokens de teste descontinuados em 29/08/2026)*
 
 ---
 
@@ -1291,8 +1287,6 @@ export TERRA_PRIVATE_KEY="your_private_key_hex_without_0x"
 |---|---|---|---|
 | **wLUNC** | `5BuTS1oZhUKJgpgwXJyz5VRdTq99SMvHm7hrPMctJk6x` | — | ✅ |
 | **JURIS** | `G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y` | `ExzEij8z7xc71kvjuMHmejRkmM4ACgKjDWuEaXdDubRa` | ✅ |
-| **XPTO** | `jNkiNLXQetj9L2tDX6xTgx9QP1tgtNgYXamouNbbwx9` | `Db8VbMerYxksYwSSdetpy6Jhp2BrE4hk9Sh9dYJT5dQ2` | ✅ |
-| **XPTV** | `7BwvVDgtTd6rNpP7y76p92KLbWSXSLt6FvZqtr2hxb3u` | `3Td4MsCDFbhqQDUNPcH13nEQJU7C8uprYFpReo9udKF3` | ✅ |
 | **USTC** | `BWJm6tjxEY1uzyFvNZsy211mooeVZdph3SMoz4HPKV4B` | `5ZTL6NPun4dmgwXex84MnAucdCtfAoz2s2Te8XsA5FPr` | ✅ |
 
 **Testnet ISM/IGP:**
@@ -1301,25 +1295,40 @@ export TERRA_PRIVATE_KEY="your_private_key_hex_without_0x"
 
 ---
 
-### XPTO — Solana Testnet ↔ Terra Classic (reference)
+### Solana Mainnet — Warp Routes
 
-> ✅ **Status: Working** — bidirectional transfers confirmed.
+| Token | Program ID | Mint (Token-2022) | Status |
+|---|---|---|---|
+| **LUNC** | `Dd3ajD8WbEyx7z3HqPnDyvUgFqEBzvF1VePjYd1NGnbr` | `8dxTo5reLtvRDx3Q8WEP33Uj2C5u6372EygJdNbsLFKG` | ✅ live — transfers tested both ways (2026-08-29) |
+| **USTC** | `7CUdBt1Qn2R2StE7MDPhQW2EhmnGg8zKK8oJXwAGEoyf` | `GNUbsF5mrurtDzNc65HipN5Fyzzzqbj5UonLNhj9frjF` | ✅ live — transfers tested both ways (2026-08-29) |
+
+**Mainnet ISM/IGP (production, shared):**
+- ISM: `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` (3-of-4)
+- IGP: `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` / OverheadIgp: `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ`
+
+Full record (hashes, txs, owners): `doc/install/DEPLOY-HASHES.md` §5.
+
+---
+
+### LUNC — Solana Mainnet ↔ Terra Classic (reference)
+
+> ✅ **Status: Working** — bidirectional transfers confirmed 2026-08-29.
 
 | Field | Value |
 |-------|-------|
-| **Program ID (Solana)** | `jNkiNLXQetj9L2tDX6xTgx9QP1tgtNgYXamouNbbwx9` |
-| **Program Hex (32b)** | `0x0adafdae59c217a1b7409f65ca81505f9991c257be80af8902ebed96d8801ba6` |
-| **Mint Address (SPL)** | `Db8VbMerYxksYwSSdetpy6Jhp2BrE4hk9Sh9dYJT5dQ2` |
-| **Warp Terra Classic** | `terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm` |
-| **CW20 Collateral** | `terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch` |
-| **Metadata URI** | `https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-xpto.json` |
+| **Program ID (Solana)** | `Dd3ajD8WbEyx7z3HqPnDyvUgFqEBzvF1VePjYd1NGnbr` |
+| **Program Hex (32b)** | `0xbb8812381e07b070e8d37945ae659b8ad17ff2c5c36f019f351f332d45a3b261` |
+| **Mint Address (Token-2022)** | `8dxTo5reLtvRDx3Q8WEP33Uj2C5u6372EygJdNbsLFKG` |
+| **Warp Terra Classic** | `terra1m7jcqxfn4hd7q4sywhw508nxshaf078c4vh83y0ts43y9tlp9dcs50cggy` |
+| **Collateral (native)** | `uluna` |
+| **Metadata URI** | `https://raw.githubusercontent.com/terra-classic-hyperlane/cw-hyperlane/refs/heads/main/warp/solana/metadata-lunc.json` |
 
 ```bash
 # Verify on-chain
-solana account jNkiNLXQetj9L2tDX6xTgx9QP1tgtNgYXamouNbbwx9 --url https://api.testnet.solana.com
-solana account Db8VbMerYxksYwSSdetpy6Jhp2BrE4hk9Sh9dYJT5dQ2 --url https://api.testnet.solana.com
-terrad query wasm contract-state smart terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm \
-  '{"router":{"get_route":{"domain":1399811150}}}' --node https://rpc.terra-classic.hexxagon.io
+solana account Dd3ajD8WbEyx7z3HqPnDyvUgFqEBzvF1VePjYd1NGnbr --url https://api.mainnet-beta.solana.com
+solana account 8dxTo5reLtvRDx3Q8WEP33Uj2C5u6372EygJdNbsLFKG --url https://api.mainnet-beta.solana.com
+terrad query wasm contract-state smart terra1m7jcqxfn4hd7q4sywhw508nxshaf078c4vh83y0ts43y9tlp9dcs50cggy \
+  '{"router":{"get_route":{"domain":1399811149}}}' --node https://rpc.terra-classic.hexxagon.io
 ```
 
 ---
@@ -1343,6 +1352,16 @@ Steps executed automatically:
 7. Resets config: `deployed=false`, `program_id=""`, `program_hex=""`, `mint_address=""`
 
 > Use before re-running `create-warp-sealevel.sh` to start a fresh deploy.
+
+> ⚠️ **Closing is PERMANENT** (seen 2026-08-29 with the first LUNC program `4SA1eK…`):
+> a closed program id can **never** be redeployed — the next deploy needs a brand-new
+> keypair, which also changes the mint PDA. If a stale `.warp-sealevel-state.json`
+> survives the close (e.g. the script was interrupted), the next `create` run reuses
+> the dead program id, every tx fails with `Program is not deployed` /
+> `UnsupportedProgramId` — yet the run may still print a success banner. Always confirm
+> the state file is gone (`rm -f .warp-sealevel-state.json`) before re-running, and
+> trust only `solana program show <ID>` ("has been closed") to tell a closed program
+> apart — the program account keeps its `executable` flag after the close.
 
 ---
 

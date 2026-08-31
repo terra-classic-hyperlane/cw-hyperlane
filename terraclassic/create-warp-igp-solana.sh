@@ -18,7 +18,7 @@
 #    6. (optional) Point an existing warp token at this IGP
 #
 #  This REPLACES trusting the shared Hyperlane IGP: you build your own binary,
-#  publish its SHA-256, and everyone can verify it.  See doc/WARP-SOLANA-BINARY-REFERENCE.md
+#  publish its SHA-256, and everyone can verify it.  See doc/archive/WARP-SOLANA-BINARY-REFERENCE.md
 #
 #  Usage:
 #    ./create-warp-igp-solana.sh

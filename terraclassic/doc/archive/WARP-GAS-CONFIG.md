@@ -57,13 +57,16 @@ Ver `update-igp-oracle.sh` (oracle terra1j8xz…).
 4. **Sempre, ao final**: testar a volta com **simulação** antes de anunciar (ver
    `.claude/skills/cosmiq-bridges-routing` no repo do AveraChain — técnica de simulação por RPC sem gastar).
 
-## Endereços mainnet atuais (IGORFAKE, 2026-07-09)
+## Endereços mainnet atuais (LUNC/USTC, 2026-08-29)
 
 | Peça | BSC | ETH | Solana |
 |---|---|---|---|
-| Warp/router | `0x3605d894…5318` | `0xA687a4C4…dfB5` | `EPJNrr…45zcL` |
+| Warp/router LUNC | `0x481095ec…e6e2` | `0xA4bc47a4…4Ac6` | `Dd3ajD8W…Gnbr` |
+| Warp/router USTC | `0xfC067fd9…4339` | `0xf49408be…1e51` | `7CUdBt1Q…Eoyf` |
 | IGP (novo, domain 132556) | `0xEdEd7a4f…4923` | `0x9650F1f8…64Aa` | `FLZuKR…dJoR` |
 | Oracle | `0x7dE950f8…2306` | `0x3987cCE8…96cE` | (interno, via client) |
 | AggregationHook | `0xD2c82583…8164` | `0x912c4d91…0aA8` | — |
 | IGP account (sealevel) | — | — | igp `FPTvDso…YKFk` / overhead `FXacR73…3RCJ` |
 | Owner | `0x8f085bAD…5291` (⚠️ rotação pendente) | `0xEF818120…00ae` | `BirXd4…Ef1j` |
+
+Registro completo (endereços por extenso, hashes, txs): `doc/install/DEPLOY-HASHES.md` §5/§6.

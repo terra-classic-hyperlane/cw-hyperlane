@@ -707,8 +707,10 @@ METAJSON
         # Com a saída indo por pipe (tee), o `solana program deploy` esconde a
         # barra de progresso e parece travado. Este watcher conta as txs de
         # escrita confirmadas no buffer a cada 20s e mostra "X/Y chunks" na
-        # mesma linha do terminal (o buffer é reaproveitado entre tentativas,
-        # então a contagem acumula e nunca regride).
+        # mesma linha do terminal. A contagem de txs é uma APROXIMAÇÃO por
+        # cima: chunks reenviados (não confirmados a tempo) e reuso do buffer
+        # entre tentativas geram txs extras para o mesmo offset — por isso o
+        # exibido é limitado ao total e o excedente aparece como reenvios.
         _SO_SIZE=$(stat -c%s "$BUILT_SO_DIR/hyperlane_sealevel_token.so")
         _TOTAL_CHUNKS=$(( (_SO_SIZE + 1010) / 1011 + 1 ))  # ~1011 bytes/tx de escrita + tx de criação do buffer
         log_info "Upload do buffer: ~${_TOTAL_CHUNKS} chunks de ~1011 bytes (progresso a cada 20s)"
@@ -720,14 +722,21 @@ METAJSON
                     -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getSignaturesForAddress\",\"params\":[\"${_BUFFER_PK}\",{\"limit\":1000}]}" \
                     | jq '[.result[]? | select(.err == null)] | length' 2>/dev/null) || _N=""
                 [[ "$_N" =~ ^[0-9]+$ ]] || continue
-                _PCT=$(( _N * 100 / _TOTAL_CHUNKS )); [ "$_PCT" -gt 100 ] && _PCT=100
-                _REM=$(( _TOTAL_CHUNKS - _N )); [ "$_REM" -lt 0 ] && _REM=0
-                _STALL=""
-                [ "$_N" = "$_PREV" ] && _STALL=" (sem avanço no último ciclo)"
+                _SHOW="$_N"; [ "$_SHOW" -gt "$_TOTAL_CHUNKS" ] && _SHOW=$_TOTAL_CHUNKS
+                _PCT=$(( _SHOW * 100 / _TOTAL_CHUNKS ))
+                _REM=$(( _TOTAL_CHUNKS - _SHOW ))
+                _TAIL=""
+                if [ "$_REM" -gt 0 ]; then
+                    _TAIL=" — faltam ~${_REM}"
+                    # "sem avanço" só faz sentido enquanto ainda há chunks a escrever
+                    [ "$_N" = "$_PREV" ] && _TAIL="${_TAIL} (sem avanço no último ciclo)"
+                elif [ "$_N" -gt "$_TOTAL_CHUNKS" ]; then
+                    _TAIL=" — ${_N} txs confirmadas (inclui reenvios)"
+                fi
                 _PREV="$_N"
-                printf '\r\033[K    ⏳ Upload do buffer: %d/%d chunks (%d%%) — faltam %d%s' \
-                    "$_N" "$_TOTAL_CHUNKS" "$_PCT" "$_REM" "$_STALL" >&2
-                echo "    progresso buffer: ${_N}/${_TOTAL_CHUNKS} chunks (${_PCT}%)${_STALL}" >> "$LOG_FILE"
+                printf '\r\033[K    ⏳ Upload do buffer: ~%d/%d chunks (%d%%)%s' \
+                    "$_SHOW" "$_TOTAL_CHUNKS" "$_PCT" "$_TAIL" >&2
+                echo "    progresso buffer: ~${_SHOW}/${_TOTAL_CHUNKS} chunks (${_PCT}%)${_TAIL}" >> "$LOG_FILE"
             done
         ) &
         _PROG_PID=$!
@@ -743,12 +752,21 @@ METAJSON
                 --upgrade-authority "$NET_KEYPAIR" \
                 --program-id "$PROG_KEYPAIR_FILE" \
                 --buffer "$BUFFER_KEYPAIR_FILE" \
+                --max-sign-attempts 200 \
                 --use-rpc --with-compute-unit-price "$CU_PRICE" 2>&1 \
                 | tee -a "$LOG_FILE"
             _DEP_EXIT=${PIPESTATUS[0]}
             set -e
             if [ "$_DEP_EXIT" -eq 0 ]; then
                 DEPLOY_OK=1
+                break
+            fi
+            # Saldo insuficiente: o retry dobra a priority fee, o que só AUMENTA a
+            # estimativa de taxa do CLI — nunca vai passar. Aborta imediatamente.
+            if tail -n 5 "$LOG_FILE" | grep -q "insufficient funds for spend"; then
+                log_err "Saldo insuficiente para rent + taxa estimada — abortando (dobrar a fee só piora)."
+                log_info "Opções: aportar SOL, ou rodar com priority fee baixa quando a rede acalmar:"
+                log_info "  DEPLOY_CU_PRICE=200000 ./create-warp-sealevel.sh"
                 break
             fi
             CU_PRICE=$(( CU_PRICE * 2 ))
@@ -1285,9 +1303,10 @@ fi
 if [ -n "$TERRA_WARP_ADDR" ] && [ "$TERRA_WARP_ADDR" != "null" ]; then
     log_info "Checking route on Terra Classic (domain ${NET_DOMAIN})..."
     set +e
-    TC_ROUTE=$(terrad query wasm contract-state smart "$TERRA_WARP_ADDR" \
+    # timeout: terrad pendura para sempre se o RPC não responder (visto 29/08/2026)
+    TC_ROUTE=$(timeout -k 5 20 terrad query wasm contract-state smart "$TERRA_WARP_ADDR" \
         "{\"router\":{\"get_route\":{\"domain\":${NET_DOMAIN}}}}" \
-        --node "$TERRA_RPC" 2>&1 | grep -A3 "route" | head -5 || echo "N/A")
+        --node "$TERRA_RPC" 2>&1 | grep -A3 "route" | head -5 || echo "N/A (timeout/RPC)")
     set -e
     log "    Terra Classic route: ${TC_ROUTE}"
 fi

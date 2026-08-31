@@ -135,8 +135,11 @@ TX: `4MNLr5HhC37jEYRKexyXFDpcoZArMwGjSMN3pWxmqinfoZ4qhEjvxWHDsLsnEkKysgNBxrbJsDa
 `igorfake` is a **FAKE token**, deployed **only to validate the end-to-end warp flow on
 mainnet** (program → init → ISM/IGP → enroll → set_route on Terra Classic).
 
-**Once testing is complete, the `igorfake` warp will be CLOSED and its rent returned to
-the payer** — approximately **2.28 SOL recovered** (program `EPJNrr…` + accounts), via:
+**✅ DONE 2026-08-29: the `igorfake` warp was CLOSED** — **2.221 SOL reclaimed** from
+the program (`EPJNrr…`), funding the LUNC Solana deploy (live program
+`Dd3ajD8WbEyx7z3HqPnDyvUgFqEBzvF1VePjYd1NGnbr`, see doc/install/DEPLOY-HASHES.md §5).
+The mint / token-store / ATA-payer PDAs stay orphaned (rent not recoverable once the
+program is closed). Command used:
 
 ```bash
 # closes the warp program and reclaims the rent

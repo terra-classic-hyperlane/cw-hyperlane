@@ -22,7 +22,7 @@
 #   chmod +x transfer-ownership-to-governance.sh
 #   ./transfer-ownership-to-governance.sh
 #
-# For detailed explanation see: doc/TRANSFER-OWNERSHIP-TO-GOVERNANCE.md
+# For detailed explanation see: doc/archive/TRANSFER-OWNERSHIP-TO-GOVERNANCE.md
 # =============================================================================
 
 set -e

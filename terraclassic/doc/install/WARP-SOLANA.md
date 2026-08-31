@@ -2,7 +2,7 @@
 
 > One script: `terraclassic/create-warp-sealevel.sh`. It deploys **only the token's
 > own program**; ISM and IGP are the production ones, SET on the new warp — nothing
-> else is created. Full reference: [`../create-warp-sealevel-guide.md`](../create-warp-sealevel-guide.md).
+> else is created. Full reference: [`../archive/create-warp-sealevel-guide.md`](../archive/create-warp-sealevel-guide.md).
 
 ## 1. What gets deployed vs reused (mainnet, verified on-chain 2026-08-28)
 
@@ -12,7 +12,7 @@
 | Collateral warp on Terra Classic | 🆕 deployed |
 | ISM | ♻️ reused: `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` (mutable MultisigISM, same 3-of-4 validator set as BSC/ETH) |
 | IGP | ♻️ reused: program `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` + **OverheadIgp** `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` — fees → pod pool PDA (relayer-reward-vault), prices governed |
-| Destination gas (TC) | `3000000` (matches the live IGORFAKE warp) |
+| Destination gas (TC) | `3000000` (matches the live LUNC/USTC warps) |
 
 ⚠️ The IGP account type is **`overhead-igp`** (from `warp-sealevel-config.json`) —
 setting it as plain `igp` would quote gas without overhead and underpay the relayer.
@@ -138,7 +138,7 @@ $CLIENT -k $KEY -u $RPC token enroll-remote-router --program-id <WARP> 132556 0x
 ### 5.6 Enroll the Solana route on the TC warp (set_route)
 
 `route` = the warp **program id decoded from base58 to 32-byte hex** (the script
-stores it as `program_hex`; e.g. IGORFAKE = `c6de5b1f…437f95`):
+stores it as `program_hex`; e.g. LUNC = `bb881238…b261`):
 
 ```bash
 python3 -c "import base58,sys; print(base58.b58decode('<WARP_PROGRAM_ID>').hex())"

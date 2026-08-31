@@ -57,7 +57,7 @@ All changes are logged to `log/update-warp-solana.log`.
 ```
 
 **Menus:**
-1. Select token (e.g., `igorfake`, `ustc`)
+1. Select token (e.g., `lunc`, `ustc`)
 2. Select Solana network (e.g., `solanamainnet`)
 3. Select action (1–8)
 
@@ -347,7 +347,7 @@ $CLIENT -k $KEY -u $RPC token transfer-ownership \
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │                    WARP ROUTE PROGRAM                        │
-│   (one per token per network — e.g., IGORFAKE on mainnet)   │
+│   (one per token per network — e.g., LUNC on mainnet)       │
 │                                                              │
 │   ┌─────────────────┐   ┌──────────────────────────────┐    │
 │   │  ISM (Script 2) │   │  Destination Gas (Script 4)  │    │

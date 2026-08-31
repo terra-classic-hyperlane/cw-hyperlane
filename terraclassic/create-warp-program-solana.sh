@@ -27,7 +27,7 @@
 #    PROGRAM_KEYPAIR=<path>      → deploy under an existing keypair (reuse a Program ID)
 #    SKIP_DEPLOY=1              → build + hash only, do not touch chain
 #
-#  Pinned toolchain + reference SHA-256:  doc/WARP-SOLANA-BINARY-REFERENCE.md
+#  Pinned toolchain + reference SHA-256:  doc/archive/WARP-SOLANA-BINARY-REFERENCE.md
 # ═══════════════════════════════════════════════════════════════════════════════
 
 set -euo pipefail

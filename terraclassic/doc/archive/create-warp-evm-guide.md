@@ -37,7 +37,7 @@
 > ## ⚡ Production defaults since 2026-08-28 (read before deploying a new token)
 >
 > The `warp-evm-config.json` now ships with the **current production security/economy
-> defaults**, so a new warp comes out wired like IGORFAKE:
+> defaults**, so a new warp comes out wired like LUNC/USTC:
 >
 > **Nothing new is created for ISM/IGP/hook** — the script wires the new warp to the
 > contracts already in production (all verified on-chain 2026-08-28):
@@ -123,7 +123,7 @@ terraclassic/
 │   └── terraclassic.json                  ← deployments existentes na Terra Classic
 │
 ├── warp/
-│   ├── terraclassic-cw20-xpto.json        ← config CW20 collateral (gerado/editável)
+│   ├── terraclassic-cw20-mytoken.json        ← config CW20 collateral (gerado/editável)
 │   ├── terraclassic-cw20-juris.json       ← config CW20 collateral
 │   ├── terraclassic-native-ustc.json      ← config native collateral
 │   ├── terraclassic-native.json           ← config native collateral (genérico)
@@ -195,7 +195,7 @@ Defines each token with its Terra Classic configuration.
 | `wlunc` | `native/collateral` (uluna) | `terra1zlm0h...` | ✅ Deployed |
 | `ustc` | `native/collateral` (uusd) | `terra1rnpvp...` | ✅ Deployed |
 | `juris` | `cw20/collateral` | `terra1stu3c...` | ✅ Deployed |
-| `xpto` | `cw20/collateral` | `terra16ql6l...` | ✅ Deployed |
+| `mytoken` | `cw20/collateral` | `terra1...` | ✅ Deployed |
 
 ---
 
@@ -249,7 +249,7 @@ Defines each EVM network with all Hyperlane addresses and IGP configurations.
     },
 
     "warp_tokens": {
-      "xpto": {
+      "mytoken": {
         "deployed":          true,
         "address":           "0xbF43aA4878f5Ad0fcAC12Cd3A835DD3506981048",
         "igp_custom":        "0xf285D5769db5AE6E79Bb3179d03082f6bc47055f",
@@ -391,7 +391,7 @@ STEP 1 — SELECT TOKEN (Terra Classic)
    [1]  wlunc  — Wrapped Terra Classic LUNC  (native/collateral)  ✅ terra warp deployed
    [2]  ustc   — Wrapped TerraClassic USD    (native/collateral)  ✅ terra warp deployed
    [3]  juris  — Juris Token                 (cw20/collateral)    ✅ terra warp deployed
-   [4]  xpto   — XPTO Token                  (cw20/collateral)    ✅ terra warp deployed
+   [4]  mytoken — MyToken                     (cw20/collateral)    ✅ terra warp deployed
 
   Choose the token [1-4]: 4
 
@@ -401,7 +401,7 @@ STEP 2 — SELECT EVM NETWORK
 
   Choose the network [1-2]: 2
 
-▶ Proceed with XPTO deploy on Ethereum Sepolia Testnet? [s/N]: s
+▶ Proceed with MYTOKEN deploy on Ethereum Sepolia Testnet? [s/N]: s
 ```
 
 ---
@@ -490,12 +490,12 @@ export ETH_PRIVATE_KEY="0xSUA_CHAVE"
 Generates the file `warp/warp-<network>-<token>.yaml` for the Hyperlane CLI:
 
 ```yaml
-# Exemplo: warp/warp-sepolia-xpto.yaml
+# Exemplo: warp/warp-sepolia-mytoken.yaml
 sepolia:
   isNft: false
   type: synthetic
-  name: "XPTO Token"
-  symbol: "XPTO"
+  name: "MyToken"
+  symbol: "MYTOKEN"
   decimals: 6
   owner: "0xSEU_ENDERECO"
   mailbox: "0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766"
@@ -514,12 +514,12 @@ Executes the synthetic token deploy on the EVM network via Hyperlane CLI:
 
 ```bash
 hyperlane warp deploy \
-  --config warp/warp-sepolia-xpto.yaml \
+  --config warp/warp-sepolia-mytoken.yaml \
   --key $ETH_PRIVATE_KEY \
   --yes
 ```
 
-Creates the synthetic ERC20 contract (`wXPTO`) and registers it in the network Mailbox.
+Creates the synthetic ERC20 contract (`wMYTOKEN`) and registers it in the network Mailbox.
 
 ---
 
@@ -858,7 +858,7 @@ Performs a simple CW20 token transfer between accounts on Terra Classic.
 
 | Variável | Padrão |
 |---|---|
-| `CW20_CONTRACT_ADDRESS` | `terra1zle6pwm9...` (XPTO) |
+| `CW20_CONTRACT_ADDRESS` | `terra1zle6pwm9...` (exemplo) |
 | `SENDER_ADDRESS` | `terra12awgqgwm2...` |
 | `RECIPIENT_ADDRESS` | `terra18lr7ujd9n...` |
 | `AMOUNT` | `100000000000` |
@@ -867,7 +867,7 @@ Performs a simple CW20 token transfer between accounts on Terra Classic.
 cd ~/cw-hyperlane/terraclassic
 export TERRA_PRIVATE_KEY="sua_chave_terra_hex"
 
-# Default transfer (100 XPTO)
+# Default transfer (100 MYTOKEN)
 ./transfer-cw20-terra.sh
 
 # Or with custom values
@@ -1210,7 +1210,7 @@ cast call $WARP_EVM "routers(uint32)(bytes32)" 1325 --rpc-url $RPC
 **Manual fix:**
 ```bash
 # Get the correct hex from warp-evm-config.json:
-HEX=$(jq -r '.terra_classic.tokens.xpto.terra_warp.warp_hexed' warp-evm-config.json)
+HEX=$(jq -r '.terra_classic.tokens.mytoken.terra_warp.warp_hexed' warp-evm-config.json)
 HEX="${HEX#0x}"  # remove 0x
 
 # Check length (must be 64):
@@ -1294,7 +1294,7 @@ cast send $WARP_ADDRESS "setHook(address)" $AGG_HOOK \
 cast call $WARP_ADDRESS "hook()(address)" --rpc-url $RPC
 ```
 
-> **Endereços reais do XPTO Sepolia** (para referência):
+> **Endereços reais de um deploy testnet** (token de teste descontinuado; para referência do formato):
 > - `AGG_FACTORY` = `0x160C28C92cA453570aD7C031972b58d5Dd128F72`
 > - `MERKLE` = `0x4917a9746A7B6E0A57159cCb7F5a6744247f2d0d`
 > - `IGP_CUSTOM` = `0xf285D5769db5AE6E79Bb3179d03082f6bc47055f`
@@ -1333,7 +1333,7 @@ cast send $WARP_ADDRESS "setHook(address)" $AGG_HOOK \
 cast call $WARP_ADDRESS "hook()(address)" --rpc-url $RPC
 ```
 
-> **Endereços reais do XPV BSC Testnet** (para referência):
+> **Endereços reais de um deploy BSC Testnet** (token de teste descontinuado; para referência do formato):
 > - `AGG_FACTORY` = `0xa1145B39F1c7Ef9aA593BC1DB1634b00CC020942`
 > - `MERKLE` = `0xc6cbF39A747f5E28d1bDc8D9dfDAb2960Abd5A8f`
 > - `IGP_CUSTOM` = `0x7d17d237c74Fa1bA3B5B56d94E414a4eAa41cE1e`
@@ -1381,10 +1381,7 @@ Addresses of all active contracts in this project, for quick reference and manua
 
 #### Sepolia Warps
 
-| Token | EVM Warp | Custom IGP | AggHook | ISM |
-|---|---|---|---|---|
-| **XPTO** | [`0xbF43aA...`](https://sepolia.etherscan.io/address/0xbF43aA4878f5Ad0fcAC12Cd3A835DD3506981048) | [`0xf285D5...`](https://sepolia.etherscan.io/address/0xf285D5769db5AE6E79Bb3179d03082f6bc47055f) | [`0x1a13d7...`](https://sepolia.etherscan.io/address/0x1a13d7A50b76d4527a611e507B3f73058eCa5eAC) | — |
-| **XPTV** | [`0x7d92c2...`](https://sepolia.etherscan.io/address/0x7d92c2E01933F1C651845152DBd4222d475Bd9f0) | `0xf285D5...` (mesmo XPTO) | `0x1a13d7...` (mesmo XPTO) | — |
+*(nenhuma rota ativa — tokens de teste descontinuados em 29/08/2026)*
 
 #### Sepolia Validator (S3)
 
@@ -1411,9 +1408,7 @@ Addresses of all active contracts in this project, for quick reference and manua
 
 #### BSC Testnet Warps
 
-| Token | EVM Warp | Custom IGP | AggHook | ISM |
-|---|---|---|---|---|
-| **XPV** | [`0x11D6aa...`](https://testnet.bscscan.com/address/0x11D6aa52d60611a513ab783842Dc397C86E7fff0) | [`0x7d17d2...`](https://testnet.bscscan.com/address/0x7d17d237c74Fa1bA3B5B56d94E414a4eAa41cE1e) | [`0x3F11a5...`](https://testnet.bscscan.com/address/0x3F11a590B50F959E52a660567865f1B65C913C5D) | [`0x2b31a0...`](https://testnet.bscscan.com/address/0x2b31a08d397b7e508cbE0F5830E8a9182C88b6cA) |
+*(nenhuma rota ativa — tokens de teste descontinuados em 29/08/2026)*
 
 #### BSC Testnet Validator (S3)
 
@@ -1439,10 +1434,9 @@ Addresses of all active contracts in this project, for quick reference and manua
 
 | Token | Terra Classic Warp | Hex bytes32 | CW20 Collateral |
 |---|---|---|---|
-| **XPTO** | [`terra16ql6l4...`](https://finder.hexxagon.io/rebel-2/address/terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm) | `0xd03fafd5...e26a1` | `terra1zle6pw...` |
-| **XPTV** | [`terra1n8y4s...`](https://finder.hexxagon.io/rebel-2/address/terra1n8y4sj9lrqq66pf7je0nm7s6nhln5z4s3accw9g2aassdh8dzqts9y0928) | `0x99c95848...d1017` | `terra19ujvy...` |
-| **XPV** | [`terra1dnflu...`](https://finder.hexxagon.io/rebel-2/address/terra1dnflusc7slapvals97em3fj4vrfyx90npr3znq6y45qjy7hhd6jqchqsgx) | `0x6cd3fe43...6ea4` | `terra1f2jw3...` |
 | **wLUNC** | [`terra1zlm0h...`](https://finder.hexxagon.io/rebel-2/address/terra1zlm0h2xu6rhnjchn29hxnpvr74uxxqetar9y75zcehyx2mqezg9slj09ml) | `0x17f6fba8...120b` | `uluna` (native) |
+
+*(demais tokens de teste descontinuados em 29/08/2026)*
 
 ---
 

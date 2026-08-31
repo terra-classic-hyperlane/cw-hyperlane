@@ -3,7 +3,7 @@
 > One script does everything: `terraclassic/create-warp-evm.sh`. It deploys **only
 > the token's own contracts** and wires them to the production ISM/IGP/hook
 > (see [README.md](README.md)). Full field-by-field reference:
-> [`../create-warp-evm-guide.md`](../create-warp-evm-guide.md).
+> [`../archive/create-warp-evm-guide.md`](../archive/create-warp-evm-guide.md).
 
 ## 1. What gets deployed vs reused
 
@@ -70,7 +70,7 @@ As the run progresses, the script **adds** its state to the same JSON via `jq`
 | Field | What it records | Filled by |
 |---|---|---|
 | `deployed` | whether the synthetic already exists on this chain | script, after STEP 2 succeeds (`false` → `true`) |
-| `address` | the synthetic token (HypERC20) address on this chain — e.g. IGORFAKE/BSC = `0x3605D894…` | script, after `hyperlane warp deploy` |
+| `address` | the synthetic token (HypERC20) address on this chain — e.g. LUNC/BSC = `0x481095ec…` | script, after `hyperlane warp deploy` |
 | `igp_custom` | the IGP associated with this token's route — with production defaults, the shared IGP (BSC `0xEdEd7a4f…`) | script, STEP 3 |
 | `hook_aggregation` | the AggregationHook set on the warp via `setHook` — with defaults, the production one (BSC `0xD2c82583…`) | script, STEP 5 |
 | `owner` | the warp's owner on this chain (derived from `ETH_PRIVATE_KEY`) | script, after deploy |

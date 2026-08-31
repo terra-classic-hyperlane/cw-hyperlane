@@ -94,15 +94,11 @@ export TERRA_PRIVATE_KEY="your_key_hex"
 Select the token and destination network:
 
   [1]   LUNC → Ethereum Sepolia Testnet  (domain 11155111)
-  [2]   XPTO → Ethereum Sepolia Testnet  (domain 11155111)
-  [3]   XPTV → Ethereum Sepolia Testnet  (domain 11155111)
-  [4]   LUNC → BSC Testnet  (domain 97)
-  [5]   XPV  → BSC Testnet  (domain 97)
-  [6]   LUNC → Solana Testnet  (domain 1399811150)
-  [7]   JURIS → Solana Testnet  (domain 1399811150)
-  [8]   XPTO → Solana Testnet  (domain 1399811150)
+  [2]   LUNC → BSC Testnet  (domain 97)
+  [3]   LUNC → Solana Testnet  (domain 1399811150)
+  [4]   JURIS → Solana Testnet  (domain 1399811150)
 
-  Option [1-8]:
+  Option [1-4]:
 ```
 
 **Step 2 — Recipient address**
@@ -121,7 +117,7 @@ For Solana:
 **Step 3 — Amount**
 
 ```
-  Decimals: 6 — e.g.: 1 XPTO = 1000000
+  Decimals: 6 — e.g.: 1 JURIS = 1000000
   Amount (in minimum units, e.g.: 10000000):
 ```
 
@@ -131,7 +127,7 @@ For Solana:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   Transfer Summary
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Token          : XPTO  (cw20)
+  Token          : JURIS  (cw20)
   Destination    : SEPOLIA  (domain 11155111)
   Recipient      : 0x867f9ce9f0d7218b016351cb6122406e6d247a5e
   Recipient b32  : 000000000000000000000000867f9ce9f0d7218b016351cb6122406e6d247a5e
@@ -154,7 +150,7 @@ Useful for automation and scripts. Pass all variables before the call:
 ```bash
 export TERRA_PRIVATE_KEY="your_key_hex"
 
-TOKEN_KEY=xpto \
+TOKEN_KEY=juris \
 DEST_NETWORK=sepolia \
 RECIPIENT="0x867f9ce9f0d7218b016351cb6122406e6d247a5e" \
 AMOUNT=10000000 \
@@ -167,7 +163,7 @@ AUTO_CONFIRM=s \
 | Variable | Required | Description | Example |
 |---|---|---|---|
 | `TERRA_PRIVATE_KEY` | ✅ | Sender hex private key | `xxxxxxxx...` |
-| `TOKEN_KEY` | — | Token identifier | `xpto`, `xptv`, `xpv`, `juris`, `wlunc` |
+| `TOKEN_KEY` | — | Token identifier | `juris`, `wlunc` |
 | `DEST_NETWORK` | — | Destination network | `sepolia`, `bsctestnet`, `solanatestnet` |
 | `RECIPIENT` | — | Recipient address | `0x867f...` or Base58 |
 | `AMOUNT` | — | Value in minimum units | `10000000` |
@@ -188,13 +184,9 @@ Only combinations with `"deployed": true` appear.
 | # | Token | Network | Domain | Type |
 |---|---|---|---|---|
 | 1 | LUNC | Ethereum Sepolia Testnet | 11155111 | native |
-| 2 | XPTO | Ethereum Sepolia Testnet | 11155111 | CW20 |
-| 3 | XPTV | Ethereum Sepolia Testnet | 11155111 | CW20 |
-| 4 | LUNC | BSC Testnet | 97 | native |
-| 5 | XPV  | BSC Testnet | 97 | CW20 |
-| 6 | LUNC | Solana Testnet | 1399811150 | native |
-| 7 | JURIS | Solana Testnet | 1399811150 | CW20 |
-| 8 | XPTO | Solana Testnet | 1399811150 | CW20 |
+| 2 | LUNC | BSC Testnet | 97 | native |
+| 3 | LUNC | Solana Testnet | 1399811150 | native |
+| 4 | JURIS | Solana Testnet | 1399811150 | CW20 |
 
 ### Adding a new token/network to the menu
 
@@ -318,7 +310,7 @@ IGP_FEE_ULUNA=2000000000 ./transfer-remote-terra.sh
   The message will be relayed by the Hyperlane Relayer.
   Estimated delivery time: 1-5 minutes.
 
-  Report    : log/TRANSFER-REMOTE-SEPOLIA-XPTO-20260312-120000.txt
+  Report    : log/TRANSFER-REMOTE-SEPOLIA-MYTOKEN-20260312-120000.txt
 ```
 
 ### Generated files
@@ -332,14 +324,14 @@ Report example:
 ```
 TRANSFER REMOTE — Terra Classic → SEPOLIA
 Date          : Thu Mar 12 12:00:00 UTC 2026
-Token         : XPTO  (cw20)
+Token         : MYTOKEN  (cw20)
 Destination   : SEPOLIA  (domain 11155111)
 Recipient     : 0x867f9ce9f0d7218b016351cb6122406e6d247a5e
 Recipient b32 : 000000000000000000000000867f9ce9f0d7218b016351cb6122406e6d247a5e
 Amount        : 10000000
 Fee IGP       : 1780832150 uluna
-Warp TC       : terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm
-Collateral    : terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch
+Warp TC       : terra1... (warp do token)
+Collateral    : terra1... (cw20 do token)
 TX Hash       : EA8C0788EDF6194BE96C08844045D16189737A38...
 Explorer      : https://finder.hexxagon.io/rebel-2/tx/EA8C...
 ```
@@ -401,11 +393,11 @@ terrad query wasm contract-state smart \
   --node https://rpc.terra-classic.hexxagon.dev:443
 ```
 
-Exemplo real com XPTO:
+Exemplo real com JURIS:
 
 ```bash
 terrad query wasm contract-state smart \
-  terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch \
+  terra1w7d0jqehn0ja3hkzsm0psk6z2hjz06lsq0nxnwkzkkq4fqwgq6tqa5te8e \
   '{"balance":{"address":"terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k"}}' \
   --node https://rpc.terra-classic.hexxagon.dev:443
 ```
@@ -455,9 +447,6 @@ balances:
 ```bash
 # List of CW20 contracts and names (adapt to your tokens)
 declare -A CW20_TOKENS=(
-  ["XPTO"]="terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch"
-  ["XPTV"]="terra19ujvy60tjeyehjrwlrdpqlp0gxmtt4qv452nwjqc6w6m38pm8xmq22lux3"
-  ["XPV"]="terra1f2jw36hc7fzeu7dz2fhk250ezec7e80c2s6uxt3ry5ujjjslf9nqwvpu88"
   ["JURIS"]="terra1w7d0jqehn0ja3hkzsm0psk6z2hjz06lsq0nxnwkzkkq4fqwgq6tqa5te8e"
 )
 WALLET="terra18lr7ujd9nsgyr49930ppaajhadzrezam70j39k"
@@ -483,9 +472,8 @@ done
 |---|---|---|---|
 | LUNC (WLUNC) | native | — | `terra1zlm0h2xu6rhnjchn29hxnpvr74uxxqetar9y75zcehyx2mqezg9slj09ml` |
 | JURIS | CW20 | `terra1w7d0jqehn0ja3hkzsm0psk6z2hjz06lsq0nxnwkzkkq4fqwgq6tqa5te8e` | `terra1stu3cl7mhtsc2mf9cputawfd6v6e4a2nkmhhphh47lsrr3j6ktdqlcfe2l` |
-| XPTO | CW20 | `terra1zle6pwm9aztwu228e0spxrydlvmhj2qrq8ap3x2wrjc52kdvu4fs20rkch` | `terra16ql6l4fuudg0fxarcm4ukxlw0jalg5ljv8kg6h8f7dk9t2e7y6ssq2hqrm` |
-| XPTV | CW20 | `terra19ujvy60tjeyehjrwlrdpqlp0gxmtt4qv452nwjqc6w6m38pm8xmq22lux3` | `terra1n8y4sj9lrqq66pf7je0nm7s6nhln5z4s3accw9g2aassdh8dzqts9y0928` |
-| XPV  | CW20 | `terra1f2jw36hc7fzeu7dz2fhk250ezec7e80c2s6uxt3ry5ujjjslf9nqwvpu88` | `terra1dnflusc7slapvals97em3fj4vrfyx90npr3znq6y45qjy7hhd6jqchqsgx` |
+
+*(demais tokens de teste descontinuados em 29/08/2026)*
 
 ### Terra Classic — Hyperlane Contracts
 
@@ -500,15 +488,12 @@ done
 | Token | Warp ERC-20 |
 |---|---|
 | LUNC | `0x224a4419D7FA69D3bEbAbce574c7c84B48D829b4` |
-| XPTO | `0xbF43aA4878f5Ad0fcAC12Cd3A835DD3506981048` |
-| XPTV | `0x7d92c2E01933F1C651845152DBd4222d475Bd9f0` |
 
 ### BSC Testnet (domain 97)
 
 | Token | Warp ERC-20 |
 |---|---|
 | LUNC | `0x2144Be4477202ba2d50c9A8be3181241878cf7D8` |
-| XPV  | `0x11D6aa52d60611a513ab783842Dc397C86E7fff0` |
 
 ### Solana Testnet (domain 1399811150)
 
@@ -516,7 +501,6 @@ done
 |---|---|
 | LUNC | `5BuTS1oZhUKJgpgwXJyz5VRdTq99SMvHm7hrPMctJk6x` |
 | JURIS | `G3eEYHv2GrBJ6KTS3XQhRd7QYdwnfWjisQrSVWedQK4y` |
-| XPTO | `jNkiNLXQetj9L2tDX6xTgx9QP1tgtNgYXamouNbbwx9` |
 
 ---
 
