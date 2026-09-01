@@ -96,7 +96,9 @@ canonical reference):
 ## 2.1 Test the route in the live UI BEFORE the PR (copy & paste)
 
 You can validate the YAML and the route end-to-end in the production UI at
-**<https://terraclassic-bridge.xyz/>** without touching the registry:
+**<https://bridge.terra-classic.io/>** (official subdomain of
+[terra-classic.io](https://terra-classic.io); <https://terraclassic-bridge.xyz/>
+also works) without touching the registry:
 
 1. Open the bridge and click the **“+”** button (right-hand side) — the
    **“Add Warp Route Configs”** dialog opens;
