@@ -28,7 +28,10 @@ This guide documents the complete process of deploying and configuring Hyperlane
 6. [IGP Oracle — Updating Gas Prices](#igp-oracle--updating-gas-prices)
 7. [Execution Verification](#execution-verification)
 8. [Contract Addresses and Hexed](#contract-addresses-and-hexed)
-9. [Troubleshooting](#troubleshooting)
+9. [Warp Routes — LUNC, USTC and JURIS on the 4 chains](#-warp-routes--lunc-ustc-and-juris-on-the-4-chains)
+10. [Current fees](#-current-fees-2026-09-18)
+11. [Ownership & admin summary](#-ownership--admin-summary-terra-classic-core-2026-09-18)
+12. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -454,6 +457,13 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 **Code ID:** `11377`
 **Instantiated Address:** `terra1taunhg629rssf3g939nqr0h594q5mssrzdj5lkx2hygmxmh72ghqeqqnvz`
 
+**Current on-chain state (2026-09-18):**
+- Owner: `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` · Beneficiary (receives the gas payments): `terra1gqkrh2va5mqdrlp90ez6lc2hgagxqju6fc7md4kldlz8lap9w4usduzc2q`
+- Default gas: `100000` · Gas per destination (`gas_for_domain`): Ethereum (1) `5394480`, BSC (56) `4803897`, Solana (1399811149) `40158741`
+- Oracle route for all three domains → IGP Oracle below
+
+> The per-domain gas amounts are **tuned so that the LUNC fee tracks a target of ≈ $0.08–0.10 per transfer** (the relayer's pass-through tariff), not the raw gas usage of the destination. See [Current fees](#current-fees-2026-09-18).
+
 ---
 
 #### 9. 🔮 IGP ORACLE - Gas Price Oracle
@@ -465,7 +475,8 @@ The script instantiates **13 contracts** supporting **3 chains** (Ethereum, BSC,
 **Code ID:** `11388`
 **Instantiated Address:** `terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d`
 
-> Gas prices configured automatically by the script (domains 1/56/1399811149).
+> Gas prices configured automatically by the script (domains 1/56/1399811149) and kept up to date by the tariff updater.
+> **Current owner: `terra1z7jmlky2cmsd9aslm4uxrsase2yjwz8k9rlk00ga8s7pxgljczjq9sv4hj`** (oracle updater wallet); contract admin remains the deployer `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp`.
 
 ---
 
@@ -666,15 +677,18 @@ terrad tx gov submit-proposal proposal_mainnet.json \
 > Formula: `token_exchange_rate = (LUNC_USD / NATIVE_USD) * 1e12`
 > - Solana uses `gas_price=1` (lamport model) with `exchange_rate = (LUNC_USD / SOL_USD) * 1e15`
 
-**Current configured values (2026-06-09):**
+**Current on-chain values (2026-09-18):**
 
-| Domain | Chain | exchange_rate | gas_price | Fee (300k gas) | Configured |
+| Domain | Chain | exchange_rate | gas_price | gas (IGP `gas_for_domain`) | Fee per transfer |
 |---|---|---|---|---|---|
-| 1 | Ethereum | 376 | 10000000000 (10 gwei) | ~113 LUNC ($0.0077) | ✅ 2026-06-09 |
-| 56 | BSC mainnet | 1,098 | 3000000000 (3 gwei) | ~99 LUNC ($0.0068) | ✅ 2026-06-09 |
-| 1399811149 | Solana | 383,001,553,014 | 1 (lamport) | ~11 LUNC ($0.0008) | ✅ 2026-06-09 |
+| 1 | Ethereum | 454 | 5879273683 (≈5.9 gwei) | 5,394,480 | 1,439.89 LUNC (≈ $0.074) |
+| 56 | BSC mainnet | 1,265 | 3000000000 (3 gwei) | 4,803,897 | 1,823.08 LUNC (≈ $0.094) |
+| 1399811149 | Solana | 488,893,709,620 | 1 (lamport) | 40,158,741 | 1,963.34 LUNC (≈ $0.101) |
 
-Prices used: LUNC=$0.00006782, ETH=$1803.18, BNB=$617.38, SOL=$70.83
+Prices used for the USD column: LUNC=$0.00005139, ETH=$2517.88, BNB=$752.62, SOL=$106.58 (Binance, 2026-09-18).
+`fee_uluna = gas × gas_price × exchange_rate / 1e10` — e.g. BSC: 4,803,897 × 3,000,000,000 × 1,265 / 1e10 = 1,823,078,911 uluna.
+
+> Historical values at first configuration (2026-06-09): ETH rate 376 / 10 gwei, BSC rate 1,098 / 3 gwei, Solana rate 383,001,553,014 / 1.
 
 ---
 
@@ -764,22 +778,23 @@ The IGP Oracle stores the exchange rate and gas price for each destination chain
 The Terra Classic Mailbox charges the sender a fee in **LUNC** to cover gas on the destination chain. The oracle provides the conversion data:
 
 ```
-fee_uluna = gas_amount × gas_price_dest × exchange_rate / 1e12
+fee_uluna = gas_amount × gas_price_dest × exchange_rate / 1e10
 
 Where:
-  gas_amount    = compute units on destination (e.g. 300,000)
-  gas_price_dest = destination gas price in wei (e.g. 3,000,000,000 = 3 gwei for BSC)
-  exchange_rate  = (LUNC_USD / NATIVE_USD) × 1e12
+  gas_amount     = the IGP's gas_for_domain for the destination (fallback: default_gas)
+  gas_price_dest = destination gas price in the smallest native unit (wei / lamport)
+  exchange_rate  = destination-native → uluna conversion, scaled by 1e10
+                   (TOKEN_EXCHANGE_RATE_SCALE in cw-hyperlane is 10^10)
 
-Example (BSC mainnet — 2026-06-09):
-  LUNC = $0.00006824, BNB = $617.38
-  exchange_rate = (0.00006824 / 617.38) × 1e12 = 110,531
-  fee = 300,000 × 3,000,000,000 × 110,531 / 1e12 = 9,948 LUNC ≈ $0.68
+Verified against the live contracts (2026-09-18):
+  BSC:      4,803,897 × 3,000,000,000 × 1,265           / 1e10 = 1,823,078,911 uluna = 1,823.08 LUNC
+  Ethereum: 5,394,480 × 5,879,273,683 × 454             / 1e10 = 1,439,889,343 uluna = 1,439.89 LUNC
+  Solana:  40,158,741 × 1             × 488,893,709,620 / 1e10 = 1,963,335,586 uluna = 1,963.34 LUNC
 ```
 
-**Solana uses a different model** — fees are in compute units × lamports:
-- `gas_price = 1` (1 lamport per compute unit, minimum Solana fee model)
-- `exchange_rate = (LUNC_USD / SOL_USD) × 1e13   ← Solana usa 1e13 no cw-hyperlane`
+**Solana** uses `gas_price = 1` (lamport model); everything else is the same formula.
+
+> In practice the three parameters are tuned together so that the LUNC fee tracks a **target of ≈ $0.08–0.10 per transfer** — the amount the relayer needs on the destination chain plus a margin. The relayer's reward equals the tariff paid (pass-through). When LUNC or the destination gas price moves, only the oracle needs to be updated; the IGP gas amounts rarely change.
 
 ### Quick update — `update-igp-oracle.sh`
 
@@ -805,8 +820,8 @@ DOMAINS="1,56,1399811149" ./update-igp-oracle.sh
 
 | Date | LUNC | ETH | BNB | SOL | rate_ETH | rate_BSC | rate_SOL |
 |---|---|---|---|---|---|---|---|
-| 2026-06-09 | $0.00006782 | $1803.18 | $617.38 | $70.83 | 37,611 | 110,531 | 38,300,155,301,425 |
-| _next update_ | | | | | | | |
+| 2026-06-09 (first config) | $0.00006782 | $1803.18 | $617.38 | $70.83 | 376 | 1,098 | 383,001,553,014 |
+| 2026-09-18 (on-chain) | $0.00005139 | $2517.88 | $752.62 | $106.58 | 454 | 1,265 | 488,893,709,620 |
 
 > Update this table after each oracle configuration change.
 > Run `./update-igp-oracle.sh` to recalculate and apply new rates.
@@ -920,6 +935,114 @@ domainId: 132556
 
 ---
 
+## 🌉 Warp Routes — LUNC, USTC and JURIS on the 4 chains
+
+> Live on-chain inventory as of **2026-09-18**. Everything below is also published in the
+> [official Hyperlane registry](https://github.com/hyperlane-xyz/hyperlane-registry) (PR [#1559](https://github.com/hyperlane-xyz/hyperlane-registry/pull/1559) chain onboarding, PR [#1687](https://github.com/hyperlane-xyz/hyperlane-registry/pull/1687) LUNC/USTC warp routes) and on
+> [terra-classic.io/docs/develop/hyperlane/contracts](https://terra-classic.io/docs/develop/hyperlane/contracts). Deployment approved by governance proposals
+> [12200](https://validator.info/terra-classic/governance/12200) and [12222](https://validator.info/terra-classic/governance/12222).
+> Live status (relayer, balances, validators, fees, ownership): **https://github.com/terra-classic-hyperlane/hyperlane-monitoring**.
+
+### Terra Classic (domain 132556) — native / collateral side
+
+| Token | Contract (bech32) | Hexed (32 bytes) | Type | Code ID | Owner | Admin |
+|---|---|---|---|---|---|---|
+| **LUNC** | `terra1m7jcqxfn4hd7q4sywhw508nxshaf078c4vh83y0ts43y9tlp9dcs50cggy` | `0xdfa5801933addbe0560475dd479e6685fa97f8f8ab2e7891eb856242afe12b71` | `hpl_warp_native` (uluna) | 11390 | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` | none (immutable) |
+| **USTC** | `terra1qu3x6vhk4y6w6erhmedzfp2ug53qm5nwpyarxveqa7tvwg0telxqvd3ccf` | `0x07226d32f6a934ed6477de5a24855c45220dd26e093a333320ef96c721ebcfcc` | `hpl_warp_native` (uusd) | 11390 | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` | none (immutable) |
+| **JURIS** | `terra1dkr5hngjngneqmfrye2fuppckk34uxuxjes5pqzfu59jvncs27uszw8wj5` | `0x6d874bcd129a27906d2326549e0438b5a35e1b869661408049e50b264f1057b9` | `hpl_warp_cw20` collateral (`terra1vhgq25v…2pxcj2`) | 11389 | `terra1m2u2jxsh4z9jyqj8807g6cptaea6mvu50epwt8` (Juris Protocol) | `terra1m2u2jxsh4z9jyqj8807g6cptaea6mvu50epwt8` |
+
+The TC warps use the mailbox defaults (no per-contract ISM/hook override): default ISM = ISM Routing, default hook = Hook Aggregate #1 (Merkle + IGP), required hook = Hook Aggregate #2 (Pausable + Fee 0.283215 LUNC).
+
+Enrolled remote routers (LUNC): Ethereum → `0xA4bc47a4…`, BSC → `0x481095ec…`, Solana → `Dd3ajD8W…`. (USTC): Ethereum → `0xf49408be…`, BSC → `0xfC067fd9…`, Solana → `7CUdBt1Q…`. (JURIS): Solana → `8pktAA5F…` only.
+
+### BNB Smart Chain (domain 56) — synthetic side
+
+| Contract | Address | Owner | Admin |
+|---|---|---|---|
+| Warp **LUNC** (HypERC20 proxy, 6 dec) | `0x481095ecEd7A907e7f390b6226F53a66D379e6e2` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` | ProxyAdmin `0x002a1821aff44c12084bc13f3c5cf442720c127c` |
+| Warp **USTC** (HypERC20 proxy, 6 dec) | `0xfC067fd98FD123fC2cAd72d040AF60a523274339` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` | ProxyAdmin `0x60c92c612d0e7befd188043d557756fef07f725f` |
+| Warp ISM (StorageMessageIdMultisigIsm, TC origin, **3-of-4**) | `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` | — |
+| Warp hook (StaticAggregationHook: Merkle + IGP) | `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` | — (static) | — |
+| Warp IGP | `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` | — |
+| IGP beneficiary | `0x34E06a7793877EC5251b1dC230aD7cD577d231f4` | | |
+| Mailbox (Hyperlane canonical) | `0x2971b9Aec44bE4eb673DF1B88cDB57b96eefe8a4` | `0x7379D7bB2ccA68982E467632B6554fD4e72e9431` (Hyperlane) | ProxyAdmin `0x65993af9d0d3a64ec77590db7ba362d6eb78ef70` |
+| Validator announce / Merkle tree hook (canonical) | `0x7024078130D9c2100fEA474DAD009C2d1703aCcd` / `0xFDb9Cd5f9daAA2E4474019405A328a88E7484f26` | `0xa7ECcdb9Be08178f896c26b7BbD8C3D4E844d9Ba` (Hyperlane) | — |
+
+### Ethereum (domain 1) — synthetic side
+
+| Contract | Address | Owner | Admin |
+|---|---|---|---|
+| Warp **LUNC** (HypERC20 proxy, 6 dec) | `0xA4bc47a4C5461eB0E59A585a21A1222EF7544Ac6` | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` | ProxyAdmin `0x8c7a816d2c5d4dd480d7267caa46769a3c9fa2b5` |
+| Warp **USTC** (HypERC20 proxy, 6 dec) | `0xf49408beb319aeCe3E8B3550a5C750C19b3F1e51` | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` | ProxyAdmin `0xfbb065fcb26a7a74e5c1f187ae9a45a7d80a51c1` |
+| Warp ISM (StorageMessageIdMultisigIsm, TC origin, **3-of-4**) | `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` | — |
+| Warp hook (StaticAggregationHook: Merkle + IGP) | `0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8` | — (static) | — |
+| Warp IGP | `0x9650F1f8DB492750323172145e67Df4e89E964Aa` | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` | — |
+| IGP beneficiary | `0x04096dCBbBB0FA58a312761c38E1d3B9F64631F1` | | |
+| Mailbox (Hyperlane canonical) | `0xc005dc82818d67AF737725bD4bf75435d065D239` | `0x562Dfaac27A84be6C96273F5c9594DA1681C0DA7` (Hyperlane) | ProxyAdmin `0x75ee15ee1b4a75fa3e2fdf5df3253c25599cc659` |
+| Validator announce / Merkle tree hook (canonical) | `0xCe74905e51497b4adD3639366708b821dcBcff96` / `0x48e6c30B97748d1e2e03bf3e9FbE3890ca5f8CCA` | `0xa7ECcdb9Be08178f896c26b7BbD8C3D4E844d9Ba` (Hyperlane) | — |
+
+### Solana (domain 1399811149) — synthetic side
+
+| Program / account | Address | Owner | Upgrade authority |
+|---|---|---|---|
+| Warp **LUNC** program | `Dd3ajD8WbEyx7z3HqPnDyvUgFqEBzvF1VePjYd1NGnbr` | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
+| LUNC mint (Token-2022, 6 dec) | `8dxTo5reLtvRDx3Q8WEP33Uj2C5u6372EygJdNbsLFKG` | mint authority = program PDA | metadata update authority `BirXd4QD…` |
+| Warp **USTC** program | `7CUdBt1Qn2R2StE7MDPhQW2EhmnGg8zKK8oJXwAGEoyf` | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
+| USTC mint (Token-2022, 6 dec) | `GNUbsF5mrurtDzNc65HipN5Fyzzzqbj5UonLNhj9frjF` | mint authority = program PDA | metadata update authority `BirXd4QD…` |
+| Warp **JURIS** program (Juris Protocol) | `8pktAA5FdXJta2V1U1xzRz5GBcpqH7gTjfFQirJTpZfm` | `HqmBW2AMCsivVS8W7mTF6Sja7j9eR8o9Pef9BktoayDu` | `HqmBW2AMCsivVS8W7mTF6Sja7j9eR8o9Pef9BktoayDu` |
+| Warp ISM program (multisig, TC origin, shared by LUNC/USTC/JURIS) | `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` | — | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
+| IGP program | `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` | — | — |
+| Overhead IGP account (used by the warps) | `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` | — |
+| Inner IGP account (gas oracle for domain 132556) | `FPTvDsowMHXFKktoLgy2a2qfr5yL6846JHKwvk2mYKFk` | `4sZAfqDqEmR7LMWjrdNmoEkv8S6BDdnDkh5mfADenaaA` | beneficiary `Eq1mJGTSbLb8s6gfoyg5aovxFAhXpnVudXXSAmbDwb9w` |
+| Mailbox program (Hyperlane canonical) | `E588QtVUvresuXq2KoNEwAmoifCzYGpRBdHByN9KQMbi` | `3oocunLfAgATEqoRyW7A5zirsQuHJh6YjD4kReiVVKLa` (Hyperlane) | `3oocunLfAgATEqoRyW7A5zirsQuHJh6YjD4kReiVVKLa` |
+| Validator announce program (canonical) | `pRgs5vN4Pj7WvFbxf6QDHizo2njq2uksqEUbaSghVA8` | — | `3oocunLfAgATEqoRyW7A5zirsQuHJh6YjD4kReiVVKLa` |
+
+### Validator sets in force
+
+| Messages from | Verified by | Validators (threshold) |
+|---|---|---|
+| **Terra Classic** → BSC / Ethereum / Solana | Warp ISMs above (BSC `0xF6b0…`, Ethereum `0x3ba1…`, Solana `4MzF7…`) | **3-of-4**: Igor Veras `0x71b2b8c36a0c76b74be92eb7915e26a69b3b03eb`, TCV `0x1afd3d07abd2aaa19a9f7993f334a926e253b90c`, DarkSun `0xe6bb040164a0ebbcb7e2d584f066c8b57dd74383`, BurnItAll `0x5c374754892ebac52702475726b67f822efdfacc`. (LuncGoblins `0x0c737caf…` is announced on the TC ValidatorAnnounce but not enrolled.) |
+| BSC → Terra Classic | ISM Multisig BSC `terra1nqj7q…` | 4-of-6 Hyperlane default validators (section 3) |
+| Ethereum → Terra Classic | ISM Multisig ETH `terra187rzj…` | 6-of-9 Hyperlane default validators (section 3) |
+| Solana → Terra Classic | ISM Multisig SOL `terra10s3p3…` | 3-of-5 Hyperlane default validators (section 3) |
+
+---
+
+## 💸 Current fees (2026-09-18)
+
+Fee paid by the user on the **origin** chain for one transfer, quoted from the live contracts
+(`igp.quote_gas_payment` on TC, `quoteDispatch` of the warp hook on EVM, IGP `QuoteGasPayment` simulation on Solana).
+USD at Binance spot: LUNC $0.00005139, BNB $752.62, ETH $2517.88, SOL $106.58.
+
+| Route | Gas fee (IGP) | ≈ USD | Plus |
+|---|---|---|---|
+| Terra Classic → BSC | 1,823.08 LUNC | $0.094 | required hook fee 0.283215 LUNC |
+| Terra Classic → Ethereum | 1,439.89 LUNC | $0.074 | required hook fee 0.283215 LUNC |
+| Terra Classic → Solana | 1,963.34 LUNC | $0.101 | required hook fee 0.283215 LUNC |
+| BSC → Terra Classic | 0.000111561 BNB | $0.084 | — |
+| Ethereum → Terra Classic | 0.0000330973 ETH | $0.083 | — |
+| Solana → Terra Classic | 0.000786 SOL (3,000,000 gas + 8,660,148 overhead) | $0.081 | — |
+
+Notes:
+- The BSC/Ethereum warp IGPs have **no gas oracle for domain 132556**; the fee comes from the hook's `quoteDispatch` and is a flat pass-through tariff.
+- The relayer (`terra1run9wz…` on TC, `0x8f085bAD…` on BSC, `0xEF818120…` on Ethereum, `PbEo7Fn2…` on Solana) pays the destination gas and is reimbursed by these tariffs.
+- These numbers move with token prices and oracle updates; the monitor shows them live.
+
+---
+
+## 🔑 Ownership & admin summary (Terra Classic core, 2026-09-18)
+
+| Contract | Owner | Contract admin (migrate) |
+|---|---|---|
+| Mailbox, ISM Routing, ISM Multisig ETH/BSC/SOL, IGP, Hook Fee, Hook Pausable, Hook Aggregate #1/#2 | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` |
+| IGP Oracle | `terra1z7jmlky2cmsd9aslm4uxrsase2yjwz8k9rlk00ga8s7pxgljczjq9sv4hj` | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` |
+| Validator Announce, Hook Merkle | — (no owner) | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` |
+| Warp LUNC / USTC | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` | none (immutable) |
+
+> Ownership transfer of the core contracts to the governance module (`terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n`) is **still pending** — see the checklist.
+
+---
+
 ## 8️⃣ Troubleshooting
 
 ### Error: "insufficient fees"
@@ -998,16 +1121,18 @@ https://rpc.terraclassic.community
 - [ ] Run `yarn tsx terraclassic/submit-proposal-mainnet.ts` — generates `proposal_mainnet.json`
 - [ ] Submit and vote when needed after transferring ownership to governance module
 
-### Post-Deployment
-- [ ] Update relayer agent-config with new addresses ✅ (done — hyperlane-agent/agent-config.json)
-- [ ] Update EVM/Solana warp route configs for new domain 132556
-- [ ] Re-deploy warp routes (new mailbox address)
-- [ ] Test cross-chain message sending
-- [ ] Document final addresses for auditing
+### Post-Deployment ✅
+- [x] Update relayer agent-config with new addresses (hyperlane-agent/agent-config.json)
+- [x] Update EVM/Solana warp route configs for new domain 132556
+- [x] Re-deploy warp routes (new mailbox address) — LUNC/USTC on BSC, Ethereum, Solana; JURIS on Solana
+- [x] Test cross-chain message sending (82 messages dispatched from TC as of 2026-09-18, all delivered)
+- [x] Document final addresses for auditing — see "Warp Routes" and "Ownership & admin summary"
+- [x] Registered in the official Hyperlane registry (PR #1559, PR #1687) and published at terra-classic.io/docs
+- [x] Public monitor: https://github.com/terra-classic-hyperlane/hyperlane-monitoring
 
 ---
 
-**Last updated:** 2026-06-09
+**Last updated:** 2026-09-18 (contracts, owners/admins, fees and warp routes re-verified on-chain)
 **Contract Version:** v0.0.7-rc0
 **Chain:** Terra Classic Mainnet (columbus-5)
 **Domain ID:** 132556 (v2 — replaces 1325 which conflicted with testnet)
