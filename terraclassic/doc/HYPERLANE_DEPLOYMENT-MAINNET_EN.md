@@ -28,7 +28,7 @@ This guide documents the complete process of deploying and configuring Hyperlane
 6. [IGP Oracle — Updating Gas Prices](#igp-oracle--updating-gas-prices)
 7. [Execution Verification](#execution-verification)
 8. [Contract Addresses and Hexed](#contract-addresses-and-hexed)
-9. [Warp Routes — LUNC, USTC and JURIS on the 4 chains](#-warp-routes--lunc-ustc-and-juris-on-the-4-chains)
+9. [Warp Routes — LUNC and USTC on the 4 chains](#-warp-routes--lunc-and-ustc-on-the-4-chains)
 10. [Current fees](#-current-fees-2026-09-18)
 11. [Ownership & admin summary](#-ownership--admin-summary-terra-classic-core-2026-09-18)
 12. [Troubleshooting](#troubleshooting)
@@ -935,7 +935,7 @@ domainId: 132556
 
 ---
 
-## 🌉 Warp Routes — LUNC, USTC and JURIS on the 4 chains
+## 🌉 Warp Routes — LUNC and USTC on the 4 chains
 
 > Live on-chain inventory as of **2026-09-18**. Everything below is also published in the
 > [official Hyperlane registry](https://github.com/hyperlane-xyz/hyperlane-registry) (PR [#1559](https://github.com/hyperlane-xyz/hyperlane-registry/pull/1559) chain onboarding, PR [#1687](https://github.com/hyperlane-xyz/hyperlane-registry/pull/1687) LUNC/USTC warp routes) and on
@@ -949,11 +949,10 @@ domainId: 132556
 |---|---|---|---|---|---|---|
 | **LUNC** | `terra1m7jcqxfn4hd7q4sywhw508nxshaf078c4vh83y0ts43y9tlp9dcs50cggy` | `0xdfa5801933addbe0560475dd479e6685fa97f8f8ab2e7891eb856242afe12b71` | `hpl_warp_native` (uluna) | 11390 | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` | none (immutable) |
 | **USTC** | `terra1qu3x6vhk4y6w6erhmedzfp2ug53qm5nwpyarxveqa7tvwg0telxqvd3ccf` | `0x07226d32f6a934ed6477de5a24855c45220dd26e093a333320ef96c721ebcfcc` | `hpl_warp_native` (uusd) | 11390 | `terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp` | none (immutable) |
-| **JURIS** | `terra1dkr5hngjngneqmfrye2fuppckk34uxuxjes5pqzfu59jvncs27uszw8wj5` | `0x6d874bcd129a27906d2326549e0438b5a35e1b869661408049e50b264f1057b9` | `hpl_warp_cw20` collateral (`terra1vhgq25v…2pxcj2`) | 11389 | `terra1m2u2jxsh4z9jyqj8807g6cptaea6mvu50epwt8` (Juris Protocol) | `terra1m2u2jxsh4z9jyqj8807g6cptaea6mvu50epwt8` |
 
 The TC warps use the mailbox defaults (no per-contract ISM/hook override): default ISM = ISM Routing, default hook = Hook Aggregate #1 (Merkle + IGP), required hook = Hook Aggregate #2 (Pausable + Fee 0.283215 LUNC).
 
-Enrolled remote routers (LUNC): Ethereum → `0xA4bc47a4…`, BSC → `0x481095ec…`, Solana → `Dd3ajD8W…`. (USTC): Ethereum → `0xf49408be…`, BSC → `0xfC067fd9…`, Solana → `7CUdBt1Q…`. (JURIS): Solana → `8pktAA5F…` only.
+Enrolled remote routers (LUNC): Ethereum → `0xA4bc47a4…`, BSC → `0x481095ec…`, Solana → `Dd3ajD8W…`. (USTC): Ethereum → `0xf49408be…`, BSC → `0xfC067fd9…`, Solana → `7CUdBt1Q…`.
 
 ### BNB Smart Chain (domain 56) — synthetic side
 
@@ -989,8 +988,7 @@ Enrolled remote routers (LUNC): Ethereum → `0xA4bc47a4…`, BSC → `0x481095e
 | LUNC mint (Token-2022, 6 dec) | `8dxTo5reLtvRDx3Q8WEP33Uj2C5u6372EygJdNbsLFKG` | mint authority = program PDA | metadata update authority `BirXd4QD…` |
 | Warp **USTC** program | `7CUdBt1Qn2R2StE7MDPhQW2EhmnGg8zKK8oJXwAGEoyf` | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
 | USTC mint (Token-2022, 6 dec) | `GNUbsF5mrurtDzNc65HipN5Fyzzzqbj5UonLNhj9frjF` | mint authority = program PDA | metadata update authority `BirXd4QD…` |
-| Warp **JURIS** program (Juris Protocol) | `8pktAA5FdXJta2V1U1xzRz5GBcpqH7gTjfFQirJTpZfm` | `HqmBW2AMCsivVS8W7mTF6Sja7j9eR8o9Pef9BktoayDu` | `HqmBW2AMCsivVS8W7mTF6Sja7j9eR8o9Pef9BktoayDu` |
-| Warp ISM program (multisig, TC origin, shared by LUNC/USTC/JURIS) | `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` | — | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
+| Warp ISM program (multisig, TC origin, shared by LUNC/USTC) | `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` | — | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
 | IGP program | `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` | — | — |
 | Overhead IGP account (used by the warps) | `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` | — |
 | Inner IGP account (gas oracle for domain 132556) | `FPTvDsowMHXFKktoLgy2a2qfr5yL6846JHKwvk2mYKFk` | `4sZAfqDqEmR7LMWjrdNmoEkv8S6BDdnDkh5mfADenaaA` | beneficiary `Eq1mJGTSbLb8s6gfoyg5aovxFAhXpnVudXXSAmbDwb9w` |
@@ -1124,7 +1122,7 @@ https://rpc.terraclassic.community
 ### Post-Deployment ✅
 - [x] Update relayer agent-config with new addresses (hyperlane-agent/agent-config.json)
 - [x] Update EVM/Solana warp route configs for new domain 132556
-- [x] Re-deploy warp routes (new mailbox address) — LUNC/USTC on BSC, Ethereum, Solana; JURIS on Solana
+- [x] Re-deploy warp routes (new mailbox address) — LUNC/USTC on BSC, Ethereum, Solana
 - [x] Test cross-chain message sending (82 messages dispatched from TC as of 2026-09-18, all delivered)
 - [x] Document final addresses for auditing — see "Warp Routes" and "Ownership & admin summary"
 - [x] Registered in the official Hyperlane registry (PR #1559, PR #1687) and published at terra-classic.io/docs
