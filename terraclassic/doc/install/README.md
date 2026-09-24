@@ -8,8 +8,10 @@
 
 | Document | What it covers |
 |---|---|
-| **[WARP-EVM.md](WARP-EVM.md)** | Create a warp on **BSC** or **Ethereum** with one script (`create-warp-evm.sh`) — examples for both chains |
+| **[WARP-EVM.md](WARP-EVM.md)** | Create a warp for a **Terra Classic** token, with **BSC**/**Ethereum** getting the synthetic — one script (`create-warp-evm.sh`), examples for both chains |
+| **[WARP-EVM-TO-TC.md](WARP-EVM-TO-TC.md)** | The **reverse** direction: a **BSC**/**Ethereum** token (native coin or existing ERC20) gets a synthetic mint on **Terra Classic** — manual, step by step (no script yet) |
 | **[WARP-SOLANA.md](WARP-SOLANA.md)** | Create a warp on **Solana** (sealevel) with one script (`create-warp-sealevel.sh`) — full example |
+| **[WARP-SEALEVEL-TO-TC.md](WARP-SEALEVEL-TO-TC.md)** | The **reverse** direction: a **Solana** token (native SOL or existing SPL) gets a synthetic mint on **Terra Classic** — manual, step by step, untested in this repo (no script yet) |
 | **[WARP-UI-PR.md](WARP-UI-PR.md)** | Make a deployed route **appear in the Warp UI** — fork & PR to the registry branch the UI reads (`terra-classic-warp`) |
 | **[DEPLOY-HASHES.md](DEPLOY-HASHES.md)** | Complete deployed-contract inventory with **hashes**: Terra Classic core (code_ids + data_hash), and the synthetics' warp/ISM/IGP/hooks on BSC · ETH · Solana — with the commands to verify each one |
 | **[WARP-LUNC.md](WARP-LUNC.md)** | The live **LUNC** route, chain by chain (TC · BSC · ETH · Solana): contracts, hashes, owners, routes, and the exact commands to query/audit each side |

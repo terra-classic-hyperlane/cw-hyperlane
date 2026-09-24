@@ -3,6 +3,10 @@
 > One script: `terraclassic/create-warp-sealevel.sh`. It deploys **only the token's
 > own program**; ISM and IGP are the production ones, SET on the new warp — nothing
 > else is created. Full reference: [`../archive/create-warp-sealevel-guide.md`](../archive/create-warp-sealevel-guide.md).
+>
+> This covers **Terra Classic → Solana synthetic** only. For the other direction —
+> a Solana token getting a synthetic mint on Terra Classic — see
+> [WARP-SEALEVEL-TO-TC.md](WARP-SEALEVEL-TO-TC.md).
 
 ## 1. What gets deployed vs reused (mainnet, verified on-chain 2026-08-28)
 

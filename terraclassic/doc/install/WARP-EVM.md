@@ -4,6 +4,10 @@
 > the token's own contracts** and wires them to the production ISM/IGP/hook
 > (see [README.md](README.md)). Full field-by-field reference:
 > [`../archive/create-warp-evm-guide.md`](../archive/create-warp-evm-guide.md).
+>
+> This covers **Terra Classic → EVM synthetic** only. For the other direction —
+> a BSC/Ethereum token getting a synthetic mint on Terra Classic — see
+> [WARP-EVM-TO-TC.md](WARP-EVM-TO-TC.md).
 
 ## 1. What gets deployed vs reused
 
