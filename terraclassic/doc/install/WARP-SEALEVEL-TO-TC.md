@@ -20,7 +20,7 @@
 |---|---|---|
 | Origin program on Solana | 🆕 `hyperlane-sealevel-token-native` (locks native SOL) | 🆕 `hyperlane-sealevel-token-collateral` (locks the existing SPL mint) |
 | Synthetic warp on Terra Classic | 🆕 deployed, **mode `bridged`** (code 11389 `hpl_warp_cw20`) — same as [WARP-EVM-TO-TC.md §1](WARP-EVM-TO-TC.md#1-what-gets-deployed-vs-reused) | same |
-| cw20-base "mold" | ♻️ reused: mainnet code **3** — see [WARP-EVM-TO-TC.md §2.1](WARP-EVM-TO-TC.md#21-one-extra-prerequisite-a-cw20-base-code-id-on-terra-classic) | same |
+| cw20-base "mold" | ♻️ reused: mainnet code **3** / rebel-2 testnet code **2455** — see [WARP-EVM-TO-TC.md §2.1](WARP-EVM-TO-TC.md#21-one-extra-prerequisite-a-cw20-base-code-id-on-terra-classic) | same |
 | ISM | ♻️ reused: `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` (same 3-of-4 as every other TC-linked warp) | same |
 | IGP | ♻️ reused: `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` + OverheadIgp `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` | same |
 
@@ -50,7 +50,7 @@ ATA-payer PDA to fund the way the synthetic deploy needs one.
 
 The cw20-base code id prerequisite is identical to the EVM reverse direction —
 see [WARP-EVM-TO-TC.md §2.1](WARP-EVM-TO-TC.md#21-one-extra-prerequisite-a-cw20-base-code-id-on-terra-classic)
-(mainnet: reuse code **3**, nothing to upload).
+(mainnet: reuse code **3** · rebel-2 testnet: reuse code **2455** — nothing to upload).
 
 ## 3. Manual deployment — step by step
 

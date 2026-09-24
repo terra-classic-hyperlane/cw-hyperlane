@@ -49,9 +49,10 @@ not per token:
 | Network | code_id | Notes |
 |---|---|---|
 | Mainnet (columbus-5) | **3** | The chain's original shared cw20-base — already used by MIR and hundreds of Terra-era tokens. Reuse it; do not upload a new one. |
-| rebel-2 testnet | *(upload your own — no shared one exists yet)* | See below |
+| rebel-2 testnet | **2455** | Uploaded 2026-09-24 (tx `FB63335D2D1CDCE2A33429ACF1E6141C82BEF77BBF6EA10030494886B8941D9A`). Reuse it; do not upload a new one. |
 
-To upload a fresh one (testnet, or if mainnet's ever needs replacing):
+Both are shared, reusable "molds" — uploading another copy just for your token
+is unnecessary. Only if one of these ever needs replacing:
 
 ```bash
 terrad tx wasm store cw20_base.wasm \
@@ -63,8 +64,8 @@ terrad query tx <TX_HASH> --node <rpc> -o json | jq -r '.events[] | select(.type
 ```
 
 `cw20_base.wasm` is the stock [CosmWasm Plus](https://github.com/CosmWasm/cw-plus)
-`cw20-base` contract — any build of it works, mainnet's code 3 and this one are
-interchangeable in function.
+`cw20-base` contract — any build of it works, and is functionally
+interchangeable with codes 3 and 2455 above.
 
 ## 3. Manual deployment — step by step
 
@@ -125,7 +126,7 @@ cast send <ROUTER> "setHook(address)" 0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8
   "id": "myeth",
   "owner": "terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp",
   "config": {
-    "code_id": 3,
+    "code_id": 3,   // rebel-2 testnet: use 2455 instead (§2.1)
     "init_msg": {
       "name": "My ETH",
       "symbol": "ETH",
@@ -218,7 +219,7 @@ registry PR, Warp UI listing ([WARP-UI-PR.md](WARP-UI-PR.md)), oracle-agent
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `cw-hpl warp create` fails validating `config.code_id` | No cw20-base uploaded on this network yet | §2.1 — upload one, or reuse mainnet's code 3 |
+| `cw-hpl warp create` fails validating `config.code_id` | Wrong/missing code_id for this network | §2.1 — mainnet is 3, rebel-2 testnet is 2455; only upload a new one if neither applies |
 | Synthetic's total supply looks wrong right after create | `initial_balances` was non-empty in `init_msg` | Re-deploy with `initial_balances: []` — supply must come only from cross-chain mints |
 | `transfer_remote` from Terra Classic reverts with "route not found" | §3.5 wasn't run, or ran with the wrong `domain` | Re-run §3.5 with the correct EVM domain (1 = Ethereum, 56 = BSC) |
 | Inbound EVM → TC transfer never arrives | §3.4 wasn't run (EVM router has no route to TC) | Re-run §3.4 |
