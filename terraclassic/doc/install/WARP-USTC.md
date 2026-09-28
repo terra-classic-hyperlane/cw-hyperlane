@@ -63,7 +63,7 @@ Same queries over LCD (no terrad): `curl https://lcd.terra-classic.hexxagon.io/c
 |---|---|
 | Token contract | `0xfC067fd98FD123fC2cAd72d040AF60a523274339` — "Terra Classic USD" / USTC / 6 decimals |
 | Owner | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` (deployer — multisig migration planned; also controls the ProxyAdmin) |
-| ISM | production 3-of-4 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` |
+| ISM | production 4-of-6 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` |
 | Hook | production AggregationHook `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` [merkleTree + governed IGP] |
 | IGP | production `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` (fees → relayer-reward-vault) |
 | Router → TC | `132556 → 0x07226d32f6…21ebcfcc` |
@@ -99,7 +99,7 @@ Explorer: https://bscscan.com/token/0xfC067fd98FD123fC2cAd72d040AF60a523274339
 |---|---|
 | Token contract | `0xf49408beb319aeCe3E8B3550a5C750C19b3F1e51` — "Terra Classic USD" / USTC / 6 decimals |
 | Owner | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` (deployer — multisig migration planned; also controls the ProxyAdmin) |
-| ISM | production 3-of-4 `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` |
+| ISM | production 4-of-6 `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` |
 | Hook | production AggregationHook `0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8` [merkleTree + governed IGP] |
 | IGP | production `0x9650F1f8DB492750323172145e67Df4e89E964Aa` (fees → relayer-reward-vault) |
 | Router → TC | `132556 → 0x07226d32f6…21ebcfcc` |
@@ -125,7 +125,7 @@ Explorer: https://etherscan.io/token/0xf49408beb319aeCe3E8B3550a5C750C19b3F1e51
 | ATA payer PDA | `2PJy1MUAaCQfxJYPm6wxZfthc46Z1iYr3MnSwRR56WHF` (funds recipients' token accounts) |
 | Owner | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` (deployer — multisig migration planned) |
 | Mailbox | `E588QtVUvresuXq2KoNEwAmoifCzYGpRBdHByN9KQMbi` (official Hyperlane) |
-| ISM | production 3-of-4 `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` |
+| ISM | production 4-of-6 `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` |
 | IGP | `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` / OverheadIgp `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` — destination gas `3000000` for domain 132556 |
 | Router → TC | `132556 → 0x07226d32f6…21ebcfcc` |
 | Deploy / init txs | deploy `WYpXYQ24…fm1W8m9` · atomic init `jDxAwcka…GD1RGsV` · metadata `34TbFeC1…HocBUFM` |

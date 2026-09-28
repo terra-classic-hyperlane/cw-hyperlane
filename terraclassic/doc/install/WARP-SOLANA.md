@@ -14,7 +14,7 @@
 |---|---|
 | Warp token program + SPL mint | 🆕 deployed (`hyperlane-sealevel-token` + metadata) |
 | Collateral warp on Terra Classic | 🆕 deployed |
-| ISM | ♻️ reused: `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` (mutable MultisigISM, same 3-of-4 validator set as BSC/ETH) |
+| ISM | ♻️ reused: `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` (mutable MultisigISM, same 4-of-6 validator set as BSC/ETH) |
 | IGP | ♻️ reused: program `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` + **OverheadIgp** `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` — fees → pod pool PDA (relayer-reward-vault), prices governed |
 | Destination gas (TC) | `3000000` (matches the live LUNC/USTC warps) |
 
@@ -172,7 +172,7 @@ WARP_PROGRAM_ID=<PROGRAM_ID> TOKEN_KEY=mytoken NET_KEY=solanamainnet \
 #   mint authority to the mint PDA itself
 ```
 
-### 5.2 Set the production ISM (3-of-4)
+### 5.2 Set the production ISM (4-of-6)
 
 ```bash
 $CLIENT -k $KEY -u $RPC token set-interchain-security-module \

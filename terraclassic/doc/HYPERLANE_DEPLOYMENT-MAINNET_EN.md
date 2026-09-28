@@ -11,9 +11,14 @@ This guide documents the complete process of deploying and configuring Hyperlane
 > BSC **4-of-6** · Solana **3-of-5**) are all live and unchanged since
 > instantiation; LUNC/USTC warp instances confirmed on-chain (code 11390,
 > `hpl_warp_native`). Deployed **after** this record: cw20 code **11392** (test
-> token, discontinued 2026-08-29) and the LUNC/USTC warp instances — the always-current full inventory
-> (including the synthetics' warp/ISM/IGP hashes on BSC/ETH/Solana) lives in
-> [`install/DEPLOY-HASHES.md`](install/DEPLOY-HASHES.md).
+> token, discontinued 2026-08-29), cw20-base mainnet code **11677** (2026-09-28,
+> for the reverse-direction bridged warps — see
+> [`install/WARP-EVM-TO-TC.md`](install/WARP-EVM-TO-TC.md)), and the LUNC/USTC
+> warp instances — the always-current full inventory (including the synthetics'
+> warp/ISM/IGP hashes on BSC/ETH/Solana) lives in
+> [`install/DEPLOY-HASHES.md`](install/DEPLOY-HASHES.md). The per-token ISM
+> (§Validator sets in force) moved from 3-of-4 to **4-of-6** on 2026-09-28
+> (LuncGoblins + lll69 added).
 
 ---
 
@@ -960,7 +965,7 @@ Enrolled remote routers (LUNC): Ethereum → `0xA4bc47a4…`, BSC → `0x481095e
 |---|---|---|---|
 | Warp **LUNC** (HypERC20 proxy, 6 dec) | `0x481095ecEd7A907e7f390b6226F53a66D379e6e2` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` | ProxyAdmin `0x002a1821aff44c12084bc13f3c5cf442720c127c` |
 | Warp **USTC** (HypERC20 proxy, 6 dec) | `0xfC067fd98FD123fC2cAd72d040AF60a523274339` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` | ProxyAdmin `0x60c92c612d0e7befd188043d557756fef07f725f` |
-| Warp ISM (StorageMessageIdMultisigIsm, TC origin, **3-of-4**) | `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` | — |
+| Warp ISM (StorageMessageIdMultisigIsm, TC origin, **4-of-6**) | `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` | — |
 | Warp hook (StaticAggregationHook: Merkle + IGP) | `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` | — (static) | — |
 | Warp IGP | `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` | — |
 | IGP beneficiary | `0x34E06a7793877EC5251b1dC230aD7cD577d231f4` | | |
@@ -973,7 +978,7 @@ Enrolled remote routers (LUNC): Ethereum → `0xA4bc47a4…`, BSC → `0x481095e
 |---|---|---|---|
 | Warp **LUNC** (HypERC20 proxy, 6 dec) | `0xA4bc47a4C5461eB0E59A585a21A1222EF7544Ac6` | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` | ProxyAdmin `0x8c7a816d2c5d4dd480d7267caa46769a3c9fa2b5` |
 | Warp **USTC** (HypERC20 proxy, 6 dec) | `0xf49408beb319aeCe3E8B3550a5C750C19b3F1e51` | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` | ProxyAdmin `0xfbb065fcb26a7a74e5c1f187ae9a45a7d80a51c1` |
-| Warp ISM (StorageMessageIdMultisigIsm, TC origin, **3-of-4**) | `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` | — |
+| Warp ISM (StorageMessageIdMultisigIsm, TC origin, **4-of-6**) | `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` | — |
 | Warp hook (StaticAggregationHook: Merkle + IGP) | `0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8` | — (static) | — |
 | Warp IGP | `0x9650F1f8DB492750323172145e67Df4e89E964Aa` | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` | — |
 | IGP beneficiary | `0x04096dCBbBB0FA58a312761c38E1d3B9F64631F1` | | |
@@ -999,7 +1004,7 @@ Enrolled remote routers (LUNC): Ethereum → `0xA4bc47a4…`, BSC → `0x481095e
 
 | Messages from | Verified by | Validators (threshold) |
 |---|---|---|
-| **Terra Classic** → BSC / Ethereum / Solana | Warp ISMs above (BSC `0xF6b0…`, Ethereum `0x3ba1…`, Solana `4MzF7…`) | **3-of-4**: Igor Veras `0x71b2b8c36a0c76b74be92eb7915e26a69b3b03eb`, TCV `0x1afd3d07abd2aaa19a9f7993f334a926e253b90c`, DarkSun `0xe6bb040164a0ebbcb7e2d584f066c8b57dd74383`, BurnItAll `0x5c374754892ebac52702475726b67f822efdfacc`. (LuncGoblins `0x0c737caf…` is announced on the TC ValidatorAnnounce but not enrolled.) |
+| **Terra Classic** → BSC / Ethereum / Solana | Warp ISMs above (BSC `0xF6b0…`, Ethereum `0x3ba1…`, Solana `4MzF7…`) | **4-of-6**: Igor Veras `0x71b2b8c36a0c76b74be92eb7915e26a69b3b03eb`, TCV `0x1afd3d07abd2aaa19a9f7993f334a926e253b90c`, DarkSun `0xe6bb040164a0ebbcb7e2d584f066c8b57dd74383`, BurnItAll `0x5c374754892ebac52702475726b67f822efdfacc`, LuncGoblins `0x0c737caf34a1b8ae4a285c5e94726de6d9b7e028`, lll69 `0xa10f3648366fe14b2e6253a0aebb9103512fa808`. LuncGoblins and lll69 enrolled 2026-09-28 (BSC tx `0xfb4841c2…`, Ethereum tx `0x68f65ec1…`, Solana `set-validators-and-threshold` on the ISM program). |
 | BSC → Terra Classic | ISM Multisig BSC `terra1nqj7q…` | 4-of-6 Hyperlane default validators (section 3) |
 | Ethereum → Terra Classic | ISM Multisig ETH `terra187rzj…` | 6-of-9 Hyperlane default validators (section 3) |
 | Solana → Terra Classic | ISM Multisig SOL `terra10s3p3…` | 3-of-5 Hyperlane default validators (section 3) |

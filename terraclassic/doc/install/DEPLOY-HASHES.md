@@ -61,7 +61,7 @@ Hash = sha256 of the **live deployed bytecode** (`eth_getCode`).
 |---|---|---|
 | Warp IGORFAKE (HypERC20 proxy) | `0x3605D8946FC6F5A75d89d92173100F59743B5318` | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B) |
 | Warp FAKEFAKE (HypERC20 proxy, 2026-08-28) | `0x07289a10E1c4E8218AE2ACC599FfC29C68f32C47` | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to IGORFAKE) |
-| **ISM 3-of-4** (mutable, minimal proxy) | `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` | `ebabd1533007ed187cdd35cbea521be162e818a8a859f251d6f0cc6a9d69efaf` (45 B) |
+| **ISM 4-of-6** (mutable, minimal proxy) | `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` | `ebabd1533007ed187cdd35cbea521be162e818a8a859f251d6f0cc6a9d69efaf` (45 B) |
 | **IGP** (beneficiary = vault `0x34E06a77…`) | `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` | `ae76a7148c0989c4d7cd30b2b5faaf7935482e9e751013cb5303de666c18a80b` (6043 B) |
 | Gas oracle (owner = governor) | `0x7dE950f8F0a037783989a6BE84B3620916552306` | `d93c86aa1b584fc0147de6aadc09b78de90f08b0378ef43a2d5118d9b62440d8` (2118 B) |
 | AggregationHook [merkle + IGP] | `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` | `f63af7636991137e6b3766a54f893a3a546d8513302ae45fc8d41a393f5d4e38` (246 B) |
@@ -74,7 +74,7 @@ Hash = sha256 of the **live deployed bytecode** (`eth_getCode`).
 |---|---|---|
 | Warp IGORFAKE (HypERC20 proxy) | `0xA687a4C4CA49795999b36fDC8A18d1DDd63eDFB5` | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B) |
 | Warp FAKEFAKE (HypERC20 proxy, 2026-08-28) | `0x959DBb6784182ba5995cCEf6Abe4e378620ADA17` | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to IGORFAKE) |
-| **ISM 3-of-4** (mutable, minimal proxy) | `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` | `b7cdff85f92c8394e47555637814cd106c6d807bb5cba8c3e51e3015b3a03b41` (45 B) |
+| **ISM 4-of-6** (mutable, minimal proxy) | `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` | `b7cdff85f92c8394e47555637814cd106c6d807bb5cba8c3e51e3015b3a03b41` (45 B) |
 | **IGP** (beneficiary = vault `0x04096dCB…`) | `0x9650F1f8DB492750323172145e67Df4e89E964Aa` | `ae76a7148c0989c4d7cd30b2b5faaf7935482e9e751013cb5303de666c18a80b` (6043 B) |
 | Gas oracle (owner = governor) | `0x3987cCE8f08037EBF93Ef3a934753540A94196cE` | `d93c86aa1b584fc0147de6aadc09b78de90f08b0378ef43a2d5118d9b62440d8` (2118 B) |
 | AggregationHook [merkle + IGP] | `0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8` | `487b329dd722a0b9e1657453d941dd6c211f5a905aa0ccd915c9dbb198e00e3c` (246 B) |
@@ -88,7 +88,10 @@ BSC and Ethereum** (same sha256) — same code on both chains. The 45-byte ISMs 
 chains **only** because the implementation/inner addresses are embedded in the
 bytecode. Both ISMs return the identical validator set
 (igorveras `0x71B2B8C3…` · tcv `0x1Afd3D07…` · darksun `0xe6BB0401…` ·
-burnitall `0x5c374754…`, **threshold 3**).
+burnitall `0x5c374754…` · luncgoblins `0x0c737CAF…` · lll69 `0xA10F3648…`,
+**threshold 4**; luncgoblins and lll69 added 2026-09-28, tx
+`0xfb4841c24f03c24cd396fc5d067883cda98012c6e01150aa2ca0fb438a46c31b` (BSC) ·
+`0x68f65ec11a94cd6e19ace0de3bea8c3725edc2580ff8263b0e6468e08e620ba5` (ETH)).
 
 Verify any row:
 ```bash
@@ -122,7 +125,7 @@ Hash = sha256 of `solana program dump` output (the deployed program bytes; size 
 |---|---|---|
 | Warp IGORFAKE (token program) — **CLOSED 2026-08-29** | ~~`EPJNrrpCeZGqDPoFtdV9u9uDWBNW3Xqh84LfM7345zcL`~~ | `d6f2fc9fed82c5079ce2cb1728d5f833d61c70e6d5f2f2a40d5df6d1bdb33419` (318,944 B) |
 | SPL mint (IGORFAKE, orphaned) | `CeLHx5Wm9AzuWRnP4URMfNqNa9kDDrnsNGoATCS96QwD` | — (account) |
-| **ISM** (mutable MultisigISM, 3-of-4) | `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` | `7c97cfedfbce7321229b811af0e36a9d6e888904964f239eb6058d769f33a53d` (161,280 B) |
+| **ISM** (mutable MultisigISM, 4-of-6) | `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` | `7c97cfedfbce7321229b811af0e36a9d6e888904964f239eb6058d769f33a53d` (161,280 B) |
 | **IGP program** | `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` | `4321c4263c37317baafdb99e133ddcded8fca470c86b16383e681e9cecc08c6d` (231,824 B) |
 | OverheadIgp account (set on the warp) | `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` | — (account; wraps the inner IGP below) |
 | Inner IGP account (receives payments) | `FPTvDsowMHXFKktoLgy2a2qfr5yL6846JHKwvk2mYKFk` | — (beneficiary = pod pool PDA `Eq1mJGTS…`, owner = gov PDA `4sZAfqDq…`) |
@@ -163,7 +166,7 @@ record: unlike the test cw20s, this collateralizes real LUNC.
 |---|---|
 | Warp contract | `0x481095ecEd7A907e7f390b6226F53a66D379e6e2` — "Luna Classic" / LUNC / 6 decimals |
 | **Owner** | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` (deployer) — **⚠️ PLANNED: migrate to a multisig**; owner controls `setHook`/`setInterchainSecurityModule`/`enrollRemoteRouter` and proxy upgrades via its ProxyAdmin |
-| ISM | production 3-of-4 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` |
+| ISM | production 4-of-6 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` |
 | Hook | production AggregationHook `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` [merkle + governed IGP] — setHook tx `0x84da30aa…ece36b2` |
 | IGP | production `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` (fees → relayer-reward-vault) |
 | Router → TC | `132556 → 0xdfa5801933…afe12b71` — enroll tx `0xdcfc2dac…c468f7f` |
@@ -175,7 +178,7 @@ record: unlike the test cw20s, this collateralizes real LUNC.
 |---|---|
 | Warp contract | `0xA4bc47a4C5461eB0E59A585a21A1222EF7544Ac6` — "Luna Classic" / LUNC / 6 decimals |
 | **Owner** | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` (deployer) — **⚠️ PLANNED: migrate to a multisig**; owner controls `setHook`/`setInterchainSecurityModule`/`enrollRemoteRouter` and proxy upgrades via its ProxyAdmin |
-| ISM | production 3-of-4 `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` |
+| ISM | production 4-of-6 `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` |
 | Hook | production AggregationHook `0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8` [merkle + governed IGP] — setHook tx `0x8e8ca9bf…801b1307` |
 | IGP | production `0x9650F1f8DB492750323172145e67Df4e89E964Aa` (fees → relayer-reward-vault) |
 | Router → TC | `132556 → 0xdfa5801933…afe12b71` — enroll tx `0xe8e1bd4d…02c6001f` |
@@ -189,7 +192,7 @@ record: unlike the test cw20s, this collateralizes real LUNC.
 | Program hex32 (route set on TC) | `0xbb8812381e07b070e8d37945ae659b8ad17ff2c5c36f019f351f332d45a3b261` |
 | Mint (Token-2022) | `8dxTo5reLtvRDx3Q8WEP33Uj2C5u6372EygJdNbsLFKG` — "Luna Classic" / LUNC / 6 decimals, mint authority = the mint PDA itself |
 | **Owner** | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` (deployer) — **⚠️ PLANNED: migrate to a multisig** (same handoff plan as the EVM sides) |
-| ISM | production 3-of-4 `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` |
+| ISM | production 4-of-6 `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` |
 | IGP | production `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` / OverheadIgp `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` — destination gas `3000000` for domain 132556 |
 | Router → TC | `132556 → 0xdfa5801933…afe12b71` (enroll-remote-router) |
 | Program sha256 | `d6f2fc9fed82c5079ce2cb1728d5f833d61c70e6d5f2f2a40d5df6d1bdb33419` (318,944 B — byte-identical to the reference `hyperlane_sealevel_token.so`; dumped and re-hashed on-chain 2026-08-29) |
@@ -233,7 +236,7 @@ production infrastructure as the LUNC route (§5).
 |---|---|
 | Warp contract | `0xfC067fd98FD123fC2cAd72d040AF60a523274339` — "Terra Classic USD" / USTC / 6 decimals |
 | **Owner** | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` (deployer) — **⚠️ PLANNED: migrate to a multisig**; owner controls `setHook`/`setInterchainSecurityModule`/`enrollRemoteRouter` and proxy upgrades via its ProxyAdmin |
-| ISM | production 3-of-4 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` |
+| ISM | production 4-of-6 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` |
 | Hook | production AggregationHook `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` [merkle + governed IGP] |
 | IGP | production `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` (fees → relayer-reward-vault) |
 | Router → TC | `132556 → 0x07226d32f6…21ebcfcc` — enroll tx `0xbfdfc072…730417b9` |
@@ -245,7 +248,7 @@ production infrastructure as the LUNC route (§5).
 |---|---|
 | Warp contract | `0xf49408beb319aeCe3E8B3550a5C750C19b3F1e51` — "Terra Classic USD" / USTC / 6 decimals |
 | **Owner** | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` (deployer) — **⚠️ PLANNED: migrate to a multisig**; owner controls `setHook`/`setInterchainSecurityModule`/`enrollRemoteRouter` and proxy upgrades via its ProxyAdmin |
-| ISM | production 3-of-4 `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` |
+| ISM | production 4-of-6 `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` |
 | Hook | production AggregationHook `0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8` [merkle + governed IGP] — setHook tx `0x0c3641cf…1e0930e7` |
 | IGP | production `0x9650F1f8DB492750323172145e67Df4e89E964Aa` (fees → relayer-reward-vault) |
 | Router → TC | `132556 → 0x07226d32f6…21ebcfcc` — enroll tx `0x15c5eb8c…f3e36fb9` |
@@ -259,7 +262,7 @@ production infrastructure as the LUNC route (§5).
 | Program hex32 (route set on TC) | `0x5c16beb39b4cce694d11540723116126a83611921f0746efdc2133a3d0ab1966` |
 | Mint (Token-2022) | `GNUbsF5mrurtDzNc65HipN5Fyzzzqbj5UonLNhj9frjF` — "Terra Classic USD" / USTC / 6 decimals, mint authority = the mint PDA itself |
 | **Owner** | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` (deployer) — **⚠️ PLANNED: migrate to a multisig** (same handoff plan as the EVM sides) |
-| ISM | production 3-of-4 `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` |
+| ISM | production 4-of-6 `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` |
 | IGP | production `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` / OverheadIgp `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` — destination gas `3000000` for domain 132556 |
 | Router → TC | `132556 → 0x07226d32f6…21ebcfcc` (enroll-remote-router) |
 | TC → Solana route | `1399811149 → 0x5c16beb3…d0ab1966` — set_route tx `CE119868BF578706B0A1AA64C87F2552F8B1C3AECA8F738A5B184A30B414F750` |

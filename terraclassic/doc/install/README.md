@@ -24,7 +24,7 @@ the EVM/Solana side + the collateral warp on Terra Classic). Everything else —
 security and economics — is **shared production infrastructure that the scripts
 wire automatically**:
 
-- **ISM (security):** the shared mutable **3-of-4 multisig** (same 4 validators on
+- **ISM (security):** the shared mutable **4-of-6 multisig** (same 6 validators on
   every chain). Validator rotation is one owner tx for ALL warps at once.
 - **IGP (gas/fees):** the production gas paymaster — user fees fund the
   **relayer-reward-vault pool**, and gas prices are governed live by the

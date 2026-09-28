@@ -15,7 +15,7 @@
 |---|---|---|
 | Synthetic token (HypERC20 proxy) | 🆕 deployed | 🆕 deployed |
 | Collateral warp on Terra Classic | 🆕 deployed (code 11389 `hpl_warp_cw20` / native) | same |
-| ISM | ♻️ reused: `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` (mutable 3-of-4) | ♻️ `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` |
+| ISM | ♻️ reused: `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` (mutable 4-of-6) | ♻️ `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` |
 | IGP | ♻️ reused: `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` (fees → vault pool) | ♻️ `0x9650F1f8DB492750323172145e67Df4e89E964Aa` |
 | Hook | ♻️ reused: AggregationHook `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` | ♻️ `0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8` |
 | Gas prices | ♻️ governed (oracle-agent → governor → oracle) — never set manually | same |
