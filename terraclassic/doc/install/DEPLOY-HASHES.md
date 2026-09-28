@@ -191,9 +191,9 @@ record: unlike the test cw20s, this collateralizes real LUNC.
 | Warp program | `Dd3ajD8WbEyx7z3HqPnDyvUgFqEBzvF1VePjYd1NGnbr` |
 | Program hex32 (route set on TC) | `0xbb8812381e07b070e8d37945ae659b8ad17ff2c5c36f019f351f332d45a3b261` |
 | Mint (Token-2022) | `8dxTo5reLtvRDx3Q8WEP33Uj2C5u6372EygJdNbsLFKG` — "Luna Classic" / LUNC / 6 decimals, mint authority = the mint PDA itself |
-| **Owner** | `UyvAB4vzpbzUfSQP4uStLPz2Td1coSJcosCRGV4vHmr` — Squads vault (4-of-6, Hyperlane validators only — see [WARP-LUNC.md](WARP-LUNC.md#owner-multisig-squads-4-of-6)). Migrated 2026-09-28, tx `UMQDgY54sQgQT3DA9xhu5L1ayG6qvx2PZVY2usaM6M4Sp2gGHyTJxeU84dDqzFn6uye1spYZKPSGP9iBRan9NZX`. **⚠️ BPF upgrade authority, ISM and overhead IGP ownership NOT migrated yet** — still the single EOA. |
-| ISM | production 4-of-6 `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` — owner still the single EOA (migration to the Squads vault above is planned, not done) |
-| IGP | production `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` / OverheadIgp `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` — destination gas `3000000` for domain 132556; overhead IGP owner still the single EOA (same pending migration) |
+| **Owner** | `UyvAB4vzpbzUfSQP4uStLPz2Td1coSJcosCRGV4vHmr` — Squads vault (4-of-6, Hyperlane validators only — see [WARP-LUNC.md](WARP-LUNC.md#owner-multisig-squads-4-of-6)). Migrated 2026-09-28, tx `UMQDgY54sQgQT3DA9xhu5L1ayG6qvx2PZVY2usaM6M4Sp2gGHyTJxeU84dDqzFn6uye1spYZKPSGP9iBRan9NZX`. **⚠️ BPF upgrade authority still the single EOA** (a separate migration, not done) — everything else (ISM, overhead IGP, LUNC/USTC warp owner) is now on this vault. |
+| ISM | production 4-of-6 `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` — owner migrated to the Squads vault above 2026-09-28, tx `3k8ZYC1p5EW3oPjYTLY4MjW2XuqysA1P5qUTN1VJGbmQwmN4d5JK87mB67Xg8gUfAhoFysqzyHQ3yCRpHizjkUcP` |
+| IGP | production `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` / OverheadIgp `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` — destination gas `3000000` for domain 132556; overhead IGP owner migrated to the Squads vault above 2026-09-28, tx `2Y3rm6MDhs5qw9qfFGHGur7KKb6ATqxckzBAH3WdTJ2jWCQiPWiy2r9YQM1iCXdRVp5SYtsRqvo468hgLtK42smv` |
 | Router → TC | `132556 → 0xdfa5801933…afe12b71` (enroll-remote-router) |
 | Program sha256 | `d6f2fc9fed82c5079ce2cb1728d5f833d61c70e6d5f2f2a40d5df6d1bdb33419` (318,944 B — byte-identical to the reference `hyperlane_sealevel_token.so`; dumped and re-hashed on-chain 2026-08-29) |
 
@@ -261,9 +261,9 @@ production infrastructure as the LUNC route (§5).
 | Warp program | `7CUdBt1Qn2R2StE7MDPhQW2EhmnGg8zKK8oJXwAGEoyf` |
 | Program hex32 (route set on TC) | `0x5c16beb39b4cce694d11540723116126a83611921f0746efdc2133a3d0ab1966` |
 | Mint (Token-2022) | `GNUbsF5mrurtDzNc65HipN5Fyzzzqbj5UonLNhj9frjF` — "Terra Classic USD" / USTC / 6 decimals, mint authority = the mint PDA itself |
-| **Owner** | `UyvAB4vzpbzUfSQP4uStLPz2Td1coSJcosCRGV4vHmr` — Squads vault (4-of-6, Hyperlane validators only — see [WARP-LUNC.md](WARP-LUNC.md#owner-multisig-squads-4-of-6)). Migrated 2026-09-28, tx `3RUCtfzpTLjnZvBuJ8V7Pgwds5J8MAp2FWQADewkM6vr2wT3wqsEGtcZ4LPkPqwoBuSfLtVMLWRwRVWj5cfH6u2v`. **⚠️ BPF upgrade authority, ISM and overhead IGP ownership NOT migrated yet** — still the single EOA. |
-| ISM | production 4-of-6 `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` — owner still the single EOA (migration to the Squads vault above is planned, not done) |
-| IGP | production `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` / OverheadIgp `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` — destination gas `3000000` for domain 132556; overhead IGP owner still the single EOA (same pending migration) |
+| **Owner** | `UyvAB4vzpbzUfSQP4uStLPz2Td1coSJcosCRGV4vHmr` — Squads vault (4-of-6, Hyperlane validators only — see [WARP-LUNC.md](WARP-LUNC.md#owner-multisig-squads-4-of-6)). Migrated 2026-09-28, tx `3RUCtfzpTLjnZvBuJ8V7Pgwds5J8MAp2FWQADewkM6vr2wT3wqsEGtcZ4LPkPqwoBuSfLtVMLWRwRVWj5cfH6u2v`. **⚠️ BPF upgrade authority still the single EOA** (a separate migration, not done) — everything else (ISM, overhead IGP, LUNC/USTC warp owner) is now on this vault. |
+| ISM | production 4-of-6 `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` — owner migrated to the Squads vault above 2026-09-28, tx `3k8ZYC1p5EW3oPjYTLY4MjW2XuqysA1P5qUTN1VJGbmQwmN4d5JK87mB67Xg8gUfAhoFysqzyHQ3yCRpHizjkUcP` |
+| IGP | production `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` / OverheadIgp `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` — destination gas `3000000` for domain 132556; overhead IGP owner migrated to the Squads vault above 2026-09-28, tx `2Y3rm6MDhs5qw9qfFGHGur7KKb6ATqxckzBAH3WdTJ2jWCQiPWiy2r9YQM1iCXdRVp5SYtsRqvo468hgLtK42smv` |
 | Router → TC | `132556 → 0x07226d32f6…21ebcfcc` (enroll-remote-router) |
 | TC → Solana route | `1399811149 → 0x5c16beb3…d0ab1966` — set_route tx `CE119868BF578706B0A1AA64C87F2552F8B1C3AECA8F738A5B184A30B414F750` |
 | Program sha256 | `d6f2fc9fed82c5079ce2cb1728d5f833d61c70e6d5f2f2a40d5df6d1bdb33419` (318,944 B — byte-identical to the reference `hyperlane_sealevel_token.so` and to the LUNC program; dumped and re-hashed on-chain 2026-08-29) |

@@ -168,11 +168,15 @@ propose/vote/execute permissions) — no non-validator signer:
 | lll69 | `DGz7bPUQh2rXMuzUyvQXoDsmRMSgoanJ4aATizrZkib6` |
 | LuncGoblins | `BQPkvq6eDe23S89m5WY2mFtJ7nbTkxVq9jfxdDusV31s` |
 
-⚠️ Only the warp token's `owner` (application-level admin: enroll router, set ISM,
-set destination gas) moved to this multisig. The program's own BPF **upgrade
-authority** is still the single EOA above — a separate migration, not yet done.
-The ISM (`4MzF7HCf…`) and the overhead IGP (`FXacR73…`) also still have the EOA as
-owner; only LUNC and USTC's warp `owner` were migrated so far.
+The ISM (`4MzF7HCf…`, tx `3k8ZYC1p5EW3oPjYTLY4MjW2XuqysA1P5qUTN1VJGbmQwmN4d5JK87mB67Xg8gUfAhoFysqzyHQ3yCRpHizjkUcP`)
+and the overhead IGP (`FXacR73…`, tx `2Y3rm6MDhs5qw9qfFGHGur7KKb6ATqxckzBAH3WdTJ2jWCQiPWiy2r9YQM1iCXdRVp5SYtsRqvo468hgLtK42smv`)
+owners were migrated to this same multisig on 2026-09-28 too — this vault now
+controls every application-level admin function across LUNC, USTC, the ISM and
+the overhead IGP.
+
+⚠️ Only the *application-level* `owner` fields moved. Every program's own BPF
+**upgrade authority** (who can replace the program's code entirely) is still
+the single EOA above — a separate migration, not yet done.
 
 ---
 

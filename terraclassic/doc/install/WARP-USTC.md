@@ -151,12 +151,14 @@ spl-token display $MINT --url $RPC -p TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuE
 ```
 
 Explorer: https://explorer.solana.com/address/7CUdBt1Qn2R2StE7MDPhQW2EhmnGg8zKK8oJXwAGEoyf
-
-⚠️ Only the warp token's `owner` (application-level admin) moved to the multisig.
-The program's own BPF upgrade authority is still the single EOA — a separate
-migration, not yet done. The ISM and the overhead IGP also still have the EOA
-as owner; only LUNC and USTC's warp `owner` were migrated so far.
 · mint https://explorer.solana.com/address/GNUbsF5mrurtDzNc65HipN5Fyzzzqbj5UonLNhj9frjF
+
+The ISM and the overhead IGP owners were also migrated to this same multisig on
+2026-09-28 — composition and tx hashes in
+[WARP-LUNC.md §4](WARP-LUNC.md#owner-multisig-squads-4-of-6).
+
+⚠️ Only the *application-level* `owner` fields moved. Every program's own BPF
+upgrade authority is still the single EOA — a separate migration, not yet done.
 
 ---
 
