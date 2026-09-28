@@ -123,7 +123,7 @@ Explorer: https://etherscan.io/token/0xA4bc47a4C5461eB0E59A585a21A1222EF7544Ac6
 | Mint (Token-2022) | `8dxTo5reLtvRDx3Q8WEP33Uj2C5u6372EygJdNbsLFKG` — mint authority = the mint PDA itself |
 | Token storage PDA | `A4kSqqDvYFtC4Cvn1ZTU7YRZHAgnBCNjco7oib9DP2w3` |
 | ATA payer PDA | `G7VKP5kEACiWHJvAt3zC4GY1DfJ1X2qHy5uzFDmUZDyL` (funds recipients' token accounts) |
-| Owner | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` (deployer — multisig migration planned) |
+| Owner | `UyvAB4vzpbzUfSQP4uStLPz2Td1coSJcosCRGV4vHmr` — Squads vault, migrated 2026-09-28 (tx `UMQDgY54sQgQT3DA9xhu5L1ayG6qvx2PZVY2usaM6M4Sp2gGHyTJxeU84dDqzFn6uye1spYZKPSGP9iBRan9NZX`). Multisig composition below. |
 | Mailbox | `E588QtVUvresuXq2KoNEwAmoifCzYGpRBdHByN9KQMbi` (official Hyperlane) |
 | ISM | production 4-of-6 `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` |
 | IGP | `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` / OverheadIgp `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` — destination gas `3000000` for domain 132556 |
@@ -151,6 +151,28 @@ spl-token display $MINT --url $RPC -p TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuE
 
 Explorer: https://explorer.solana.com/address/Dd3ajD8WbEyx7z3HqPnDyvUgFqEBzvF1VePjYd1NGnbr
 · mint https://explorer.solana.com/address/8dxTo5reLtvRDx3Q8WEP33Uj2C5u6372EygJdNbsLFKG
+
+### Owner multisig (Squads, 4-of-6)
+
+Multisig account `De1McrvkHNCTs8aYrirqdRVyWcK7DTtEJyMnqGe7gVhr`, vault (the address
+actually set as `owner` above) `UyvAB4vzpbzUfSQP4uStLPz2Td1coSJcosCRGV4vHmr`. Members
+are exactly the 6 Hyperlane validators of this ISM's set (all with
+propose/vote/execute permissions) — no non-validator signer:
+
+| Member | Solana address |
+|---|---|
+| Igor Veras (deployer) | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
+| BurnItAll | `Go4LbhxTZX6gfvSEV1aN9MfqbLUqLNmqZEY32BencyXY` |
+| TCV | `6zRXUSgpuLzKtzPtMYTYRXihBTd7R9diRXy2x3q6mz8s` |
+| DarkSun | `CtZFtWhCfCQvwekkpqAVPcDfwSb5kpBXkX1hxcGrE21K` |
+| lll69 | `DGz7bPUQh2rXMuzUyvQXoDsmRMSgoanJ4aATizrZkib6` |
+| LuncGoblins | `BQPkvq6eDe23S89m5WY2mFtJ7nbTkxVq9jfxdDusV31s` |
+
+⚠️ Only the warp token's `owner` (application-level admin: enroll router, set ISM,
+set destination gas) moved to this multisig. The program's own BPF **upgrade
+authority** is still the single EOA above — a separate migration, not yet done.
+The ISM (`4MzF7HCf…`) and the overhead IGP (`FXacR73…`) also still have the EOA as
+owner; only LUNC and USTC's warp `owner` were migrated so far.
 
 ---
 

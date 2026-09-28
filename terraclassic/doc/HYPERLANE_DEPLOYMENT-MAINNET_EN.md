@@ -18,7 +18,11 @@ This guide documents the complete process of deploying and configuring Hyperlane
 > warp/ISM/IGP hashes on BSC/ETH/Solana) lives in
 > [`install/DEPLOY-HASHES.md`](install/DEPLOY-HASHES.md). The per-token ISM
 > (§Validator sets in force) moved from 3-of-4 to **4-of-6** on 2026-09-28
-> (LuncGoblins + lll69 added).
+> (LuncGoblins + lll69 added). Same day, LUNC and USTC's Solana warp `owner`
+> moved from the single EOA to a Squads multisig (4-of-6, members = exactly the
+> 6 Hyperlane validators above — see the Solana table footnote in §Contracts
+> deployed / owned). The ISM, overhead IGP owner and every program's BPF
+> upgrade authority are **not yet** migrated — still the single EOA.
 
 ---
 
@@ -989,16 +993,35 @@ Enrolled remote routers (LUNC): Ethereum → `0xA4bc47a4…`, BSC → `0x481095e
 
 | Program / account | Address | Owner | Upgrade authority |
 |---|---|---|---|
-| Warp **LUNC** program | `Dd3ajD8WbEyx7z3HqPnDyvUgFqEBzvF1VePjYd1NGnbr` | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
+| Warp **LUNC** program | `Dd3ajD8WbEyx7z3HqPnDyvUgFqEBzvF1VePjYd1NGnbr` | Squads vault `UyvAB4vz…vHmr` ⁴ | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
 | LUNC mint (Token-2022, 6 dec) | `8dxTo5reLtvRDx3Q8WEP33Uj2C5u6372EygJdNbsLFKG` | mint authority = program PDA | metadata update authority `BirXd4QD…` |
-| Warp **USTC** program | `7CUdBt1Qn2R2StE7MDPhQW2EhmnGg8zKK8oJXwAGEoyf` | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
+| Warp **USTC** program | `7CUdBt1Qn2R2StE7MDPhQW2EhmnGg8zKK8oJXwAGEoyf` | Squads vault `UyvAB4vz…vHmr` ⁴ | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
 | USTC mint (Token-2022, 6 dec) | `GNUbsF5mrurtDzNc65HipN5Fyzzzqbj5UonLNhj9frjF` | mint authority = program PDA | metadata update authority `BirXd4QD…` |
-| Warp ISM program (multisig, TC origin, shared by LUNC/USTC) | `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` | — | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
+| Warp ISM program (multisig, TC origin, shared by LUNC/USTC) | `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` — migration to the vault planned, not done | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
 | IGP program | `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` | — | — |
-| Overhead IGP account (used by the warps) | `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` | — |
+| Overhead IGP account (used by the warps) | `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` — migration to the vault planned, not done | — |
 | Inner IGP account (gas oracle for domain 132556) | `FPTvDsowMHXFKktoLgy2a2qfr5yL6846JHKwvk2mYKFk` | `4sZAfqDqEmR7LMWjrdNmoEkv8S6BDdnDkh5mfADenaaA` | beneficiary `Eq1mJGTSbLb8s6gfoyg5aovxFAhXpnVudXXSAmbDwb9w` |
 | Mailbox program (Hyperlane canonical) | `E588QtVUvresuXq2KoNEwAmoifCzYGpRBdHByN9KQMbi` | `3oocunLfAgATEqoRyW7A5zirsQuHJh6YjD4kReiVVKLa` (Hyperlane) | `3oocunLfAgATEqoRyW7A5zirsQuHJh6YjD4kReiVVKLa` |
 | Validator announce program (canonical) | `pRgs5vN4Pj7WvFbxf6QDHizo2njq2uksqEUbaSghVA8` | — | `3oocunLfAgATEqoRyW7A5zirsQuHJh6YjD4kReiVVKLa` |
+
+⁴ **Squads vault `UyvAB4vzpbzUfSQP4uStLPz2Td1coSJcosCRGV4vHmr`** — the vault of
+Squads multisig `De1McrvkHNCTs8aYrirqdRVyWcK7DTtEJyMnqGe7gVhr` (4-of-6). Only the
+LUNC and USTC warp `owner` fields (application-level admin) were migrated to it so
+far, 2026-09-28 (LUNC tx `UMQDgY54sQgQT3DA9xhu5L1ayG6qvx2PZVY2usaM6M4Sp2gGHyTJxeU84dDqzFn6uye1spYZKPSGP9iBRan9NZX`,
+USTC tx `3RUCtfzpTLjnZvBuJ8V7Pgwds5J8MAp2FWQADewkM6vr2wT3wqsEGtcZ4LPkPqwoBuSfLtVMLWRwRVWj5cfH6u2v`).
+The ISM and overhead IGP owner, and every program's BPF upgrade authority, are
+still the single EOA — that migration is planned but not done. Members are
+exactly the 6 Hyperlane validators of this ISM's set, all with
+propose/vote/execute permissions, no non-validator signer:
+
+| Member | Solana address |
+|---|---|
+| Igor Veras (deployer) | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` |
+| BurnItAll | `Go4LbhxTZX6gfvSEV1aN9MfqbLUqLNmqZEY32BencyXY` |
+| TCV | `6zRXUSgpuLzKtzPtMYTYRXihBTd7R9diRXy2x3q6mz8s` |
+| DarkSun | `CtZFtWhCfCQvwekkpqAVPcDfwSb5kpBXkX1hxcGrE21K` |
+| lll69 | `DGz7bPUQh2rXMuzUyvQXoDsmRMSgoanJ4aATizrZkib6` |
+| LuncGoblins | `BQPkvq6eDe23S89m5WY2mFtJ7nbTkxVq9jfxdDusV31s` |
 
 ### Validator sets in force
 

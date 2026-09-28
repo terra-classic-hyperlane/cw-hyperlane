@@ -123,7 +123,7 @@ Explorer: https://etherscan.io/token/0xf49408beb319aeCe3E8B3550a5C750C19b3F1e51
 | Mint (Token-2022) | `GNUbsF5mrurtDzNc65HipN5Fyzzzqbj5UonLNhj9frjF` — mint authority = the mint PDA itself |
 | Token storage PDA | `5Qw5PnPbEEfq1qudRu3fRnscQGvHDBVPVte8oZqDEqej` |
 | ATA payer PDA | `2PJy1MUAaCQfxJYPm6wxZfthc46Z1iYr3MnSwRR56WHF` (funds recipients' token accounts) |
-| Owner | `BirXd4QDxfq2vx9LGqgXXSgZrjT81rhoFGUbQRWDEf1j` (deployer — multisig migration planned) |
+| Owner | `UyvAB4vzpbzUfSQP4uStLPz2Td1coSJcosCRGV4vHmr` — Squads vault, migrated 2026-09-28 (tx `3RUCtfzpTLjnZvBuJ8V7Pgwds5J8MAp2FWQADewkM6vr2wT3wqsEGtcZ4LPkPqwoBuSfLtVMLWRwRVWj5cfH6u2v`). Same 4-of-6 multisig as LUNC — composition in [WARP-LUNC.md §4](WARP-LUNC.md#owner-multisig-squads-4-of-6). |
 | Mailbox | `E588QtVUvresuXq2KoNEwAmoifCzYGpRBdHByN9KQMbi` (official Hyperlane) |
 | ISM | production 4-of-6 `4MzF7HCfxuwj4EFHqZSEpvkcZZvv1mF37DP4pDHwR5VQ` |
 | IGP | `FLZuKRsfdovLqd8n1AYhPCwLqBjfFyZY3A2edgnjdJoR` / OverheadIgp `FXacR73HiuNyvW7x34KYCDyv8XxM86pz31Ap8t2v3RCJ` — destination gas `3000000` for domain 132556 |
@@ -151,6 +151,11 @@ spl-token display $MINT --url $RPC -p TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuE
 ```
 
 Explorer: https://explorer.solana.com/address/7CUdBt1Qn2R2StE7MDPhQW2EhmnGg8zKK8oJXwAGEoyf
+
+⚠️ Only the warp token's `owner` (application-level admin) moved to the multisig.
+The program's own BPF upgrade authority is still the single EOA — a separate
+migration, not yet done. The ISM and the overhead IGP also still have the EOA
+as owner; only LUNC and USTC's warp `owner` were migrated so far.
 · mint https://explorer.solana.com/address/GNUbsF5mrurtDzNc65HipN5Fyzzzqbj5UonLNhj9frjF
 
 ---
