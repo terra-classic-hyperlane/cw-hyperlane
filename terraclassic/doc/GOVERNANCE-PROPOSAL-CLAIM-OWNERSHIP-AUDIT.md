@@ -14,7 +14,7 @@ proposer's word.
 ## 1. Executive summary
 
 The Hyperlane infrastructure contracts on Terra Classic (mailbox, ISMs, hooks,
-IGP, and the LUNC/USTC/IGORFAKE/FAKEFAKE warp routes) were deployed and
+IGP, and the LUNC/USTC/ warp routes) were deployed and
 administered by a single deployer wallet (`terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp`)
 during installation and testing. This proposal completes the handoff of that
 administration to the chain's own governance module, so that future
