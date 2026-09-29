@@ -1,116 +1,155 @@
 #!/usr/bin/env bash
 #
-# transfer-ownership.sh — Transfere owner (e, opcionalmente, admin de migração)
-# de todos os contratos Hyperlane no Terra Classic para a conta da GOVERNANÇA.
+# transfer-ownership.sh — Transfers owner (and, optionally, migration admin) of
+# ALL Hyperlane contracts on Terra Classic to the GOVERNANCE account.
 #
-# >>> SEGURO POR PADRÃO: roda em --dry-run (NÃO executa nada). <<<
-# Para executar de verdade, passe --execute explicitamente.
+# Scope: every ownable contract discovered in context/terraclassic.json,
+# INCLUDING the LUNC/USTC warp routes and the test cw20 warps (IGORFAKE/
+# FAKEFAKE) — full inventory, see TRANSFER-OWNERSHIP-TO-GOVERNANCE.md.
 #
-# Mecanismo (confirmado no código hpl_ownable):
-#   - Transferência de OWNER é em DOIS PASSOS:
-#       1) VOCÊ (owner atual) chama  init_ownership_transfer { next_owner: GOV }
-#       2) A GOVERNANÇA chama        claim_ownership {}        (precisa aceitar!)
-#     Enquanto a governança não der o claim, VOCÊ continua sendo o owner.
-#   - Transferência de ADMIN (migração) é em UM PASSO: set-contract-admin (imediato).
+# HARD EXCLUSION: the IGP gas-oracle contract is NEVER touched by this script,
+# under any mode, regardless of its on-chain owner. It is governed separately
+# by its own dedicated oracle-governor contract and must stay that way — see
+# HARD_EXCLUDE below.
 #
-# Uso:
-#   ./transfer-ownership.sh                      # dry-run: passo 1 (init transfer) p/ você rodar
-#   ./transfer-ownership.sh --include-admin      # dry-run: + set-contract-admin
-#   ./transfer-ownership.sh --claim              # dry-run: comandos de CLAIM p/ a governança rodar
-#   ./transfer-ownership.sh --execute            # EXECUTA o passo 1 de verdade (cuidado!)
-#   ./transfer-ownership.sh --claim --execute    # governança EXECUTA o claim
+# >>> SAFE BY DEFAULT: runs in --dry-run (does NOT execute anything). <<<
+# Pass --execute explicitly to actually run something.
+#
+# Mechanism (confirmed in the hpl_ownable code, packages/ownable/src/lib.rs):
+#   - OWNER transfer is TWO STEPS:
+#       1) YOU (current owner) call  init_ownership_transfer { next_owner: GOV }
+#       2) GOVERNANCE claims          claim_ownership {}       (must accept!)
+#     Until governance claims, YOU remain the owner.
+#   - ADMIN transfer (migration authority) is ONE STEP: set-contract-admin
+#     (immediate).
+#
+# GOVERNANCE_ADDRESS below is the real Terra Classic x/gov module account
+# (verified on-chain via /cosmos/auth/v1beta1/module_accounts, name "gov").
+# A module account has NO private key — it cannot sign a plain tx. So the
+# claim_ownership step CANNOT be done with `--from <key>`; it can only happen
+# through a passed on-chain governance proposal that executes
+# MsgExecuteContract on its behalf. See --claim below: instead of trying to
+# sign anything, it generates that proposal's JSON for you to submit with
+# `terrad tx gov submit-proposal`.
+#
+# Usage:
+#   ./transfer-ownership.sh                                 # dry-run: step 1 (init transfer)
+#   ./transfer-ownership.sh --include-admin                 # dry-run: + set-contract-admin
+#   ./transfer-ownership.sh --claim                         # dry-run: preview the claim proposal JSON
+#   ./transfer-ownership.sh --key mykey --execute            # ACTUALLY runs step 1 (careful!)
+#   ./transfer-ownership.sh --claim --execute                # writes claim-ownership-proposal.json to disk (no key needed — nothing is signed)
+#   --key <name> sets SIGNER_KEY to a name from `terrad keys list` (only
+#   needed for --execute without --claim; the actual step 1 signer).
 #
 set -euo pipefail
 
 # ============================================================================
-# >>>>>>>>>>>>>>>>>>>>>>  CONFIGURE AQUI  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+# CONFIGURATION (verified on-chain 2026-09-28 — see TRANSFER-OWNERSHIP-TO-GOVERNANCE.md)
 # ============================================================================
 
-# Conta da governança que receberá owner/admin (terra1...). OBRIGATÓRIO.
-GOVERNANCE_ADDRESS=""
+# Governance account that will receive owner/admin (terra1...).
+# = the real x/gov module account, same on mainnet (columbus-5) and testnet.
+GOVERNANCE_ADDRESS="terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n"
 
-# Seu endereço atual de owner (terra1...). Usado como FILTRO DE SEGURANÇA:
-# o script só mexe em contratos cujo owner == este endereço. OBRIGATÓRIO.
-CURRENT_OWNER=""
+# Current owner of all target contracts (terra1...). Used as a SAFETY FILTER:
+# the script only touches contracts whose on-chain owner == this address.
+CURRENT_OWNER="terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp"
 
-# Nome da key no keyring que assina as transações (terrad keys list).
-#   - No modo normal: a SUA key (deployer/owner atual).
-#   - No modo --claim: a key da GOVERNANÇA (se for conta normal/multisig).
+# Contract(s) that must NEVER be touched by this script, no matter what.
+# hpl_igp_oracle — governed by its own dedicated oracle-governor contract
+# (terra1z7jmlky2cmsd9aslm4uxrsase2yjwz8k9rlk00ga8s7pxgljczjq9sv4hj), not by
+# this migration. Explicitly excluded per direct instruction, in addition to
+# already failing the CURRENT_OWNER filter naturally.
+HARD_EXCLUDE=(
+  "terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d"  # hpl_igp_oracle — DO NOT TOUCH
+)
+
+# Name of the keyring key that signs transactions (terrad keys list).
+#   - Normal mode: YOUR key (current deployer/owner).
+#   - --claim never signs anything itself anymore (see header) — SIGNER_KEY is
+#     unused in that mode.
 SIGNER_KEY=""
 
-# Rede
+# Network
 BINARY="terrad"
 CHAIN_ID="columbus-5"
 NODE="https://terra-classic-rpc.publicnode.com:443"
 GAS_PRICES="28.325uluna"
 GAS_ADJUST="1.5"
 
-# Arquivo de contexto do deploy (endereços dos contratos núcleo; warp é ignorado)
+# Deploy context file (source of all contract addresses)
 CONTEXT_FILE="$(cd "$(dirname "$0")" && pwd)/context/terraclassic.json"
 
-# NOTA: WARP ROUTES NÃO ENTRAM. Cada warp route é responsabilidade de quem o
-# criou; o script ignora automaticamente tudo que está sob "deployments.warp".
-#
-# Contratos de INFRAESTRUTURA extra (mailbox/ISM/IGP/hook) que por acaso não
-# estejam no context json — cole aqui. O script valida cada um via get_owner.
-# (NÃO coloque warp routes aqui.)
+# Extra infrastructure contracts that happen not to be in the context json —
+# add here. The script validates each one via get_owner just like the rest.
 EXTRA_CONTRACTS=(
-  # "terra1..."
   # "terra1..."
 )
 
 # ============================================================================
-# >>>>>>>>>>>>>>>>>>>>>>  NÃO PRECISA EDITAR ABAIXO  <<<<<<<<<<<<<<<<<<<<<<<<<<<
+# NO NEED TO EDIT BELOW
 # ============================================================================
 
 DRY_RUN=1
 INCLUDE_ADMIN=0
 CLAIM_MODE=0
 
-for arg in "$@"; do
-  case "$arg" in
+while [ $# -gt 0 ]; do
+  case "$1" in
     --execute)       DRY_RUN=0 ;;
     --dry-run)       DRY_RUN=1 ;;
     --include-admin) INCLUDE_ADMIN=1 ;;
     --claim)         CLAIM_MODE=1 ;;
+    --key)
+      shift
+      [ $# -gt 0 ] || { echo "--key requires a keyring key name"; exit 1; }
+      SIGNER_KEY="$1"
+      ;;
     -h|--help)
       grep '^#' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-    *) echo "Argumento desconhecido: $arg"; exit 1 ;;
+    *) echo "Unknown argument: $1"; exit 1 ;;
   esac
+  shift
 done
 
 c_red=$'\e[31m'; c_grn=$'\e[32m'; c_ylw=$'\e[33m'; c_cyn=$'\e[36m'; c_off=$'\e[0m'
-die(){ echo "${c_red}ERRO:${c_off} $*" >&2; exit 1; }
+die(){ echo "${c_red}ERROR:${c_off} $*" >&2; exit 1; }
 note(){ echo "${c_cyn}»${c_off} $*"; }
 
-# ---- validações ------------------------------------------------------------
-command -v "$BINARY" >/dev/null 2>&1 || die "binário '$BINARY' não encontrado no PATH."
-command -v python3   >/dev/null 2>&1 || die "python3 é necessário para ler o JSON."
-[ -f "$CONTEXT_FILE" ] || die "context não encontrado: $CONTEXT_FILE"
+# ---- validation --------------------------------------------------------
+command -v "$BINARY" >/dev/null 2>&1 || die "binary '$BINARY' not found in PATH."
+command -v python3   >/dev/null 2>&1 || die "python3 is required to read/write JSON."
+[ -f "$CONTEXT_FILE" ] || die "context file not found: $CONTEXT_FILE"
 [[ "$GOVERNANCE_ADDRESS" == terra1* ]] || die "configure GOVERNANCE_ADDRESS (terra1...)."
 [[ "$CURRENT_OWNER"      == terra1* ]] || die "configure CURRENT_OWNER (terra1...)."
 
-if [ "$DRY_RUN" -eq 0 ]; then
-  [[ -n "$SIGNER_KEY" ]] || die "modo --execute exige SIGNER_KEY configurado."
+if [ "$DRY_RUN" -eq 0 ] && [ "$CLAIM_MODE" -eq 0 ]; then
+  [[ -n "$SIGNER_KEY" ]] || die "--execute (step 1) requires SIGNER_KEY to be set."
 fi
 
-# ---- coleta de endereços candidatos ----------------------------------------
-# Pega todos os terra1... que parecem CONTRATO (>= 58 chars de payload) do
-# context json + os EXTRA_CONTRACTS. Wallets (38 chars) são ignoradas.
+is_excluded(){
+  local addr="$1"
+  for ex in "${HARD_EXCLUDE[@]}"; do
+    [ "$addr" = "$ex" ] && return 0
+  done
+  return 1
+}
+
+# ---- collect candidate addresses ---------------------------------------
+# Every terra1... that looks like a CONTRACT (32-byte payload bech32) found
+# anywhere in the context json (core, isms, hooks, AND warp — nothing is
+# skipped by category) + EXTRA_CONTRACTS.
 mapfile -t CTX_ADDRS < <(python3 - "$CONTEXT_FILE" <<'PY'
 import json,sys,re
 d=json.load(open(sys.argv[1]))
 seen=[]
-def walk(o,key=None):
-    # Pula toda a subárvore de warp routes: são responsabilidade de quem criou.
-    if key == "warp":
-        return
+def walk(o):
     if isinstance(o,dict):
-        for k,v in o.items(): walk(v,k)
+        for v in o.values(): walk(v)
     elif isinstance(o,list):
-        for v in o: walk(v,key)
+        for v in o: walk(v)
     elif isinstance(o,str):
-        # contratos no Terra têm 32 bytes -> bech32 longo (~63 chars)
+        # Terra Classic contracts use 32-byte payloads -> long bech32 (~63 chars)
         if re.fullmatch(r"terra1[0-9a-z]{58}", o) and o not in seen:
             seen.append(o)
 walk(d)
@@ -126,18 +165,19 @@ done
 # dedup
 mapfile -t CANDIDATES < <(printf '%s\n' "${CANDIDATES[@]}" | awk 'NF && !seen[$0]++')
 
-[ "${#CANDIDATES[@]}" -gt 0 ] || die "nenhum endereço candidato encontrado."
+[ "${#CANDIDATES[@]}" -gt 0 ] || die "no candidate addresses found."
 
 echo
 echo "============================================================"
-echo " Transferência de propriedade — Hyperlane Terra Classic"
+echo " Ownership transfer — Hyperlane Terra Classic"
 echo "============================================================"
-echo " Modo            : $( [ "$CLAIM_MODE" -eq 1 ] && echo 'CLAIM (rodar pela GOVERNANÇA)' || echo 'INIT TRANSFER (rodar por você)' )"
-echo " Execução        : $( [ "$DRY_RUN" -eq 1 ] && echo "${c_ylw}DRY-RUN (não executa)${c_off}" || echo "${c_red}EXECUTAR DE VERDADE${c_off}" )"
-echo " Governança (GOV): $GOVERNANCE_ADDRESS"
-echo " Owner atual     : $CURRENT_OWNER"
-echo " Incluir admin   : $( [ "$INCLUDE_ADMIN" -eq 1 ] && echo 'SIM' || echo 'não' )"
-echo " Candidatos      : ${#CANDIDATES[@]} endereço(s)"
+echo " Mode             : $( [ "$CLAIM_MODE" -eq 1 ] && echo 'CLAIM (generates governance proposal JSON)' || echo 'INIT TRANSFER (run by you, the current owner)' )"
+echo " Execution        : $( [ "$DRY_RUN" -eq 1 ] && echo "${c_ylw}DRY-RUN (nothing executed/written)${c_off}" || echo "${c_red}REAL EXECUTION${c_off}" )"
+echo " Governance (GOV) : $GOVERNANCE_ADDRESS"
+echo " Current owner    : $CURRENT_OWNER"
+echo " Hard-excluded    : ${HARD_EXCLUDE[*]}"
+echo " Include admin    : $( [ "$INCLUDE_ADMIN" -eq 1 ] && echo 'YES' || echo 'no' )"
+echo " Candidates       : ${#CANDIDATES[@]} address(es)"
 echo "============================================================"
 echo
 
@@ -145,35 +185,55 @@ TXFLAGS=(--chain-id "$CHAIN_ID" --node "$NODE" --gas auto \
          --gas-adjustment "$GAS_ADJUST" --gas-prices "$GAS_PRICES" \
          --from "$SIGNER_KEY" -y -b sync -o json)
 
-q_owner(){ # echo owner addr ou vazio se não for ownable
-  "$BINARY" query wasm contract-state smart "$1" '{"ownable":{"get_owner":{}}}' \
-     --node "$NODE" -o json 2>/dev/null \
-   | python3 -c 'import sys,json;
+# The public RPC node occasionally answers with a transient 503 under rapid
+# sequential queries — retry a few times before concluding a contract has no
+# owner. A false negative here would silently drop a real contract from the
+# eligible list, so this is not just cosmetic.
+retry_query(){
+  local attempt out
+  for attempt in 1 2 3; do
+    out="$("$@" 2>/dev/null || true)"
+    [ -n "$out" ] && { echo "$out"; return 0; }
+    sleep 2
+  done
+  echo "$out"
+}
+q_owner(){ # echo owner address, or nothing if not ownable
+  local out
+  out="$(retry_query "$BINARY" query wasm contract-state smart "$1" '{"ownable":{"get_owner":{}}}' \
+     --node "$NODE" -o json)"
+  echo "$out" | python3 -c 'import sys,json;
 try:
  print(json.load(sys.stdin)["data"]["owner"])
-except Exception: pass' 2>/dev/null
+except Exception: pass' 2>/dev/null || true
 }
-q_admin(){ # echo admin addr atual do contrato
-  "$BINARY" query wasm contract "$1" --node "$NODE" -o json 2>/dev/null \
-   | python3 -c 'import sys,json;
+q_admin(){ # echo current migration-admin of the contract
+  local out
+  out="$(retry_query "$BINARY" query wasm contract "$1" --node "$NODE" -o json)"
+  echo "$out" | python3 -c 'import sys,json;
 try:
  print(json.load(sys.stdin)["contract_info"]["admin"])
-except Exception: pass' 2>/dev/null
+except Exception: pass' 2>/dev/null || true
 }
 
 ELIGIBLE=(); SKIP=()
-note "Consultando owner on-chain de cada candidato..."
+note "Querying on-chain owner of each candidate..."
 echo
 for addr in "${CANDIDATES[@]}"; do
+  if is_excluded "$addr"; then
+    SKIP+=("$addr  (HARD-EXCLUDED — igp_oracle, governed separately) — skipped")
+    printf "  %s  %s\n" "${c_red}EXCL${c_off}" "$addr  (hard-excluded: igp_oracle)"
+    continue
+  fi
   owner="$(q_owner "$addr")"
   if [ -z "$owner" ]; then
-    SKIP+=("$addr  (não-ownable, ex.: validator_announce/merkle hook) — pulado")
-    printf "  %s  %s\n" "${c_ylw}skip${c_off}" "$addr  (sem get_owner)"
+    SKIP+=("$addr  (not ownable, e.g. validator_announce/merkle hook) — skipped")
+    printf "  %s  %s\n" "${c_ylw}skip${c_off}" "$addr  (no get_owner)"
     continue
   fi
   if [ "$owner" != "$CURRENT_OWNER" ]; then
-    SKIP+=("$addr  (owner = $owner ≠ você) — pulado")
-    printf "  %s  %s\n" "${c_ylw}skip${c_off}" "$addr  (owner já é $owner)"
+    SKIP+=("$addr  (owner = $owner ≠ you) — skipped")
+    printf "  %s  %s\n" "${c_ylw}skip${c_off}" "$addr  (owner is already $owner)"
     continue
   fi
   ELIGIBLE+=("$addr")
@@ -182,13 +242,13 @@ done
 
 echo
 echo "------------------------------------------------------------"
-echo " Elegíveis (owner == você): ${#ELIGIBLE[@]}    |    Pulados: ${#SKIP[@]}"
+echo " Eligible (owner == you): ${#ELIGIBLE[@]}    |    Skipped: ${#SKIP[@]}"
 echo "------------------------------------------------------------"
 echo
 
-[ "${#ELIGIBLE[@]}" -gt 0 ] || { note "Nada a fazer."; exit 0; }
+[ "${#ELIGIBLE[@]}" -gt 0 ] || { note "Nothing to do."; exit 0; }
 
-run_or_show(){ # $1 = descrição, resto = comando
+run_or_show(){ # $1 = description, rest = command
   local desc="$1"; shift
   if [ "$DRY_RUN" -eq 1 ]; then
     echo "  # $desc"
@@ -198,21 +258,80 @@ run_or_show(){ # $1 = descrição, resto = comando
     echo "  ▶ $desc"
     "$@"
     echo
-    sleep 2   # respiro entre txs p/ sequência de nonce
+    sleep 2   # breathing room between txs for nonce sequencing
   fi
 }
 
 if [ "$CLAIM_MODE" -eq 1 ]; then
-  # ---- modo CLAIM: governança aceita a posse ------------------------------
-  note "Comandos de CLAIM (executar com a key da GOVERNANÇA = $GOVERNANCE_ADDRESS):"
+  # ---- CLAIM mode: build the governance proposal JSON ---------------------
+  # GOVERNANCE_ADDRESS is the real x/gov module account: it has no private key,
+  # so claim_ownership can only happen via a passed governance proposal that
+  # executes MsgExecuteContract on the module's behalf — same pattern as
+  # terraclassic/submit-proposal-mainnet.ts.
+  OUT_FILE="claim-ownership-proposal.json"
+  note "Building the governance proposal that claims ownership on all ${#ELIGIBLE[@]} contract(s)..."
   echo
-  for addr in "${ELIGIBLE[@]}"; do
-    run_or_show "claim_ownership @ $addr" \
-      "$BINARY" tx wasm execute "$addr" '{"ownable":{"claim_ownership":{}}}' "${TXFLAGS[@]}"
-  done
+
+  if [ "$DRY_RUN" -eq 1 ]; then
+    echo "  # Would write $OUT_FILE with one MsgExecuteContract per contract:"
+    for addr in "${ELIGIBLE[@]}"; do
+      echo "  #   $addr  ->  {\"ownable\":{\"claim_ownership\":{}}}"
+    done
+    echo
+    note "DRY-RUN: nothing written. Re-run with --claim --execute to write $OUT_FILE."
+  else
+    # Query the REAL on-chain minimum deposit — never hardcode this, it's a
+    # governance parameter that can change (and has, historically).
+    LCD="https://lcd.terra-classic.hexxagon.io"
+    MIN_DEPOSIT_JSON=$(curl -s "$LCD/cosmos/gov/v1/params/deposit")
+    MIN_DEPOSIT_AMOUNT=$(echo "$MIN_DEPOSIT_JSON" | python3 -c "import sys,json; print(json.load(sys.stdin)['params']['min_deposit'][0]['amount'])" 2>/dev/null || echo "")
+    MIN_DEPOSIT_DENOM=$(echo "$MIN_DEPOSIT_JSON" | python3 -c "import sys,json; print(json.load(sys.stdin)['params']['min_deposit'][0]['denom'])" 2>/dev/null || echo "")
+    [ -n "$MIN_DEPOSIT_AMOUNT" ] && [ -n "$MIN_DEPOSIT_DENOM" ] || die "could not fetch live min_deposit from $LCD/cosmos/gov/v1/params/deposit — check manually before submitting."
+    DEPOSIT="${MIN_DEPOSIT_AMOUNT}${MIN_DEPOSIT_DENOM}"
+    note "Live on-chain min_deposit: $DEPOSIT ($(python3 -c "print(int('$MIN_DEPOSIT_AMOUNT')/1e6)") LUNC)"
+
+    python3 - "$OUT_FILE" "$GOVERNANCE_ADDRESS" "$DEPOSIT" "${ELIGIBLE[@]}" <<'PY'
+import json, sys
+out_file, gov, deposit = sys.argv[1], sys.argv[2], sys.argv[3]
+contracts = sys.argv[4:]
+proposal = {
+    "title": "Claim Hyperlane infrastructure ownership for governance",
+    "summary": (
+        "Governance claims ownership (claim_ownership) of the Hyperlane "
+        f"contracts on Terra Classic whose owner was already proposed to "
+        f"governance ({gov}) via init_ownership_transfer. "
+        "The IGP gas-oracle contract is intentionally NOT included: it is "
+        "governed separately by its own dedicated oracle-governor contract."
+    ),
+    "messages": [
+        {
+            "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+            "sender": gov,
+            "contract": c,
+            "msg": {"ownable": {"claim_ownership": {}}},
+            "funds": [],
+        }
+        for c in contracts
+    ],
+    "deposit": deposit,
+    "expedited": False,
+}
+with open(out_file, "w") as f:
+    json.dump(proposal, f, indent=2)
+print(f"Wrote {out_file} with {len(contracts)} claim_ownership message(s).")
+PY
+    echo
+    note "Submit it with:"
+    echo "  $BINARY tx gov submit-proposal $OUT_FILE \\"
+    echo "    --from <any_funding_key> --chain-id $CHAIN_ID --node $NODE \\"
+    echo "    --gas auto --gas-adjustment $GAS_ADJUST --gas-prices $GAS_PRICES -y"
+    echo
+    note "After it passes, vote/verify, then check:"
+    echo "  $BINARY query wasm contract-state smart <CONTRACT> '{\"ownable\":{\"get_owner\":{}}}' --node $NODE"
+  fi
 else
-  # ---- modo INIT TRANSFER: você propõe a transferência --------------------
-  note "Passo 1 — init_ownership_transfer (executar com a SUA key = $CURRENT_OWNER):"
+  # ---- INIT TRANSFER mode: you propose the transfer ------------------------
+  note "Step 1 — init_ownership_transfer (run with YOUR key = $CURRENT_OWNER):"
   echo
   for addr in "${ELIGIBLE[@]}"; do
     run_or_show "init_ownership_transfer -> $GOVERNANCE_ADDRESS @ $addr" \
@@ -223,14 +342,14 @@ else
 
   if [ "$INCLUDE_ADMIN" -eq 1 ]; then
     echo "------------------------------------------------------------"
-    note "Admin de migração — set-contract-admin (UM passo, imediato):"
-    echo "${c_ylw}  AVISO: ao mudar o admin você perde o poder de 'migrate' (upgrade) destes contratos.${c_off}"
-    echo "${c_ylw}  Recomendado fazer SÓ depois que a governança já tiver dado o claim do owner.${c_off}"
+    note "Migration admin — set-contract-admin (ONE step, immediate):"
+    echo "${c_ylw}  WARNING: changing the admin gives up your own 'migrate' (upgrade) power over these contracts.${c_off}"
+    echo "${c_ylw}  Recommended only AFTER governance has already claimed ownership.${c_off}"
     echo
     for addr in "${ELIGIBLE[@]}"; do
       cur_admin="$(q_admin "$addr")"
       if [ "$cur_admin" != "$CURRENT_OWNER" ]; then
-        echo "  ${c_ylw}skip admin${c_off} $addr  (admin atual = ${cur_admin:-<nenhum/imutável>})"
+        echo "  ${c_ylw}skip admin${c_off} $addr  (current admin = ${cur_admin:-<none/immutable>})"
         continue
       fi
       run_or_show "set-contract-admin -> $GOVERNANCE_ADDRESS @ $addr" \
@@ -239,16 +358,18 @@ else
   fi
 
   echo "------------------------------------------------------------"
-  note "LEMBRE: o owner só muda de fato quando a GOVERNANÇA rodar o claim:"
-  echo "        ./transfer-ownership.sh --claim            (dry-run)"
-  echo "        ./transfer-ownership.sh --claim --execute  (governança executa)"
-  echo "  Para CANCELAR antes do claim:"
-  echo "        $BINARY tx wasm execute <CONTRATO> '{\"ownable\":{\"revoke_ownership_transfer\":{}}}' --from <sua_key> ..."
+  note "REMEMBER: the owner only changes for real once GOVERNANCE claims it —"
+  note "governance has no private key, so this needs a passed proposal:"
+  echo "        ./transfer-ownership.sh --claim            (preview)"
+  echo "        ./transfer-ownership.sh --claim --execute  (writes claim-ownership-proposal.json)"
+  echo "        $BINARY tx gov submit-proposal claim-ownership-proposal.json --from <any_key> ..."
+  echo "  To CANCEL before the claim:"
+  echo "        $BINARY tx wasm execute <CONTRACT> '{\"ownable\":{\"revoke_ownership_transfer\":{}}}' --from <your_key> ..."
 fi
 
 echo
-note "Conferir resultado de qualquer contrato:"
-echo "  $BINARY query wasm contract-state smart <CONTRATO> '{\"ownable\":{\"get_owner\":{}}}' --node $NODE"
-echo "  $BINARY query wasm contract-state smart <CONTRATO> '{\"ownable\":{\"get_pending_owner\":{}}}' --node $NODE"
+note "Check the result of any contract:"
+echo "  $BINARY query wasm contract-state smart <CONTRACT> '{\"ownable\":{\"get_owner\":{}}}' --node $NODE"
+echo "  $BINARY query wasm contract-state smart <CONTRACT> '{\"ownable\":{\"get_pending_owner\":{}}}' --node $NODE"
 echo
-[ "$DRY_RUN" -eq 1 ] && note "${c_grn}DRY-RUN: nada foi executado.${c_off} Revise acima e rode com --execute quando estiver pronto."
+[ "$DRY_RUN" -eq 1 ] && note "${c_grn}DRY-RUN: nothing was executed.${c_off} Review the output above and re-run with --execute when ready."

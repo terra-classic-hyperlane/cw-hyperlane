@@ -165,10 +165,10 @@ record: unlike the test cw20s, this collateralizes real LUNC.
 | Field | Value |
 |---|---|
 | Warp contract | `0x481095ecEd7A907e7f390b6226F53a66D379e6e2` — "Luna Classic" / LUNC / 6 decimals |
-| **Owner** | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` (deployer) — **⚠️ PLANNED: migrate to a multisig**; owner controls `setHook`/`setInterchainSecurityModule`/`enrollRemoteRouter` and proxy upgrades via its ProxyAdmin |
-| ISM | production 4-of-6 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` |
+| **Owner** | Safe `0x4d78A2182a7Cd3a370D73E6651EF4B32C2dd8BDb` (4-of-6) — migrated 2026-09-28, tx `0xe59f998d3760d8de5d0d088bb57687e39022474a9c7bac4e4a3a7b8aebaee1d8`; owner controls `setHook`/`setInterchainSecurityModule`/`enrollRemoteRouter`. Proxy upgrades still gated by the ProxyAdmin, whose owner is still the deployer EOA (**not** migrated) |
+| ISM | production 4-of-6 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` — owner migration to the Safe proposed 2026-09-28 (tx `0xdae67930b3bbd09b7314737577c1cedbf2392dcd7860be3895a7066f8c6ac3ee`), awaiting 4-of-6 `acceptOwnership()` |
 | Hook | production AggregationHook `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` [merkle + governed IGP] — setHook tx `0x84da30aa…ece36b2` |
-| IGP | production `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` (fees → relayer-reward-vault) |
+| IGP | production `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` (fees → relayer-reward-vault) — owner `0x8f085bAD…` permanent, no ownership-transfer function in the deployed bytecode |
 | Router → TC | `132556 → 0xdfa5801933…afe12b71` — enroll tx `0xdcfc2dac…c468f7f` |
 | Bytecode sha256 | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to IGORFAKE/FAKEFAKE proxies) |
 
@@ -235,10 +235,10 @@ production infrastructure as the LUNC route (§5).
 | Field | Value |
 |---|---|
 | Warp contract | `0xfC067fd98FD123fC2cAd72d040AF60a523274339` — "Terra Classic USD" / USTC / 6 decimals |
-| **Owner** | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` (deployer) — **⚠️ PLANNED: migrate to a multisig**; owner controls `setHook`/`setInterchainSecurityModule`/`enrollRemoteRouter` and proxy upgrades via its ProxyAdmin |
-| ISM | production 4-of-6 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` |
+| **Owner** | Safe `0x4d78A2182a7Cd3a370D73E6651EF4B32C2dd8BDb` (4-of-6) — migrated 2026-09-28, tx `0xea7fbc516fcb95016ed6f4b70ed885e04a1f58011235fccee0a3fea8fc63a91c`; owner controls `setHook`/`setInterchainSecurityModule`/`enrollRemoteRouter`. Proxy upgrades still gated by the ProxyAdmin, whose owner is still the deployer EOA (**not** migrated) |
+| ISM | production 4-of-6 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` — owner migration to the Safe proposed 2026-09-28 (tx `0xdae67930b3bbd09b7314737577c1cedbf2392dcd7860be3895a7066f8c6ac3ee`), awaiting 4-of-6 `acceptOwnership()` |
 | Hook | production AggregationHook `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` [merkle + governed IGP] |
-| IGP | production `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` (fees → relayer-reward-vault) |
+| IGP | production `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` (fees → relayer-reward-vault) — owner `0x8f085bAD…` permanent, no ownership-transfer function in the deployed bytecode |
 | Router → TC | `132556 → 0x07226d32f6…21ebcfcc` — enroll tx `0xbfdfc072…730417b9` |
 | Bytecode sha256 | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to the LUNC / IGORFAKE / FAKEFAKE proxies) |
 

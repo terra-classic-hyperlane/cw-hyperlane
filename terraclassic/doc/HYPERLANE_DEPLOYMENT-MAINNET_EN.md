@@ -967,14 +967,31 @@ Enrolled remote routers (LUNC): Ethereum → `0xA4bc47a4…`, BSC → `0x481095e
 
 | Contract | Address | Owner | Admin |
 |---|---|---|---|
-| Warp **LUNC** (HypERC20 proxy, 6 dec) | `0x481095ecEd7A907e7f390b6226F53a66D379e6e2` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` | ProxyAdmin `0x002a1821aff44c12084bc13f3c5cf442720c127c` |
-| Warp **USTC** (HypERC20 proxy, 6 dec) | `0xfC067fd98FD123fC2cAd72d040AF60a523274339` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` | ProxyAdmin `0x60c92c612d0e7befd188043d557756fef07f725f` |
-| Warp ISM (StorageMessageIdMultisigIsm, TC origin, **4-of-6**) | `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` | — |
+| Warp **LUNC** (HypERC20 proxy, 6 dec) | `0x481095ecEd7A907e7f390b6226F53a66D379e6e2` | Safe `0x4d78A2…8BDb` ⁵ | ProxyAdmin `0x002a1821aff44c12084bc13f3c5cf442720c127c` |
+| Warp **USTC** (HypERC20 proxy, 6 dec) | `0xfC067fd98FD123fC2cAd72d040AF60a523274339` | Safe `0x4d78A2…8BDb` ⁵ | ProxyAdmin `0x60c92c612d0e7befd188043d557756fef07f725f` |
+| Warp ISM (StorageMessageIdMultisigIsm, TC origin, **4-of-6**) | `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` (pendingOwner = Safe ⁵, proposed, awaiting acceptOwnership) | — |
 | Warp hook (StaticAggregationHook: Merkle + IGP) | `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` | — (static) | — |
-| Warp IGP | `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` | — |
+| Warp IGP | `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` (permanent — deployed bytecode has no ownership-transfer function, see ⁵) | — |
 | IGP beneficiary | `0x34E06a7793877EC5251b1dC230aD7cD577d231f4` | | |
 | Mailbox (Hyperlane canonical) | `0x2971b9Aec44bE4eb673DF1B88cDB57b96eefe8a4` | `0x7379D7bB2ccA68982E467632B6554fD4e72e9431` (Hyperlane) | ProxyAdmin `0x65993af9d0d3a64ec77590db7ba362d6eb78ef70` |
 | Validator announce / Merkle tree hook (canonical) | `0x7024078130D9c2100fEA474DAD009C2d1703aCcd` / `0xFDb9Cd5f9daAA2E4474019405A328a88E7484f26` | `0xa7ECcdb9Be08178f896c26b7BbD8C3D4E844d9Ba` (Hyperlane) | — |
+
+⁵ **Safe `0x4d78A2182a7Cd3a370D73E6651EF4B32C2dd8BDb`** (BSC, Gnosis Safe v1.5.0,
+4-of-6) — same 6 validators as the ISM set, via separate governance wallets
+(not their checkpoint-signing keys):
+`0x867f9CE9…7a5e`, `0xCcC64365…e7716`, `0x21B658Ce…8E61f`, `0x45186a77…276Ea`,
+`0xd8828186…e38184`, `0xD14228A3…c71d007`.
+LUNC warp `owner` migrated 2026-09-28 (tx `0xe59f998d3760d8de5d0d088bb57687e39022474a9c7bac4e4a3a7b8aebaee1d8`),
+USTC warp `owner` migrated 2026-09-28 (tx `0xea7fbc516fcb95016ed6f4b70ed885e04a1f58011235fccee0a3fea8fc63a91c`).
+ISM `owner` is Ownable2StepUpgradeable: `transferOwnership` was called 2026-09-28
+(tx `0xdae67930b3bbd09b7314737577c1cedbf2392dcd7860be3895a7066f8c6ac3ee`), which
+only sets the Safe as `pendingOwner` — the migration finalizes once the Safe
+itself executes `acceptOwnership()` (4-of-6), which had not yet happened as of
+this writing. The IGP's deployed bytecode (verified by inspecting its actual
+function-selector dispatcher, not just the reference source) has no
+`transferOwnership`/`renounceOwnership` or equivalent — its `owner` cannot be
+migrated by any direct call and stays the original EOA permanently. Since the
+bridge is live in production, no IGP redeploy is planned to work around this.
 
 ### Ethereum (domain 1) — synthetic side
 

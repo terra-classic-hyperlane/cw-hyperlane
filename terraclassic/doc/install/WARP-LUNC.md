@@ -62,10 +62,10 @@ Same queries over LCD (no terrad): `curl https://lcd.terra-classic.hexxagon.io/c
 | Field | Value |
 |---|---|
 | Token contract | `0x481095ecEd7A907e7f390b6226F53a66D379e6e2` — "Luna Classic" / LUNC / 6 decimals |
-| Owner | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` (deployer — multisig migration planned; also controls the ProxyAdmin) |
-| ISM | production 4-of-6 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` |
+| Owner | Safe `0x4d78A2182a7Cd3a370D73E6651EF4B32C2dd8BDb` (4-of-6, same validators as the ISM set) — migrated 2026-09-28, tx `0xe59f998d3760d8de5d0d088bb57687e39022474a9c7bac4e4a3a7b8aebaee1d8`; still controls the ProxyAdmin as the deployer EOA (not migrated) |
+| ISM | production 4-of-6 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` — owner migration to the Safe proposed 2026-09-28 (`pendingOwner`, tx `0xdae67930b3bbd09b7314737577c1cedbf2392dcd7860be3895a7066f8c6ac3ee`), awaiting the Safe's 4-of-6 `acceptOwnership()` to finalize — see [HYPERLANE_DEPLOYMENT-MAINNET_EN.md](../HYPERLANE_DEPLOYMENT-MAINNET_EN.md) footnote ⁵ |
 | Hook | production AggregationHook `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` [merkleTree + governed IGP] |
-| IGP | production `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` (fees → relayer-reward-vault) |
+| IGP | production `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` (fees → relayer-reward-vault) — owner `0x8f085bAD…` is **permanent**: the deployed bytecode has no ownership-transfer function, confirmed by inspecting its live function-selector dispatcher (not the reference source) |
 | Router → TC | `132556 → 0xdfa5801933…afe12b71` |
 | Proxy bytecode sha256 | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical across all our HypERC20 proxies) |
 

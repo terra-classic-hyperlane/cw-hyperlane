@@ -1,0 +1,162 @@
+{
+  "title": "Claim Hyperlane infrastructure ownership for governance",
+  "summary": "Governance claims ownership (claim_ownership) of the Hyperlane contracts on Terra Classic whose owner was already proposed to governance (terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n) via init_ownership_transfer. The IGP gas-oracle contract is intentionally NOT included: it is governed separately by its own dedicated oracle-governor contract.",
+  "messages": [
+    {
+      "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
+      "contract": "terra1fwg35n5esjgny7d8pxnz8usjpwsvpguk0txsy6cnqxy58x9fdlksjpx3p9",
+      "msg": {
+        "ownable": {
+          "claim_ownership": {}
+        }
+      },
+      "funds": []
+    },
+    {
+      "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
+      "contract": "terra1uhzzvt9x3u8hjnkp695hklexx2uywjvfqv454d93ds92sgtpwk7qrpxdg0",
+      "msg": {
+        "ownable": {
+          "claim_ownership": {}
+        }
+      },
+      "funds": []
+    },
+    {
+      "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
+      "contract": "terra187rzjc3dznfxqtqqrwh796e5q4khmvp5av8mka6zhp98zjfk2z2qneldar",
+      "msg": {
+        "ownable": {
+          "claim_ownership": {}
+        }
+      },
+      "funds": []
+    },
+    {
+      "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
+      "contract": "terra1nqj7qlnt2sty0dgnu3ss5z4u6wr7hjfea7cn6wpwjt2uymts8ucsmuj9xw",
+      "msg": {
+        "ownable": {
+          "claim_ownership": {}
+        }
+      },
+      "funds": []
+    },
+    {
+      "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
+      "contract": "terra10s3p36tjek8amhlc4krxpzln6g8n0qy9jq82wyda434l3rv89wfsucl50t",
+      "msg": {
+        "ownable": {
+          "claim_ownership": {}
+        }
+      },
+      "funds": []
+    },
+    {
+      "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
+      "contract": "terra1026v947k2jn58t09ppw003xujj92vp3lxv0fg3xk8ccz42r8d2sqvnmvel",
+      "msg": {
+        "ownable": {
+          "claim_ownership": {}
+        }
+      },
+      "funds": []
+    },
+    {
+      "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
+      "contract": "terra1taunhg629rssf3g939nqr0h594q5mssrzdj5lkx2hygmxmh72ghqeqqnvz",
+      "msg": {
+        "ownable": {
+          "claim_ownership": {}
+        }
+      },
+      "funds": []
+    },
+    {
+      "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
+      "contract": "terra1xmdd7yhu3qdlfhrcku8srfvtday6efymj54gqz0daxsmn8pvqygq0nxq04",
+      "msg": {
+        "ownable": {
+          "claim_ownership": {}
+        }
+      },
+      "funds": []
+    },
+    {
+      "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
+      "contract": "terra1x8s9qtw9355pfckywkns4e8f9zyfjaf8w5e5s8vh28ph5gzwwlks9tjcnf",
+      "msg": {
+        "ownable": {
+          "claim_ownership": {}
+        }
+      },
+      "funds": []
+    },
+    {
+      "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
+      "contract": "terra1sud5xyknr93wmxem6kxdfd0vxcju47wuh7zdm5uecavrm36w669sp7j8ag",
+      "msg": {
+        "ownable": {
+          "claim_ownership": {}
+        }
+      },
+      "funds": []
+    },
+    {
+      "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
+      "contract": "terra1m7jcqxfn4hd7q4sywhw508nxshaf078c4vh83y0ts43y9tlp9dcs50cggy",
+      "msg": {
+        "ownable": {
+          "claim_ownership": {}
+        }
+      },
+      "funds": []
+    },
+    {
+      "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
+      "contract": "terra1qu3x6vhk4y6w6erhmedzfp2ug53qm5nwpyarxveqa7tvwg0telxqvd3ccf",
+      "msg": {
+        "ownable": {
+          "claim_ownership": {}
+        }
+      },
+      "funds": []
+    },
+    {
+      "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
+      "contract": "terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel",
+      "msg": {
+        "ownable": {
+          "claim_ownership": {}
+        }
+      },
+      "funds": []
+    },
+    {
+      "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
+      "contract": "terra1zkkk9km8f6gf5vgn4zf66ep0djztqqkvns8jws8c9f85v4tfxrvq9n2wlk",
+      "msg": {
+        "ownable": {
+          "claim_ownership": {}
+        }
+      },
+      "funds": []
+    }
+  ],
+  "deposit": "2417579670000uluna",
+  "expedited": false
+}
