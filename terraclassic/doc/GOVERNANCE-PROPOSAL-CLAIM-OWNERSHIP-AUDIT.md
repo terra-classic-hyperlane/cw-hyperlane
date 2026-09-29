@@ -3,10 +3,13 @@
 **Status as of 2026-09-29:** Step 1 (init_ownership_transfer) executed and
 verified on-chain for all 12 contracts in scope. Migration admin already
 transferred to governance for the 12 contracts that have one (§3). Step 2
-(the governance proposal itself, for `owner`) has been generated and **not
-yet submitted** (deposit currently partial — see
-`claim-ownership-proposal.json` for the live figures, which can change as the
-deposit is topped up).
+(the governance proposal itself, for `owner`) is **submitted on-chain as
+[proposal #12229](https://lcd.terra-classic.hexxagon.io/cosmos/gov/v1/proposals/12229)**,
+tx `2FC146CC730B2E2C1FC421B3E31A2A8980AFB743689E740837AC53E736AB8BC6`,
+currently in `PROPOSAL_STATUS_DEPOSIT_PERIOD` (deposit period ends
+2026-10-13) — see `claim-ownership-proposal.json` for the exact deposit
+amount, which can still be topped up by any wallet via `MsgDeposit` before it
+moves to voting.
 
 This document exists so any validator, community member, or reviewer can
 independently verify every claim behind the "Claim Hyperlane infrastructure

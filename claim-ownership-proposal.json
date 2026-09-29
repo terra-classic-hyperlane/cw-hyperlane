@@ -1,6 +1,6 @@
 {
   "title": "Claim Hyperlane infrastructure ownership for governance",
-  "summary": "Governance claims ownership (claim_ownership) of 12 Hyperlane infrastructure contracts on Terra Classic (mailbox, ISMs, hooks, IGP, LUNC/USTC warps) whose owner was already proposed to governance (terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n) via init_ownership_transfer. The IGP gas-oracle contract is intentionally NOT included: it is governed separately by its own dedicated oracle-governor contract. The discontinued test warp routes IGORFAKE and FAKEFAKE are also NOT included in this proposal; their pending_owner is already governance but the claim is deferred to a later proposal.",
+  "summary": "Governance claims ownership (claim_ownership) of 12 Hyperlane infrastructure contracts on Terra Classic (mailbox, ISMs, hooks, IGP, LUNC/USTC warps) whose owner was already proposed to governance (terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n) via init_ownership_transfer. https://discourse.luncgoblins.com/t/claim-hyperlane-infrastructure-ownership-for-governance/555 ",
   "messages": [
     {
       "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
@@ -135,6 +135,6 @@
       "funds": []
     }
   ],
-  "deposit": "2447482756218uluna",
+  "deposit": "2447382756218uluna",
   "expedited": false
 }
