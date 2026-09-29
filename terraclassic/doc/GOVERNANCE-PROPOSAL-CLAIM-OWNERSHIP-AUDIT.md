@@ -246,7 +246,11 @@ All source-code claims in §6.1 (the `hpl_ownable` logic and the per-contract
 `ExecuteMsg::Ownable` wiring) were verified against:
 
 - Repository: `git@github.com:terra-classic-hyperlane/cw-hyperlane.git`
-- Commit: `47a6cfc538af4a9067a4e8d221e68697e39428e9` (2026-09-28)
+- Contract source verified against commit: `47a6cfc538af4a9067a4e8d221e68697e39428e9` (2026-09-28)
+- This document, the tooling, and the proposal snapshot: commit
+  `b18cc218e782ac6743f14f30bbffa0a1cd1fe72f` (2026-09-28, not yet pushed to
+  `origin` at the time of writing — check `git log` on the branch for the
+  latest pushed state before relying on this hash being public).
 
 This document, `transfer-ownership.sh`/`transfer-ownership.md`, and
 `claim-ownership-proposal.json` are committed to the same repository so the
