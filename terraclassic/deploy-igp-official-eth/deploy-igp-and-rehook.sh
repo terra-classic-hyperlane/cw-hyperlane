@@ -83,6 +83,21 @@ MERKLE="0x48e6c30B97748d1e2e03bf3e9FbE3890ca5f8CCA"
 OLD_HOOK="0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8"
 EXPECTED_OWNER="0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae"
 
+# Compute an explicit, tight gas price instead of letting `cast` pick its own
+# (observed to pad well beyond 2x the current base fee by default, inflating
+# the balance cast requires up front even though only real usage is charged).
+# maxFeePerGas = 2x current base fee (standard EIP-1559 headroom for a couple
+# of blocks); priority fee kept minimal since eth_maxPriorityFeePerGas is
+# currently suggesting 0 on mainnet.
+BASE_FEE=$(cast base-fee --rpc-url "$RPC" 2>/dev/null || echo "")
+if [ -n "$BASE_FEE" ]; then
+  MAX_FEE=$((BASE_FEE * 2))
+  PRIORITY_FEE=100000000  # 0.1 gwei
+  GASPRICE_ARGS=(--gas-price "$MAX_FEE" --priority-gas-price "$PRIORITY_FEE")
+else
+  GASPRICE_ARGS=()
+fi
+
 DEPLOYER=$(cast wallet address $SIGNER_ARG)
 if [ "$(echo "$DEPLOYER" | tr '[:upper:]' '[:lower:]')" != "$(echo "$EXPECTED_OWNER" | tr '[:upper:]' '[:lower:]')" ]; then
   err "Signer ($DEPLOYER) is not $EXPECTED_OWNER, the expected/current owner of the warps and ISM."
@@ -99,7 +114,7 @@ warn "About to deploy a NEW contract on ETHEREUM MAINNET (real, expensive gas co
 read -p "Proceed with deploying the official InterchainGasPaymaster? (yes/no): " CONFIRM1
 [[ "$CONFIRM1" =~ ^[Yy][Ee][Ss]$ ]] || { info "Aborted."; exit 0; }
 
-TX=$(cast send --rpc-url "$RPC" $SIGNER_ARG --gas-limit 5000000 --create "$BYTECODE" 2>&1) || true
+TX=$(cast send --rpc-url "$RPC" $SIGNER_ARG --gas-limit 3900000 "${GASPRICE_ARGS[@]}" --create "$BYTECODE" 2>&1) || true
 if echo "$TX" | grep -qi "error\|revert"; then
   err "Deploy failed:"; echo "$TX"; exit 1
 fi
@@ -110,7 +125,7 @@ echo ""
 
 # ---- Step 2: initialize ----
 info "Step 2 — initialize(you, beneficiary)..."
-TX=$(cast send "$NEW_IGP" "initialize(address,address)" "$DEPLOYER" "$BENEFICIARY" --rpc-url "$RPC" $SIGNER_ARG 2>&1) || true
+TX=$(cast send "$NEW_IGP" "initialize(address,address)" "$DEPLOYER" "$BENEFICIARY" --rpc-url "$RPC" $SIGNER_ARG "${GASPRICE_ARGS[@]}" 2>&1) || true
 if echo "$TX" | grep -qi "error\|revert"; then
   err "initialize() failed:"; echo "$TX"
   err "Contract deployed at $NEW_IGP but uninitialized (initialize can only run once) — investigate before retrying."
@@ -122,7 +137,7 @@ echo ""
 # ---- Step 3: setDestinationGasConfigs ----
 info "Step 3 — setDestinationGasConfigs([{domain: $TERRA_CLASSIC_DOMAIN, oracle, overhead}])..."
 TX=$(cast send "$NEW_IGP" "setDestinationGasConfigs((uint32,(address,uint96))[])" \
-  "[($TERRA_CLASSIC_DOMAIN,($GAS_ORACLE,$GAS_OVERHEAD))]" --rpc-url "$RPC" $SIGNER_ARG 2>&1) || true
+  "[($TERRA_CLASSIC_DOMAIN,($GAS_ORACLE,$GAS_OVERHEAD))]" --rpc-url "$RPC" $SIGNER_ARG "${GASPRICE_ARGS[@]}" 2>&1) || true
 if echo "$TX" | grep -qi "error\|revert"; then
   err "setDestinationGasConfigs() failed:"; echo "$TX"; exit 1
 fi
@@ -148,7 +163,7 @@ else
   read -p "Proceed? (yes/no): " CONFIRM2
   [[ "$CONFIRM2" =~ ^[Yy][Ee][Ss]$ ]] || { info "Stopping here. New IGP is deployed and owned by you at $NEW_IGP — re-run later to finish wiring it."; exit 0; }
 
-  TX=$(cast send "$AGG_FACTORY" "deploy(address[])" "[$MERKLE,$NEW_IGP]" --rpc-url "$RPC" $SIGNER_ARG 2>&1) || true
+  TX=$(cast send "$AGG_FACTORY" "deploy(address[])" "[$MERKLE,$NEW_IGP]" --rpc-url "$RPC" $SIGNER_ARG "${GASPRICE_ARGS[@]}" 2>&1) || true
   if echo "$TX" | grep -qi "error\|revert"; then
     err "Hook deploy failed:"; echo "$TX"; exit 1
   fi
@@ -164,11 +179,11 @@ warn "Old hook (still live until this step, still points at the old custom IGP):
 warn "About to call setHook($NEW_HOOK) directly on LUNC and USTC warps."
 read -p "Proceed? (yes/no): " CONFIRM3
 if [[ "$CONFIRM3" =~ ^[Yy][Ee][Ss]$ ]]; then
-  TX=$(cast send "$LUNC_WARP" "setHook(address)" "$NEW_HOOK" --rpc-url "$RPC" $SIGNER_ARG 2>&1) || true
+  TX=$(cast send "$LUNC_WARP" "setHook(address)" "$NEW_HOOK" --rpc-url "$RPC" $SIGNER_ARG "${GASPRICE_ARGS[@]}" 2>&1) || true
   if echo "$TX" | grep -qi "error\|revert"; then err "LUNC setHook failed:"; echo "$TX"; exit 1; fi
   ok "LUNC warp hook updated."
 
-  TX=$(cast send "$USTC_WARP" "setHook(address)" "$NEW_HOOK" --rpc-url "$RPC" $SIGNER_ARG 2>&1) || true
+  TX=$(cast send "$USTC_WARP" "setHook(address)" "$NEW_HOOK" --rpc-url "$RPC" $SIGNER_ARG "${GASPRICE_ARGS[@]}" 2>&1) || true
   if echo "$TX" | grep -qi "error\|revert"; then err "USTC setHook failed:"; echo "$TX"; exit 1; fi
   ok "USTC warp hook updated."
 else
