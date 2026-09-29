@@ -1,13 +1,12 @@
 # Governance Proposal Audit — Claim Ownership of Hyperlane Infrastructure (Terra Classic)
 
 **Status as of 2026-09-29:** Step 1 (init_ownership_transfer) executed and
-verified on-chain for all 14 contracts. Migration admin already transferred
-to governance for the 12 contracts that have one (§3). Step 2 (the governance
-proposal itself, for `owner`) has been generated for **12 of the 14** and
-**not yet submitted** (deposit currently partial — see
+verified on-chain for all 12 contracts in scope. Migration admin already
+transferred to governance for the 12 contracts that have one (§3). Step 2
+(the governance proposal itself, for `owner`) has been generated and **not
+yet submitted** (deposit currently partial — see
 `claim-ownership-proposal.json` for the live figures, which can change as the
-deposit is topped up). IGORFAKE and FAKEFAKE were deliberately removed from
-this proposal's message list — see §2.1.
+deposit is topped up).
 
 This document exists so any validator, community member, or reviewer can
 independently verify every claim behind the "Claim Hyperlane infrastructure
@@ -25,11 +24,6 @@ during installation and testing. This proposal completes the handoff of that
 administration to the chain's own governance module, so that future
 configuration changes (validator set updates, hook/ISM changes, router
 enrollment) require a community vote instead of one wallet's signature.
-
-The discontinued test warp routes IGORFAKE and FAKEFAKE also had step 1
-executed alongside the other 12, but their `claim_ownership` was deliberately
-left out of this proposal (see §2.1) — this proposal covers exactly the 12
-live production contracts.
 
 The transfer is a standard two-step `hpl_ownable` handoff:
 1. **`init_ownership_transfer`** — the deployer proposes governance as the next
@@ -58,20 +52,7 @@ New owner: `terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n` — the Terra Classic
 | 11 | Warp **LUNC** (native, real collateral) | `hpl_warp_native` | `terra1m7jcqxfn4hd7q4sywhw508nxshaf078c4vh83y0ts43y9tlp9dcs50cggy` |
 | 12 | Warp **USTC** (native, real collateral) | `hpl_warp_native` | `terra1qu3x6vhk4y6w6erhmedzfp2ug53qm5nwpyarxveqa7tvwg0telxqvd3ccf` |
 
-### 2.1 Deferred — step 1 already done, claim NOT included in this proposal
-
-| Contract | Address | Status |
-|---|---|---|
-| Warp IGORFAKE (cw20, discontinued test route) | `terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel` | `pending_owner` = governance (step 1 done, tx in §6), `claim_ownership` deliberately left out of this proposal — deferred to a later one |
-| Warp FAKEFAKE (cw20, discontinued test route) | `terra1zkkk9km8f6gf5vgn4zf66ep0djztqqkvns8jws8c9f85v4tfxrvq9n2wlk` | same as above |
-
-These are discontinued test routes (not part of the production registry/UI).
-Removed from this proposal on request, to keep the first governance handoff
-focused on live production infrastructure. Until a future claim, `owner()` on
-both remains the deployer wallet — this is a safe, fully reversible
-intermediate state (see §8).
-
-### 2.2 Not ownable — no `owner` field exists, nothing to transfer
+### 2.1 Not ownable — no `owner` field exists, nothing to transfer
 
 | Contract | Address |
 |---|---|
@@ -95,14 +76,14 @@ effective immediately, with no vote or proposal involved.
 
 Executed 2026-09-29 by the deployer via `transfer-ownership.sh --admin-only
 --execute`, for **12 contracts** with a mutable admin: the 10 from §2, plus
-Validator Announce and the Merkle Tree hook (§2.2) — these two have no
+Validator Announce and the Merkle Tree hook (§2.1) — these two have no
 `owner()` at all, but a CosmWasm admin is a separate, always-present property
 independent of whether a contract implements `hpl_ownable`, so they were
 still eligible. (First pass at this script only checked admin for the
 owner-eligible subset and silently missed these two — fixed by building a
-separate admin-candidate list covering every non-excluded address.) The 4
-warp routes have no admin at all — see the "not ownable"-style note in
-`DEPLOY-HASHES.md`, admin is `<none/immutable>` for those, permanently
+separate admin-candidate list covering every non-excluded address.) The
+LUNC and USTC warps have no admin at all — see the "not ownable"-style note
+in `DEPLOY-HASHES.md`, admin is `<none/immutable>` for those, permanently
 (confirmed on-chain: `contract_info.admin` is an empty string, and an empty
 admin can never be set later — `MsgUpdateAdmin` requires the sender to
 already be the current admin). All 12 confirmed
@@ -167,7 +148,7 @@ Executed 2026-09-28 by the deployer (`terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26ma
 one `MsgExecuteContract` per contract:
 `{"ownable":{"init_ownership_transfer":{"next_owner":"terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n"}}}`.
 
-All 14 transactions confirmed with `code: 0` (success):
+All 12 transactions confirmed with `code: 0` (success):
 
 | Contract | Tx hash | Height |
 |---|---|---|
@@ -183,8 +164,6 @@ All 14 transactions confirmed with `code: 0` (success):
 | Hook Fee | `86A08F96AA8C9F49ED7A541086C0FE310F335CB1808AD8BA133CE77433773553` | 30609007 |
 | Warp LUNC | `5CFC5AB62513063186A968C0F82FEDFF1A92795AF9FC0A1B6A432150517E6708` | 30609009 |
 | Warp USTC | `AAD0BA1DF959F49CF0383D4B6BBC008B294140E4ED52DDB6444A9C4A547E10E4` | 30609011 |
-| Warp IGORFAKE | `FAA1AFB63B14CCE41517AA9A977698F5031A748D28949099C0E1632ACA73FC7F` | 30609012 |
-| Warp FAKEFAKE | `12F2661C77F0EBB4234E38E39F816E7C23CE04F7CA3B750430865536F6F49333` | 30609014 |
 
 Independently re-verifiable by anyone:
 ```bash
@@ -197,7 +176,7 @@ And the resulting state, queried directly (not from these tx receipts):
 curl -s "https://lcd.terra-classic.hexxagon.io/cosmwasm/wasm/v1/contract/<CONTRACT>/smart/$(echo -n '{"ownable":{"get_pending_owner":{}}}' | base64 -w0)"
 # -> data.pending_owner must be terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n
 ```
-All 14 confirmed this way on 2026-09-28 (14/14 match, 0 mismatches).
+All 12 confirmed this way on 2026-09-28 (12/12 match, 0 mismatches).
 
 ---
 
@@ -218,7 +197,7 @@ pub fn claim_ownership(storage: &mut dyn Storage, sender: &Addr) -> StdResult<Ev
 }
 ```
 
-Every one of the 14 contract types wires this the same way, confirmed by
+Every one of the 12 contracts wires `hpl_ownable` the same way, confirmed by
 reading each contract's source directly (not assumed from convention):
 
 ```
@@ -230,7 +209,6 @@ contracts/hooks/pausable/src/lib.rs:69:               ExecuteMsg::Ownable(msg) =
 contracts/hooks/fee/src/lib.rs:82:                    ExecuteMsg::Ownable(msg) => hpl_ownable::handle(...)
 contracts/igps/core/src/contract.rs:70:               ExecuteMsg::Ownable(msg) => hpl_ownable::handle(...)
 contracts/warp/native/src/contract.rs:98:             Ownable(msg) => hpl_ownable::handle(...)
-contracts/warp/cw20/src/contract.rs:94:               Ownable(msg) => hpl_ownable::handle(...)
 ```
 
 And every `ExecuteMsg` enum wraps it as a `#[cw_serde]` newtype variant
@@ -243,23 +221,21 @@ message shape used in `claim-ownership-proposal.json`.
 Cosmos SDK executes a proposal's messages atomically — if any one of the 12
 `claim_ownership` calls in this proposal were to fail (e.g. a contract's
 pending_owner had since changed), the entire proposal execution reverts;
-there is no partial application. Given §6 already confirms all 14
-pending_owner values (the 12 here plus the 2 deferred in §2.1) are correct,
-this proposal is expected to succeed in full or not at all.
+there is no partial application. Given §6 already confirms all 12
+pending_owner values are correct, this proposal is expected to succeed in
+full or not at all.
 
 ---
 
 ## 8. Reversibility
 
 - **Before this proposal passes:** the deployer remains the actual `owner` on
-  all 14 contracts (including the 2 deferred ones) and can cancel any
-  individual pending transfer with `{"ownable":{"revoke_ownership_transfer":{}}}`.
-- **After this proposal passes:** governance is the owner of the 12 claimed
+  all 12 contracts and can cancel any individual pending transfer with
+  `{"ownable":{"revoke_ownership_transfer":{}}}`.
+- **After this proposal passes:** governance is the owner of all 12
   contracts. Reverting requires a *new* governance proposal calling
   `init_ownership_transfer` back to a chosen address, then a wallet claiming
   it — i.e., undoing this requires the same democratic process that did it.
-  IGORFAKE and FAKEFAKE are unaffected either way — still pending, still
-  revocable or claimable independently in a future step.
 
 ---
 
