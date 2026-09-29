@@ -2,7 +2,7 @@
 
 **Status as of 2026-09-29:** Step 1 (init_ownership_transfer) executed and
 verified on-chain for all 14 contracts. Migration admin already transferred
-to governance for the 10 contracts that have one (§3). Step 2 (the governance
+to governance for the 12 contracts that have one (§3). Step 2 (the governance
 proposal itself, for `owner`) has been generated for **12 of the 14** and
 **not yet submitted** (deposit currently partial — see
 `claim-ownership-proposal.json` for the live figures, which can change as the
@@ -94,9 +94,18 @@ accept step: it is a single signed transaction from the current admin,
 effective immediately, with no vote or proposal involved.
 
 Executed 2026-09-29 by the deployer via `transfer-ownership.sh --admin-only
---execute`, for the same 10 contracts from §2 that have a mutable admin (the
-4 warp routes have no admin at all — see the "not ownable"-style note in
-`DEPLOY-HASHES.md`, admin is `<none/immutable>` for those). All 10 confirmed
+--execute`, for **12 contracts** with a mutable admin: the 10 from §2, plus
+Validator Announce and the Merkle Tree hook (§2.2) — these two have no
+`owner()` at all, but a CosmWasm admin is a separate, always-present property
+independent of whether a contract implements `hpl_ownable`, so they were
+still eligible. (First pass at this script only checked admin for the
+owner-eligible subset and silently missed these two — fixed by building a
+separate admin-candidate list covering every non-excluded address.) The 4
+warp routes have no admin at all — see the "not ownable"-style note in
+`DEPLOY-HASHES.md`, admin is `<none/immutable>` for those, permanently
+(confirmed on-chain: `contract_info.admin` is an empty string, and an empty
+admin can never be set later — `MsgUpdateAdmin` requires the sender to
+already be the current admin). All 12 confirmed
 `admin == terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n` directly via
 `GET /cosmwasm/wasm/v1/contract/<address>` (`contract_info.admin`), not just
 the broadcast response:
@@ -113,10 +122,12 @@ the broadcast response:
 | Hook Aggregate (required) | `A5CE1CEC5E92857BD6FBE3392E95F8163B6425A12EC802D35AF652FA58D31070` |
 | Hook Pausable | `12A7087A71969E31976E6C8FA887B5A4716B4117359BA12FC4B618457A1EEBEA` |
 | Hook Fee | `707C56E07861082C87C5BA9463B83DDBF17991C17679FE206385066F143178B1` |
+| Validator Announce | `06639CD923F00B2868A2200E4438438E21DCBEB3E6078A528F8DB77D6492EF77` |
+| Hook Merkle | `3566BD5A461BEAA93DD0C39B44DFDB4DEB7B11451784C33168EACF32042BBA6E` |
 
-(A first attempt at this failed silently on all 10 — `code 11`, out of gas,
+(A first attempt at the initial 10 failed silently — `code 11`, out of gas,
 visible only via a real tx query, not the broadcast response. Fixed in
-`transfer-ownership.sh` by raising `GAS_ADJUST` and re-run successfully; see
+`transfer-ownership.sh` by raising `GAS_ADJUST`, and re-run successfully; see
 `transfer-ownership.md` for the tooling fix.)
 
 ## 4. Also out of scope for this proposal
