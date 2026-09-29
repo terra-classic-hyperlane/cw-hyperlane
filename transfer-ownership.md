@@ -101,8 +101,9 @@ one script's target address for the other.
 
 Transferring `owner` does **not** transfer `admin`, and vice versa. The
 script only touches `owner` by default; `admin` is opt-in via
-`--include-admin` and should happen only after governance has already
-claimed ownership (see §5).
+`--include-admin` (or `--admin-only`, if step 1 already ran). Since `admin`
+transfer has no accept step, it can be run independently, before, during, or
+after the owner claim — there is no required order (see §5).
 
 ### 3.2 `owner` transfer is TWO STEPS
 
@@ -206,11 +207,14 @@ terrad query wasm contract-state smart <CONTRACT> '{"ownable":{"get_owner":{}}}'
 # should now be terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n for all 14
 ```
 
-**6. (Optional, later) Transfer the migration admin** — only after governance
-has confirmed the owner claim, so you're never left without any control
-mid-way:
+**6. (Optional) Transfer the migration admin.** Unlike `owner`, `admin`
+transfer (`MsgUpdateAdmin`) has no accept step — it takes effect immediately
+once you sign it, governance doesn't need to do anything. There is no
+technical reason to sequence it after the owner claim; do it whenever you
+decide governance should hold upgrade authority too. Use `--admin-only` to
+skip step 1 (already done) and go straight to the admin transfer:
 ```bash
-./transfer-ownership.sh --include-admin --execute
+./transfer-ownership.sh --admin-only --execute
 ```
 
 ---
@@ -239,10 +243,12 @@ mid-way:
 2. **The oracle is intentionally excluded, twice over** (filter + hard
    exclude) — do not remove it from `HARD_EXCLUDE` without an explicit
    decision to change how the oracle is governed.
-3. **Order matters for `--include-admin`:** transfer `owner` and let
-   governance claim it **before** touching `admin`. Changing `admin` too
-   early can leave you without upgrade power while the owner transfer is
-   still pending.
+3. **`admin` transfer is independent of `owner`, and immediate.** `owner`
+   needs governance to `claim_ownership` (a passed proposal) before it takes
+   effect; `admin` (`set-contract-admin`/`MsgUpdateAdmin`) has no accept step
+   at all — it changes the instant you sign it. There is no sequencing
+   requirement between the two; run `--admin-only` whenever you want,
+   independent of the owner claim's status.
 4. **Always dry-run first** and read the eligible/skipped list — if a
    contract you expect to see shows up as "skip (no get_owner)", re-run once
    before assuming it's really non-ownable (see §3.4 on RPC retries).

@@ -74,8 +74,9 @@ SIGNER_KEY=""
 BINARY="terrad"
 CHAIN_ID="columbus-5"
 NODE="https://terra-classic-rpc.publicnode.com:443"
+LCD="https://lcd.terra-classic.hexxagon.io"
 GAS_PRICES="28.325uluna"
-GAS_ADJUST="1.5"
+GAS_ADJUST="2.0"
 
 # Deploy context file (source of all contract addresses)
 CONTEXT_FILE="$(cd "$(dirname "$0")" && pwd)/context/terraclassic.json"
@@ -92,6 +93,7 @@ EXTRA_CONTRACTS=(
 
 DRY_RUN=1
 INCLUDE_ADMIN=0
+ADMIN_ONLY=0
 CLAIM_MODE=0
 
 while [ $# -gt 0 ]; do
@@ -99,6 +101,7 @@ while [ $# -gt 0 ]; do
     --execute)       DRY_RUN=0 ;;
     --dry-run)       DRY_RUN=1 ;;
     --include-admin) INCLUDE_ADMIN=1 ;;
+    --admin-only)    INCLUDE_ADMIN=1; ADMIN_ONLY=1 ;;
     --claim)         CLAIM_MODE=1 ;;
     --key)
       shift
@@ -207,6 +210,16 @@ try:
  print(json.load(sys.stdin)["data"]["owner"])
 except Exception: pass' 2>/dev/null || true
 }
+q_pending_owner(){ # echo pending_owner address, or nothing if none/not ownable
+  local out
+  out="$(retry_query "$BINARY" query wasm contract-state smart "$1" '{"ownable":{"get_pending_owner":{}}}' \
+     --node "$NODE" -o json)"
+  echo "$out" | python3 -c 'import sys,json;
+try:
+ v = json.load(sys.stdin)["data"]["pending_owner"]
+ print(v if v else "")
+except Exception: pass' 2>/dev/null || true
+}
 q_admin(){ # echo current migration-admin of the contract
   local out
   out="$(retry_query "$BINARY" query wasm contract "$1" --node "$NODE" -o json)"
@@ -248,6 +261,8 @@ echo
 
 [ "${#ELIGIBLE[@]}" -gt 0 ] || { note "Nothing to do."; exit 0; }
 
+FAILED_TXS=()  # collected for a final summary — see the end of the script
+
 run_or_show(){ # $1 = description, rest = command
   local desc="$1"; shift
   if [ "$DRY_RUN" -eq 1 ]; then
@@ -256,9 +271,54 @@ run_or_show(){ # $1 = description, rest = command
     echo
   else
     echo "  ▶ $desc"
-    "$@"
+    local tmpfile hash code raw_log
+    tmpfile=$(mktemp)
+    # Pipe through tee (not `$(...)` capture) so an interactive keyring
+    # passphrase prompt still reaches the terminal live — capturing stdout
+    # into a variable silently swallowed that prompt, leaving the script
+    # looking hung while it was actually just waiting for input on stdin.
+    "$@" 2>&1 | tee "$tmpfile" || true
+    # The file also contains the passphrase prompt text (mixed via 2>&1), so
+    # the JSON result is only ONE line among others — try each line, keep the
+    # first one that parses and has a txhash, instead of parsing the whole file.
+    hash=$(python3 -c 'import sys,json
+for line in open(sys.argv[1]):
+    line = line.strip()
+    if not line.startswith("{"):
+        continue
+    try:
+        h = json.loads(line).get("txhash", "")
+        if h:
+            print(h)
+            break
+    except Exception:
+        continue' "$tmpfile" 2>/dev/null)
+    rm -f "$tmpfile"
+    if [ -z "$hash" ]; then
+      echo "  ${c_red}⚠ could not extract a txhash from the response — verify manually.${c_off}"
+      FAILED_TXS+=("$desc -> no txhash returned")
+      echo
+      return
+    fi
+    # A 'sync' broadcast only confirms CheckTx (mempool acceptance), NOT that
+    # the transaction actually succeeded on-chain (DeliverTx). Wait for block
+    # inclusion, then check the REAL result — otherwise a failed tx (e.g. out
+    # of gas) looks identical to a successful one in the immediate response.
+    sleep 6
+    out="$(curl -s --max-time 10 "$LCD/cosmos/tx/v1beta1/txs/$hash")"
+    code=$(echo "$out" | python3 -c 'import sys,json
+try: print(json.load(sys.stdin)["tx_response"]["code"])
+except Exception: print("?")' 2>/dev/null)
+    if [ "$code" = "0" ]; then
+      echo "  ${c_grn}✓ confirmed on-chain (code 0)${c_off}"
+    else
+      raw_log=$(echo "$out" | python3 -c 'import sys,json
+try: print(json.load(sys.stdin)["tx_response"]["raw_log"][:250])
+except Exception: print("(could not fetch raw_log)")' 2>/dev/null)
+      echo "  ${c_red}✗ FAILED on-chain (code $code): $raw_log${c_off}"
+      FAILED_TXS+=("$desc -> tx $hash failed, code $code: $raw_log")
+    fi
     echo
-    sleep 2   # breathing room between txs for nonce sequencing
   fi
 }
 
@@ -282,7 +342,6 @@ if [ "$CLAIM_MODE" -eq 1 ]; then
   else
     # Query the REAL on-chain minimum deposit — never hardcode this, it's a
     # governance parameter that can change (and has, historically).
-    LCD="https://lcd.terra-classic.hexxagon.io"
     MIN_DEPOSIT_JSON=$(curl -s "$LCD/cosmos/gov/v1/params/deposit")
     MIN_DEPOSIT_AMOUNT=$(echo "$MIN_DEPOSIT_JSON" | python3 -c "import sys,json; print(json.load(sys.stdin)['params']['min_deposit'][0]['amount'])" 2>/dev/null || echo "")
     MIN_DEPOSIT_DENOM=$(echo "$MIN_DEPOSIT_JSON" | python3 -c "import sys,json; print(json.load(sys.stdin)['params']['min_deposit'][0]['denom'])" 2>/dev/null || echo "")
@@ -331,20 +390,30 @@ PY
   fi
 else
   # ---- INIT TRANSFER mode: you propose the transfer ------------------------
-  note "Step 1 — init_ownership_transfer (run with YOUR key = $CURRENT_OWNER):"
-  echo
-  for addr in "${ELIGIBLE[@]}"; do
-    run_or_show "init_ownership_transfer -> $GOVERNANCE_ADDRESS @ $addr" \
-      "$BINARY" tx wasm execute "$addr" \
-      "{\"ownable\":{\"init_ownership_transfer\":{\"next_owner\":\"$GOVERNANCE_ADDRESS\"}}}" \
-      "${TXFLAGS[@]}"
-  done
+  if [ "$ADMIN_ONLY" -eq 1 ]; then
+    note "Skipping step 1 (--admin-only) — going straight to migration admin."
+  else
+    note "Step 1 — init_ownership_transfer (run with YOUR key = $CURRENT_OWNER):"
+    echo
+    for addr in "${ELIGIBLE[@]}"; do
+      pending="$(q_pending_owner "$addr")"
+      if [ -n "$pending" ]; then
+        echo "  ${c_ylw}skip${c_off} $addr  (already has a pending_owner: $pending)"
+        continue
+      fi
+      run_or_show "init_ownership_transfer -> $GOVERNANCE_ADDRESS @ $addr" \
+        "$BINARY" tx wasm execute "$addr" \
+        "{\"ownable\":{\"init_ownership_transfer\":{\"next_owner\":\"$GOVERNANCE_ADDRESS\"}}}" \
+        "${TXFLAGS[@]}"
+    done
+  fi
 
   if [ "$INCLUDE_ADMIN" -eq 1 ]; then
     echo "------------------------------------------------------------"
-    note "Migration admin — set-contract-admin (ONE step, immediate):"
-    echo "${c_ylw}  WARNING: changing the admin gives up your own 'migrate' (upgrade) power over these contracts.${c_off}"
-    echo "${c_ylw}  Recommended only AFTER governance has already claimed ownership.${c_off}"
+    note "Migration admin — set-contract-admin (ONE step, immediate, no proposal needed):"
+    echo "${c_ylw}  This hands code-upgrade authority to governance right away — unlike owner,${c_off}"
+    echo "${c_ylw}  admin transfer has no accept step, so there is no reason to sequence it${c_off}"
+    echo "${c_ylw}  after the owner claim unless you specifically want that safety margin.${c_off}"
     echo
     for addr in "${ELIGIBLE[@]}"; do
       cur_admin="$(q_admin "$addr")"
@@ -372,4 +441,13 @@ note "Check the result of any contract:"
 echo "  $BINARY query wasm contract-state smart <CONTRACT> '{\"ownable\":{\"get_owner\":{}}}' --node $NODE"
 echo "  $BINARY query wasm contract-state smart <CONTRACT> '{\"ownable\":{\"get_pending_owner\":{}}}' --node $NODE"
 echo
+if [ "$DRY_RUN" -eq 0 ] && [ "${#FAILED_TXS[@]}" -gt 0 ]; then
+  echo "${c_red}✗ ${#FAILED_TXS[@]} transaction(s) FAILED on-chain${c_off} (confirmed via tx query, not just the broadcast response):"
+  for f in "${FAILED_TXS[@]}"; do
+    echo "  - $f"
+  done
+  echo "${c_ylw}These did NOT take effect. Common cause: gas underestimated — consider raising GAS_ADJUST and re-running.${c_off}"
+elif [ "$DRY_RUN" -eq 0 ]; then
+  echo "${c_grn}✓ All broadcast transactions confirmed successful on-chain (code 0).${c_off}"
+fi
 [ "$DRY_RUN" -eq 1 ] && note "${c_grn}DRY-RUN: nothing was executed.${c_off} Review the output above and re-run with --execute when ready."

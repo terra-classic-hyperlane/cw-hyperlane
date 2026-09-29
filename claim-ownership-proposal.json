@@ -1,6 +1,6 @@
 {
   "title": "Claim Hyperlane infrastructure ownership for governance",
-  "summary": "Governance claims ownership (claim_ownership) of the Hyperlane contracts on Terra Classic whose owner was already proposed to governance (terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n) via init_ownership_transfer. The IGP gas-oracle contract is intentionally NOT included: it is governed separately by its own dedicated oracle-governor contract.",
+  "summary": "Governance claims ownership (claim_ownership) of 12 Hyperlane infrastructure contracts on Terra Classic (mailbox, ISMs, hooks, IGP, LUNC/USTC warps) whose owner was already proposed to governance (terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n) via init_ownership_transfer. The IGP gas-oracle contract is intentionally NOT included: it is governed separately by its own dedicated oracle-governor contract. The discontinued test warp routes IGORFAKE and FAKEFAKE are also NOT included in this proposal; their pending_owner is already governance but the claim is deferred to a later proposal.",
   "messages": [
     {
       "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
@@ -127,28 +127,6 @@
       "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
       "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
       "contract": "terra1qu3x6vhk4y6w6erhmedzfp2ug53qm5nwpyarxveqa7tvwg0telxqvd3ccf",
-      "msg": {
-        "ownable": {
-          "claim_ownership": {}
-        }
-      },
-      "funds": []
-    },
-    {
-      "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
-      "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
-      "contract": "terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel",
-      "msg": {
-        "ownable": {
-          "claim_ownership": {}
-        }
-      },
-      "funds": []
-    },
-    {
-      "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
-      "sender": "terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n",
-      "contract": "terra1zkkk9km8f6gf5vgn4zf66ep0djztqqkvns8jws8c9f85v4tfxrvq9n2wlk",
       "msg": {
         "ownable": {
           "claim_ownership": {}

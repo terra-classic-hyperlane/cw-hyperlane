@@ -1,8 +1,13 @@
 # Governance Proposal Audit — Claim Ownership of Hyperlane Infrastructure (Terra Classic)
 
-**Status as of 2026-09-28:** Step 1 (init_ownership_transfer) executed and verified
-on-chain for all 14 contracts. Step 2 (the governance proposal itself) has been
-generated but **not yet submitted** (currently under-funded — see §6).
+**Status as of 2026-09-29:** Step 1 (init_ownership_transfer) executed and
+verified on-chain for all 14 contracts. Migration admin already transferred
+to governance for the 10 contracts that have one (§3). Step 2 (the governance
+proposal itself, for `owner`) has been generated for **12 of the 14** and
+**not yet submitted** (deposit currently partial — see
+`claim-ownership-proposal.json` for the live figures, which can change as the
+deposit is topped up). IGORFAKE and FAKEFAKE were deliberately removed from
+this proposal's message list — see §2.1.
 
 This document exists so any validator, community member, or reviewer can
 independently verify every claim behind the "Claim Hyperlane infrastructure
@@ -14,28 +19,29 @@ proposer's word.
 ## 1. Executive summary
 
 The Hyperlane infrastructure contracts on Terra Classic (mailbox, ISMs, hooks,
-IGP, and the LUNC/USTC/IGORFAKE/FAKEFAKE warp routes) were deployed and
-administered by a single deployer wallet (`terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp`)
+IGP, and the LUNC/USTC warp routes) were deployed and administered by a
+single deployer wallet (`terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp`)
 during installation and testing. This proposal completes the handoff of that
 administration to the chain's own governance module, so that future
 configuration changes (validator set updates, hook/ISM changes, router
 enrollment) require a community vote instead of one wallet's signature.
 
-The IGP gas-oracle contract is **intentionally excluded** — it is governed
-separately by its own dedicated oracle-governor contract and must stay that
-way; it is not part of this proposal's scope.
+The discontinued test warp routes IGORFAKE and FAKEFAKE also had step 1
+executed alongside the other 12, but their `claim_ownership` was deliberately
+left out of this proposal (see §2.1) — this proposal covers exactly the 12
+live production contracts.
 
 The transfer is a standard two-step `hpl_ownable` handoff:
 1. **`init_ownership_transfer`** — the deployer proposes governance as the next
-   owner (**already done**, see §5).
-2. **`claim_ownership`** — governance accepts (**this proposal**, see §6).
+   owner (**already done**, see §6).
+2. **`claim_ownership`** — governance accepts (**this proposal**, see §7).
 
 ---
 
-## 2. Scope — 14 contracts, one governance recipient
+## 2. Scope — 12 contracts claimed in this proposal, one governance recipient
 
-New owner for all 14: `terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n` — the
-Terra Classic **x/gov module account** (provenance in §4).
+New owner: `terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n` — the Terra Classic
+**x/gov module account** (provenance in §5).
 
 | # | Contract | Code (`hpl_*`) | Address |
 |---|---|---|---|
@@ -51,14 +57,19 @@ Terra Classic **x/gov module account** (provenance in §4).
 | 10 | Hook Fee (0.283215 LUNC/msg) | `hpl_hook_fee` | `terra1sud5xyknr93wmxem6kxdfd0vxcju47wuh7zdm5uecavrm36w669sp7j8ag` |
 | 11 | Warp **LUNC** (native, real collateral) | `hpl_warp_native` | `terra1m7jcqxfn4hd7q4sywhw508nxshaf078c4vh83y0ts43y9tlp9dcs50cggy` |
 | 12 | Warp **USTC** (native, real collateral) | `hpl_warp_native` | `terra1qu3x6vhk4y6w6erhmedzfp2ug53qm5nwpyarxveqa7tvwg0telxqvd3ccf` |
-| 13 | Warp IGORFAKE (cw20, discontinued test route) | `hpl_warp_cw20` | `terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel` |
-| 14 | Warp FAKEFAKE (cw20, discontinued test route) | `hpl_warp_cw20` | `terra1zkkk9km8f6gf5vgn4zf66ep0djztqqkvns8jws8c9f85v4tfxrvq9n2wlk` |
 
-### 2.1 Excluded — never touched by this proposal
+### 2.1 Deferred — step 1 already done, claim NOT included in this proposal
 
-| Contract | Address | Why |
+| Contract | Address | Status |
 |---|---|---|
-| IGP gas-oracle (`hpl_igp_oracle`) | `terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d` | Owned by its own dedicated oracle-governor contract (`terra1z7jmlky2cmsd9aslm4uxrsase2yjwz8k9rlk00ga8s7pxgljczjq9sv4hj`), confirmed on-chain. Out of scope by design, and hard-excluded in the tooling regardless of on-chain state. |
+| Warp IGORFAKE (cw20, discontinued test route) | `terra1wr7krp8lpfddpzxfkxvmhfnxd06vkz34e7f0tk2vyau36j3d4pvs6pjpel` | `pending_owner` = governance (step 1 done, tx in §6), `claim_ownership` deliberately left out of this proposal — deferred to a later one |
+| Warp FAKEFAKE (cw20, discontinued test route) | `terra1zkkk9km8f6gf5vgn4zf66ep0djztqqkvns8jws8c9f85v4tfxrvq9n2wlk` | same as above |
+
+These are discontinued test routes (not part of the production registry/UI).
+Removed from this proposal on request, to keep the first governance handoff
+focused on live production infrastructure. Until a future claim, `owner()` on
+both remains the deployer wallet — this is a safe, fully reversible
+intermediate state (see §8).
 
 ### 2.2 Not ownable — no `owner` field exists, nothing to transfer
 
@@ -74,15 +85,42 @@ issue, the code genuinely has no such query/execute variant.
 
 ---
 
-## 3. What does NOT change
+## 3. Migration admin — already done, outside this governance proposal
 
-- **Migration admin** (code-upgrade authority, separate from `owner`) is
-  **not** part of this proposal. It stays with the deployer wallet for now,
-  and is intentionally deferred to a later, separate proposal — only after
-  governance has claimed `owner` here, so the deployer is never left without
-  any control mid-transition. See `transfer-ownership.md` §8 for the
-  `--include-admin` flow.
-- The IGP gas-oracle's ownership (see §2.1).
+**Migration admin** (code-upgrade authority, separate from `owner`) was
+**never** part of this governance proposal — it doesn't need to be. Unlike
+`owner`, `admin` transfer (`MsgUpdateAdmin`/`set-contract-admin`) has no
+accept step: it is a single signed transaction from the current admin,
+effective immediately, with no vote or proposal involved.
+
+Executed 2026-09-29 by the deployer via `transfer-ownership.sh --admin-only
+--execute`, for the same 10 contracts from §2 that have a mutable admin (the
+4 warp routes have no admin at all — see the "not ownable"-style note in
+`DEPLOY-HASHES.md`, admin is `<none/immutable>` for those). All 10 confirmed
+`admin == terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n` directly via
+`GET /cosmwasm/wasm/v1/contract/<address>` (`contract_info.admin`), not just
+the broadcast response:
+
+| Contract | Tx hash |
+|---|---|
+| Mailbox | `210A97D10B55D4161CC67AF159F841E24E822DEADBF07D7A5D412F023E3C487E` |
+| ISM Routing | `D7E72AB2397FF89732783729D155FAD6334389CFA0E31990A519A2C2496FF3D6` |
+| ISM Multisig ETH | `4458068C1892F17B8FC0A6CF30E790CC277B4738B037484ED394DE82122C4DC9` |
+| ISM Multisig BSC | `17A957A9F6F8CE1E7F456632ADC1EEACBC730A2ABB8C37AB79E66A667FA675F4` |
+| ISM Multisig Solana | `BB49C0B3256251BD5C1FB34F38FB1481E71B2FC9A38AEDEF78D835EB26DBB700` |
+| Hook Aggregate (default) | `02E96F6FFC2CC0DE05E110491BA9B1E35B6D30BDF81EE6B71BFFB1508E78FD00` |
+| IGP | `ECFB49FA2B820D19E3E7B9CCF1732E61646447494201F8549CCC3A8BEB350A95` |
+| Hook Aggregate (required) | `A5CE1CEC5E92857BD6FBE3392E95F8163B6425A12EC802D35AF652FA58D31070` |
+| Hook Pausable | `12A7087A71969E31976E6C8FA887B5A4716B4117359BA12FC4B618457A1EEBEA` |
+| Hook Fee | `707C56E07861082C87C5BA9463B83DDBF17991C17679FE206385066F143178B1` |
+
+(A first attempt at this failed silently on all 10 — `code 11`, out of gas,
+visible only via a real tx query, not the broadcast response. Fixed in
+`transfer-ownership.sh` by raising `GAS_ADJUST` and re-run successfully; see
+`transfer-ownership.md` for the tooling fix.)
+
+## 4. Also out of scope for this proposal
+
 - Nothing on BSC, Ethereum, or Solana — this proposal is Terra Classic-side
   only. The synthetic warp routes on those chains are governed separately, by
   each chain's own validator multisig (Safe on BSC, Squads on Solana),
@@ -90,7 +128,7 @@ issue, the code genuinely has no such query/execute variant.
 
 ---
 
-## 4. Governance account provenance
+## 5. Governance account provenance
 
 `terra10d07y265gmmuvt4z0w9aw880jnsr700juxf95n` is not a hand-picked address —
 it is the chain's actual `x/gov` module account, deterministically derived by
@@ -108,11 +146,11 @@ and used unchanged since the original core deployment.
 
 A module account has **no private key** — the only way to make it act is
 through a passed governance proposal executing a message on its behalf, which
-is exactly what §6 is.
+is exactly what §7 is.
 
 ---
 
-## 5. Step 1 — init_ownership_transfer (already executed, verified on-chain)
+## 6. Step 1 — init_ownership_transfer (already executed, verified on-chain)
 
 Executed 2026-09-28 by the deployer (`terra1run9wz09uhh6pu7ggcwwetrgye4wu7wn26mawp`),
 one `MsgExecuteContract` per contract:
@@ -152,9 +190,9 @@ All 14 confirmed this way on 2026-09-28 (14/14 match, 0 mismatches).
 
 ---
 
-## 6. Step 2 — this proposal (claim_ownership)
+## 7. Step 2 — this proposal (claim_ownership)
 
-### 6.1 Message shape verification
+### 7.1 Message shape verification
 
 `claim_ownership` requires `info.sender == pending_owner` exactly — no other
 precondition:
@@ -189,68 +227,42 @@ And every `ExecuteMsg` enum wraps it as a `#[cw_serde]` newtype variant
 which serializes to `{"ownable": {"claim_ownership": {}}}` — exactly the
 message shape used in `claim-ownership-proposal.json`.
 
-This same governance-executed `MsgExecuteContract` mechanism (bundling
-multiple messages into one proposal, signed by the gov module account) has
-already been used successfully in this project's history — see proposals
-[#12200 and #12222](https://validator.info/terra-classic/governance/12222),
-referenced in `HYPERLANE_DEPLOYMENT-MAINNET_EN.md`.
+### 7.2 Behavior on partial failure
 
-### 6.2 Proposal contents
-
-- **Title:** "Claim Hyperlane infrastructure ownership for governance"
-- **Messages:** 14× `/cosmwasm.wasm.v1.MsgExecuteContract`, one per contract in
-  §2, `sender` = governance, `msg` = `{"ownable":{"claim_ownership":{}}}`.
-- **Chain minimum deposit:** live-queried from
-  `https://lcd.terra-classic.hexxagon.io/cosmos/gov/v1/params/deposit` —
-  `min_deposit` is **5,000,000,000,000 uluna (5,000,000 LUNC)** as of
-  2026-09-28 (`voting_period` 604800s, `quorum` 40%, `threshold` 50%,
-  `veto_threshold` 33.4%). This is a governance parameter and can change —
-  always re-fetch before submitting rather than trusting a hardcoded figure.
-- **Actual deposit in the current proposal file:** `2,417,579,670,000 uluna`
-  (2,417,579.67 LUNC — a **partial initial deposit**, ~48.4% of the chain
-  minimum, matching the deployer wallet's available balance at generation
-  time). `min_initial_deposit_ratio` on this chain is `0`, so a proposal can
-  be submitted with a partial deposit and enter the deposit period; it only
-  moves to voting once the full 5,000,000 LUNC is reached (any wallet can top
-  it up via `MsgDeposit` within the 14-day `max_deposit_period`, not
-  necessarily the original submitter).
-- File: `claim-ownership-proposal.json` (repo root), generated by
-  `./transfer-ownership.sh --claim --execute` and hand-edited for the partial
-  deposit amount above.
-
-### 6.3 Behavior on partial failure
-
-Cosmos SDK executes a proposal's messages atomically — if any one of the 14
-`claim_ownership` calls were to fail (e.g. a contract's pending_owner had
-since changed), the entire proposal execution reverts; there is no partial
-application. Given §5 already confirms all 14 pending_owner values are
-correct, this proposal is expected to succeed in full or not at all.
+Cosmos SDK executes a proposal's messages atomically — if any one of the 12
+`claim_ownership` calls in this proposal were to fail (e.g. a contract's
+pending_owner had since changed), the entire proposal execution reverts;
+there is no partial application. Given §6 already confirms all 14
+pending_owner values (the 12 here plus the 2 deferred in §2.1) are correct,
+this proposal is expected to succeed in full or not at all.
 
 ---
 
-## 7. Reversibility
+## 8. Reversibility
 
 - **Before this proposal passes:** the deployer remains the actual `owner` on
-  all 14 contracts and can cancel any individual pending transfer with
-  `{"ownable":{"revoke_ownership_transfer":{}}}`.
-- **After this proposal passes:** governance is the owner. Reverting requires
-  a *new* governance proposal calling `init_ownership_transfer` back to a
-  chosen address, then a wallet claiming it — i.e., undoing this requires the
-  same democratic process that did it.
+  all 14 contracts (including the 2 deferred ones) and can cancel any
+  individual pending transfer with `{"ownable":{"revoke_ownership_transfer":{}}}`.
+- **After this proposal passes:** governance is the owner of the 12 claimed
+  contracts. Reverting requires a *new* governance proposal calling
+  `init_ownership_transfer` back to a chosen address, then a wallet claiming
+  it — i.e., undoing this requires the same democratic process that did it.
+  IGORFAKE and FAKEFAKE are unaffected either way — still pending, still
+  revocable or claimable independently in a future step.
 
 ---
 
-## 8. Git provenance
+## 9. Git provenance
 
-All source-code claims in §6.1 (the `hpl_ownable` logic and the per-contract
+All source-code claims in §7.1 (the `hpl_ownable` logic and the per-contract
 `ExecuteMsg::Ownable` wiring) were verified against:
 
-- Repository: `git@github.com:terra-classic-hyperlane/cw-hyperlane.git`
-- Contract source verified against commit: `47a6cfc538af4a9067a4e8d221e68697e39428e9` (2026-09-28)
-- This document, the tooling, and the proposal snapshot: commit
-  `b18cc218e782ac6743f14f30bbffa0a1cd1fe72f` (2026-09-28, not yet pushed to
-  `origin` at the time of writing — check `git log` on the branch for the
-  latest pushed state before relying on this hash being public).
+- Repository: `git@github.com:terra-classic-hyperlane/cw-hyperlane.git`, `main` branch.
+- Contract source verified against commit: `47a6cfc538af4a9067a4e8d221e68697e39428e9` (2026-09-28).
+- This document and the tooling were first published in commit
+  `b18cc218e782ac6743f14f30bbffa0a1cd1fe72f` (2026-09-28) and have been
+  amended since — check `git log -- terraclassic/doc/GOVERNANCE-PROPOSAL-CLAIM-OWNERSHIP-AUDIT.md`
+  for the current state rather than assuming any single hash is final.
 
 This document, `transfer-ownership.sh`/`transfer-ownership.md`, and
 `claim-ownership-proposal.json` are committed to the same repository so the
@@ -259,7 +271,7 @@ reproducible and auditable by anyone, not just quoted in a proposal summary.
 
 ---
 
-## 9. Related files
+## 10. Related files
 
 - [`../../transfer-ownership.md`](../../transfer-ownership.md) — operator's
   guide (flags, flow, troubleshooting) for `transfer-ownership.sh`.
@@ -269,4 +281,4 @@ reproducible and auditable by anyone, not just quoted in a proposal summary.
   — full mainnet deployment record, including the BSC/Ethereum/Solana side
   (out of scope for this proposal, documented for context).
 - `packages/ownable/src/lib.rs`, `packages/interface/src/ownable.rs` —
-  `hpl_ownable` implementation referenced in §6.1.
+  `hpl_ownable` implementation referenced in §7.1.
