@@ -261,6 +261,16 @@ echo
 
 [ "${#ELIGIBLE[@]}" -gt 0 ] || { note "Nothing to do."; exit 0; }
 
+# Admin (CosmWasm migration authority) is independent of hpl_ownable's owner()
+# — a contract can have no custom owner (validator_announce, merkle hook) and
+# still have a real, mutable admin set at instantiation. Build a SEPARATE
+# candidate list for the admin step: every non-hard-excluded address, not just
+# the ones eligible for the owner transfer above.
+ADMIN_CANDIDATES=()
+for addr in "${CANDIDATES[@]}"; do
+  is_excluded "$addr" || ADMIN_CANDIDATES+=("$addr")
+done
+
 FAILED_TXS=()  # collected for a final summary — see the end of the script
 
 run_or_show(){ # $1 = description, rest = command
@@ -415,7 +425,7 @@ else
     echo "${c_ylw}  admin transfer has no accept step, so there is no reason to sequence it${c_off}"
     echo "${c_ylw}  after the owner claim unless you specifically want that safety margin.${c_off}"
     echo
-    for addr in "${ELIGIBLE[@]}"; do
+    for addr in "${ADMIN_CANDIDATES[@]}"; do
       cur_admin="$(q_admin "$addr")"
       if [ "$cur_admin" != "$CURRENT_OWNER" ]; then
         echo "  ${c_ylw}skip admin${c_off} $addr  (current admin = ${cur_admin:-<none/immutable>})"
