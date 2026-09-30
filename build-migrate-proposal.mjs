@@ -96,7 +96,8 @@ const proposal = {
     'immutable — confirmed on-chain) and cannot be migrated by any proposal, ever. The IGP Oracle admin was ' +
     'transferred to governance separately on 2026-09-30 (tx 2182AB478B5197245C50CA6657D55BAF7AEBE41529D938F88BE36B975F84F4B6) ' +
     'and is included in this proposal. MigrateMsg is empty ({}) for every message; cw2 version ' +
-    'check passes for all (stored 0.0.6 < new 0.0.7).',
+    'check passes for all (stored 0.0.6 < new 0.0.7). Full writeup with per-contract old/new code_id and ' +
+    'checksums: https://discourse.luncgoblins.com/t/migrate-hyperlane-infrastructure-contracts-to-fix-duplicate-signature-counting-bug-upstream-142/556',
   messages,
   deposit: '5000000000000uluna',
   expedited: false,
