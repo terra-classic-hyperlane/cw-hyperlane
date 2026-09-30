@@ -33,6 +33,13 @@ The transfer is a standard two-step `hpl_ownable` handoff:
    owner (**already done**, see §6).
 2. **`claim_ownership`** — governance accepts (**this proposal**, see §7).
 
+**Note:** the 3 ISM Multisig contracts in scope (§2, items #3–#5) carry a
+pre-existing bug in their deployed code (duplicate validator-signature
+counting, predates upstream fix #142) — unrelated to `claim_ownership`
+itself, but relevant to anyone evaluating this infrastructure. See §10 for
+the finding and the remediation path, which does not block or depend on this
+proposal.
+
 ---
 
 ## 2. Scope — 12 contracts claimed in this proposal, one governance recipient
@@ -261,7 +268,99 @@ reproducible and auditable by anyone, not just quoted in a proposal summary.
 
 ---
 
-## 10. Related files
+## 10. Known pre-existing issue — multisig ISM duplicate-signature counting (code_id 11374)
+
+**Found independently by community researcher Fragwuerdig**, posted
+[on Discourse](https://discourse.luncgoblins.com/t/claim-hyperlane-infrastructure-ownership-for-governance/555/2?u=fragwuerdig)
+2026-09-30, and confirmed by us the same day. This is a property of the code
+already live on-chain — it is **not introduced or changed by this proposal**,
+and does not affect the correctness of `claim_ownership` verified in §7.1.
+Documented here so it isn't discovered twice and so the remediation path is
+on record before the vote.
+
+### 10.1 What's wrong
+
+The three ISM Multisig contracts (§2, items #3–#5: ETH, BSC, Solana) all run
+code_id `11374`, uploaded 2026-06-03 as the **unmodified official release**
+`many-things/cw-hyperlane` tag `v0.0.7-rc0`
+(`yarn cw-hpl upload remote v0.0.7-rc0 -n terraclassic` — see
+`HYPERLANE_DEPLOYMENT-MAINNET_EN.md`). That release predates upstream
+[PR #142](https://github.com/many-things/cw-hyperlane/commit/d07e55e17c791a5f6557f114e3fb6cb433d9b800)
+("fix: correct multisig ism signature verification logic", merged
+2024-11-11), which fixed `verify_message` in
+`contracts/isms/multisig/src/query.rs`. Pre-fix, the loop decrements the
+threshold counter for every signature that recovers to an address in the
+validator set, **without checking whether that validator has already been
+counted in this same verification**:
+
+```rust
+for signature in metadata.signatures {
+    let pubkey = deps.api.secp256k1_recover_pubkey(&hashed_message, &signature[..64], signature[64] - 27)?;
+    if validators.contains(&eth_addr(pubkey.into())?) {
+        threshold -= 1;
+        if threshold == 0 { break; }
+    }
+}
+```
+
+Impact: the relayer supplies the signature metadata for an inbound message.
+Repeating one validator's own valid signature N times satisfies an N-of-M
+threshold **by itself** — no collusion between validators needed. A single
+compromised or malicious key in the validator set could forge acceptance of
+an arbitrary inbound message on that ISM, including a warp transfer that
+releases native LUNC/USTC from the Warp LUNC/USTC contracts (§2, items
+#11–#12), since their default security path routes through this same ISM
+(via ISM Routing, item #2).
+
+**Bytecode verification (independently reproduced, not just claimed):**
+on-chain `data_hash` for code_id 11374
+(`32b07207c733ba7469f49d321c30cf00bacb8c9560dc92accd35df61e5e3a531`) matches
+the upstream `v0.0.7-rc0` GitHub release sha256 exactly, and matches an
+independent local rebuild from source tag `v0.0.7-rc0` (commit `eb791b56d`)
+via `cosmwasm/optimizer:0.15.0`. Confirmed locally: `d07e55e` (the #142 fix)
+**is** present in our fork's `main` branch (`terra-classic-hyperlane/cw-hyperlane`)
+today — the fix exists in our source tree, it was simply never rebuilt and
+re-uploaded as a new on-chain code after the original 2026-06-03 upload. Three
+other upstream fixes merged into fork `main` after the deployed tag are
+likewise absent on-chain: #138 (mailbox `Process` event emits local instead
+of origin domain — cosmetic), #139 (pausable-ISM event name — cosmetic), #143
+(allow disabling ISM/hook — feature).
+
+### 10.2 Scope of exposure
+
+The validator sets behind the affected ISMs (§2 items #3–#5) are the
+**official Hyperlane mainnet validator sets** for each origin chain, not
+TC-chosen keys:
+
+| ISM | Domain | Validators | Threshold |
+|---|---|---|---|
+| ISM Multisig ETH | 1 | 9 | 6 |
+| ISM Multisig BSC | 56 | 6 | 4 |
+| ISM Multisig Solana | 1399811149 | 5 | 3 |
+
+So exploitation requires one of those specific official validator keys to be
+malicious or compromised — bounded, but real, and not something this
+repository controls.
+
+### 10.3 Remediation does not have to wait for this proposal
+
+Migration (code upgrade) authority is the contract **admin**, which is
+separate from **owner** (§3) and was already transferred to governance on
+2026-09-29 for all three ISM Multisig contracts — independently of whether
+proposal #12229 (this `owner` claim) passes. Governance can therefore fix
+this with its own, separate `MsgMigrateContract` proposal at any time: build
+code from current fork `main` (which already contains #142), upload it, and
+migrate the three `terra187rzjc3…neldar` / `terra1nqj7qln…muj9xw` /
+`terra10s3p36t…ucl50t` addresses to it. This does not depend on, and can run
+in parallel with, the ownership handoff covered by this document. Once
+`owner` also moves to governance (this proposal), migrating the `default`
+Mailbox ISM and the Pausable hook to a current build is optional
+cleanup — recommended, not required, since neither carries the
+signature-verification bug (that's specific to `hpl_ism_multisig`).
+
+---
+
+## 11. Related files
 
 - [`../../transfer-ownership.md`](../../transfer-ownership.md) — operator's
   guide (flags, flow, troubleshooting) for `transfer-ownership.sh`.
