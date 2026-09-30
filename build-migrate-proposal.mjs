@@ -23,6 +23,7 @@ const NEW_CODE_ID = {
   hpl_hook_fee: 11695,
   hpl_hook_merkle: 11696,
   hpl_hook_pausable: 11697,
+  hpl_igp_oracle: 11704,
 };
 
 // every contract instance considered for this migration, with its type.
@@ -43,6 +44,7 @@ const INSTANCES = [
   { name: 'hook_merkle', type: 'hpl_hook_merkle', address: 'terra183lq6yqp8km3p34cxgk6k3u78uy4plqahey6rne7n9gy98delr9qyp0n2p' },
   { name: 'warp LUNC (native)', type: 'hpl_warp_native', address: 'terra1m7jcqxfn4hd7q4sywhw508nxshaf078c4vh83y0ts43y9tlp9dcs50cggy' },
   { name: 'warp USTC (native)', type: 'hpl_warp_native', address: 'terra1qu3x6vhk4y6w6erhmedzfp2ug53qm5nwpyarxveqa7tvwg0telxqvd3ccf' },
+  { name: 'igp_oracle', type: 'hpl_igp_oracle', address: 'terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d' },
 ];
 
 async function contractInfo(address) {
@@ -91,9 +93,9 @@ const proposal = {
     '(https://discourse.luncgoblins.com/t/claim-hyperlane-infrastructure-ownership-for-governance/555/2?u=fragwuerdig), ' +
     'documented in terraclassic/doc/GOVERNANCE-PROPOSAL-CLAIM-OWNERSHIP-AUDIT.md §10. ' +
     'Excluded: Warp LUNC and Warp USTC (native collateral warps) have no contract admin at all (empty, permanently ' +
-    'immutable — confirmed on-chain) and cannot be migrated by any proposal, ever. The IGP Oracle ' +
-    '(terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d) admin is still the deployer wallet, not ' +
-    'governance, so it is out of scope for this proposal. MigrateMsg is empty ({}) for every message; cw2 version ' +
+    'immutable — confirmed on-chain) and cannot be migrated by any proposal, ever. The IGP Oracle admin was ' +
+    'transferred to governance separately on 2026-09-30 (tx 2182AB478B5197245C50CA6657D55BAF7AEBE41529D938F88BE36B975F84F4B6) ' +
+    'and is included in this proposal. MigrateMsg is empty ({}) for every message; cw2 version ' +
     'check passes for all (stored 0.0.6 < new 0.0.7).',
   messages,
   deposit: '5000000000000uluna',

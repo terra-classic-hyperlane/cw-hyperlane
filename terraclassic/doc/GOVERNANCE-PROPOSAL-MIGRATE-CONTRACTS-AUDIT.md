@@ -1,7 +1,7 @@
 # Governance Proposal Audit — Migrate Hyperlane Infrastructure Contracts (Terra Classic)
 
 **Status as of 2026-09-30:** new code uploaded and verified on-chain for all
-20 contracts in the workspace (tx hashes in §3). The proposal JSON
+20 contracts in the workspace (tx hashes in §2.1). The proposal JSON
 (`migrate-contracts-proposal.json`) is built and verified against live
 chain state but **not yet submitted**. This document lets any validator,
 community member, or reviewer verify every claim before it is submitted and
@@ -42,10 +42,20 @@ of proposal #12229 (which transfers *owner*, still pending) — see
 [`GOVERNANCE-PROPOSAL-CLAIM-OWNERSHIP-AUDIT.md §3`](./GOVERNANCE-PROPOSAL-CLAIM-OWNERSHIP-AUDIT.md#3-migration-admin--already-done-outside-this-governance-proposal).
 That's what makes this proposal possible without waiting for #12229.
 
-### 2.1 Migrating in this proposal — 12 instances, 9 code builds
+### 2.1 Migrating in this proposal — 13 instances, 10 code builds
 
 All confirmed on-chain: `admin == terra10d07y265…` (governance), and the new
-code_id's checksum differs from what's currently deployed.
+code_id's checksum differs from what's currently deployed. 12 of these 13 had
+admin transferred to governance on 2026-09-29 as part of the ownership-claim
+tooling (§3 of the ownership audit). The IGP Oracle (#13) is separate: its
+admin was still the deployer wallet until 2026-09-30, when it was transferred
+directly (`terrad tx wasm set-contract-admin`, tx
+`2182AB478B5197245C50CA6657D55BAF7AEBE41529D938F88BE36B975F84F4B6`) —
+unrelated to proposal #12229, which only ever covered the 12 contracts in
+`GOVERNANCE-PROPOSAL-CLAIM-OWNERSHIP-AUDIT.md §2`. The IGP Oracle's *owner*
+(who can call `SetRemoteGasData`, i.e. who actually sets prices) was already
+the `oracle-governor` contract (`terra1z7jmlky2cmsd9aslm4uxrsase2yjwz8k9rlk00ga8s7pxgljczjq9sv4hj`,
+tc-proof-of-delivery) before any of this — only migration authority changed.
 
 | # | Contract | Address | Old code_id | Old sha256 | New code_id | New sha256 |
 |---|---|---|---|---|---|---|
@@ -61,6 +71,7 @@ code_id's checksum differs from what's currently deployed.
 | 10 | Hook Pausable | `terra1x8s9qtw9355pfckywkns4e8f9zyfjaf8w5e5s8vh28ph5gzwwlks9tjcnf` | 11381 | `0f53c4193be4…699b6c2` | **11697** | `ca462e9554f0…3584b7` |
 | 11 | Hook Fee (0.283215 LUNC/msg) | `terra1sud5xyknr93wmxem6kxdfd0vxcju47wuh7zdm5uecavrm36w669sp7j8ag` | 11379 | `c981467b9af2…4e7956e` | **11695** | `414f7d28f82af…264575` |
 | 12 | Hook Merkle | `terra183lq6yqp8km3p34cxgk6k3u78uy4plqahey6rne7n9gy98delr9qyp0n2p` | 11380 | `f4258979caf1…e61e9f156` | **11696** | `cb2e04c9a51d0…6543c07` |
+| 13 | IGP Oracle | `terra1j8xzgzk7vds5uzrplmnln4vcz6f205t9atdyflypzrr43cd5eh7scwqj0d` | 11388 | `3b0143755d32…8de1fc` | **11704** | `d288f3384707…2db4f1` |
 
 Upload txs (2026-09-30, `yarn cw-hpl -n terraclassic upload local`, all 20
 codes uploaded in one batch): mailbox `2ED95505…F66A0B7`, validator_announce
@@ -166,7 +177,7 @@ sha256sum artifacts/*.wasm   # compare against §2's table
 
 **Message shape.** `MsgMigrateContract{sender, contract, code_id, msg}`,
 `msg` is the CosmWasm `MigrateMsg` — confirmed `Empty` (`{}`) for every one
-of the 9 contract types migrated here, by reading each `migrate()` entry
+of the 10 contract types migrated here, by reading each `migrate()` entry
 point directly:
 
 ```
@@ -175,6 +186,7 @@ contracts/core/va/src/contract.rs:219:         pub fn migrate(deps: DepsMut, _en
 contracts/isms/multisig/src/contract.rs:137:   pub fn migrate(deps: DepsMut, _env: Env, _msg: Empty)
 contracts/isms/routing/src/contract.rs:155:    pub fn migrate(deps: DepsMut, _env: Env, _msg: Empty)
 contracts/igps/core/src/contract.rs:138:       pub fn migrate(deps: DepsMut, _env: Env, _msg: Empty)
+contracts/igps/oracle/src/contract.rs:103:     pub fn migrate(deps: DepsMut, _env: Env, _msg: Empty)
 contracts/hooks/aggregate/src/lib.rs:198:      pub fn migrate(deps: DepsMut, _env: Env, _msg: Empty)
 contracts/hooks/fee/src/lib.rs:157:            pub fn migrate(deps: DepsMut, _env: Env, _msg: Empty)
 contracts/hooks/merkle/src/lib.rs:197:         pub fn migrate(deps: DepsMut, _env: Env, _msg: Empty)
@@ -187,16 +199,16 @@ requires the crate `name` to match what's stored on-chain exactly, and the
 crate `version` to be strictly greater than what's stored — otherwise the
 whole message (and therefore the whole proposal, §6) reverts.
 
-- **Name:** unchanged for all 9 crates between the deployed tag
+- **Name:** unchanged for all 10 crates between the deployed tag
   (`eb791b56d`) and the build commit — `hpl-mailbox`,
   `hpl-validator-announce`, `hpl-ism-multisig`, `hpl-ism-routing`, `hpl-igp`,
-  `hpl-hook-aggregate`, `hpl-hook-fee`, `hpl-hook-merkle`,
+  `hpl-igp-oracle`, `hpl-hook-aggregate`, `hpl-hook-fee`, `hpl-hook-merkle`,
   `hpl-hook-pausable` — verified by diffing each crate's `Cargo.toml`
   `name` field at both commits.
 - **Version:** the workspace-wide `version` (root `Cargo.toml`,
   `[workspace.package]`) was `0.0.6` at the deployed tag and is `0.0.7` at
   the build commit — bumped in the very commit that lands #142. Every one
-  of the 9 crates declares `version.workspace = true`, so the on-chain
+  of the 10 crates declares `version.workspace = true`, so the on-chain
   stored version (`0.0.6`, set at each contract's original instantiation)
   is strictly less than the new build's `0.0.7` for all of them. Checked
   individually, not assumed from one example.
@@ -207,10 +219,10 @@ whole message (and therefore the whole proposal, §6) reverts.
 
 Like the ownership-claim proposal (`GOVERNANCE-PROPOSAL-CLAIM-OWNERSHIP-AUDIT.md §7.2`),
 the Cosmos SDK executes a governance proposal's messages as a single atomic
-batch: if any one of the 12 `MsgMigrateContract` messages fails (wrong
+batch: if any one of the 13 `MsgMigrateContract` messages fails (wrong
 admin, name/version mismatch, code_id doesn't exist), **none of them
 apply**, even after the proposal passes a vote. §5 above exists specifically
-to rule that out ahead of time, for every one of the 9 contract types, not
+to rule that out ahead of time, for every one of the 10 contract types, not
 just a representative sample.
 
 ---
@@ -220,10 +232,10 @@ just a representative sample.
 Migrating again to a different code_id later requires the same process:
 a new governance proposal with `MsgMigrateContract` per contract. There is
 no separate "revert" message — rolling back means proposing a migration
-back to the old code_id (11371/11372/11374/11376/11377/11378/11379/11380/11381),
+back to the old code_id (11371/11372/11374/11376/11377/11378/11379/11380/11381/11388),
 which would also need a cw2 version bump above `0.0.7` to pass the same gate
 described in §5 (or a contract-specific `MigrateMsg` change — none of these
-9 contracts currently has one).
+10 contracts currently has one).
 
 ---
 
