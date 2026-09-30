@@ -91,16 +91,28 @@ A new build of `hpl_warp_native` was uploaded anyway as code_id **11706**
 (sha256 `c2d2160766847…f99ccfd800`) for the record, but nothing can ever
 point these two contracts at it.
 
-### 2.3 Uploaded but nothing to migrate — 8 instances
+### 2.3 Uploaded but nothing to migrate — 9 instances
 
-`hpl_ism_aggregate` (11689), `hpl_ism_pausable` (11691 — not instantiated
-anywhere on Terra Classic mainnet today, unlike `hpl_hook_pausable` which
-is, §2.1 row 10), `hpl_hook_routing` / `_custom` / `_fallback` (11698–11700),
-the 3 test-mock contracts (11701–11703), and `hpl_warp_cw20` (11705) were
-rebuilt and uploaded as part of the same batch (the optimizer builds the
-whole workspace at once) but have no live instance on Terra Classic mainnet
-to migrate. Uploading them cost gas but changes nothing; they are listed
-here so nobody has to wonder why their code_ids exist.
+`hpl_ism_pausable` is not instantiated anywhere on Terra Classic mainnet
+today, unlike `hpl_hook_pausable` which is (§2.1 row 10) — easy to confuse,
+different contracts. These 9 were rebuilt and uploaded as part of the same
+batch (the optimizer builds the whole workspace at once, and `upload local`
+uploads every code whose checksum changed) but have no live instance on
+Terra Classic mainnet to migrate. Uploading them cost gas but changes
+nothing; they are listed here, with full checksums, so nobody has to wonder
+why their code_ids exist or take the diff on faith.
+
+| Contract | Old code_id | Old sha256 | New code_id | New sha256 |
+|---|---|---|---|---|
+| `hpl_ism_aggregate` | 11373 | `e33ccca03a9366c4020900e562febcd8311fc3449687ec876cc7ea8b84767f4f` | **11689** | `41fbea0cdc3ef326979133ce0d100f6c229cb02388f9670d8bfa97dc191a7145` |
+| `hpl_ism_pausable` | 11375 | `31fff431baa0d752f3f9f6c63400bef9c69363cff16d9064a1882fd697b0cacb` | **11691** | `d9da899a9c2f447e7415d9a58047bb2fb373684dc2b8743d31320d2b16afc0b0` |
+| `hpl_hook_routing` | 11382 | `ff11e7535f07cb20123735b61f31bf1b60a428f67cb332faf64a2b7641d11ed3` | **11698** | `fd26d0baf7ba185a7e2b784fb9d391848055d31f6d9815e354383f9bfda83d62` |
+| `hpl_hook_routing_custom` | 11383 | `34c947fbf2cc37df33237ab062265520fc28d5427745c669631590f22fd9d534` | **11699** | `d569b298fbf52a0894b657d25d364a1f9fb2fb1579783f9e4a0b5791d569e652` |
+| `hpl_hook_routing_fallback` | 11384 | `b4930c213cae2728b83ffee876d0d880030ed079cc0167fd7e69c98880315f89` | **11700** | `08056e20a8e30a7d4cf4d4f81970f58bb9678096957d9288b5cce943a419b365` |
+| `hpl_test_mock_hook` | 11385 | `8dcdf5f9ef0f7632404b5310b9ed37e091c9854d6fe5e4c38ae3424948a9d3a1` | **11701** | `32623e9e75d6c0fdd862e423009408dc54928812cfab5adaaeb0f78933774ebe` |
+| `hpl_test_mock_ism` | 11386 | `e283df5977a897e0c33f47540f2d50f43f735dfe6f31ef2614aefff225af8c8f` | **11702** | `22d7a536a1f450f81b7078e6944eec02fb0b53ce34444f1860141c7bbddfd477` |
+| `hpl_test_mock_msg_receiver` | 11387 | `aa7fca1213b164cb1e8a1beefe32dce6d31f7ebe8add4b568db49283bbdb43af` | **11703** | `996ecdb2ed3a0e27ea057256e1aeb05023c9b9fbde6b2a65ebf9489f28c188c3` |
+| `hpl_warp_cw20` | 11389 | `25b100c1c1bec141c90f4fc0e556b52025921403d7ae2d25bad8cfec35c74be7` | **11705** | `77dc7676075555c062935624f183789286fb3ad3b7adfe30cd36a6404f398355` |
 
 ---
 
