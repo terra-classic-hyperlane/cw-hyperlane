@@ -1,5 +1,7 @@
 # WARP-USTC — Terra Classic USD warp route (audit & developer reference)
 
+> ⚠️ **DEPRECATED CONTRACTS — DO NOT USE.** The old BSC/Ethereum IGP and AggregationHook addresses are ~~struck through~~ below and must **not** be used. Current contracts: BSC IGP `0xc3593dD54274A4CDa8fEBDa343A63A7331154138` · BSC hook `0x4AE5fd735Fe1a987756366F7FFeE754C061839d4` · ETH IGP `0x69b3A7C507014fd6E87E7b58a6b037e0EEe0e096` · ETH hook `0xDC9FF1B50d04792bf7730032F1763501D5669420`.
+
 > Complete on-chain record of the **USTC** warp route: Terra Classic (collateral,
 > native `uusd`) ↔ synthetics on **BSC**, **Ethereum** and **Solana**.
 > Deployed and verified 2026-08-29; live transfers tested in both directions on
@@ -64,8 +66,8 @@ Same queries over LCD (no terrad): `curl https://lcd.terra-classic.hexxagon.io/c
 | Token contract | `0xfC067fd98FD123fC2cAd72d040AF60a523274339` — "Terra Classic USD" / USTC / 6 decimals |
 | Owner | Safe `0x4d78A2182a7Cd3a370D73E6651EF4B32C2dd8BDb` (4-of-6, same validators as the ISM set) — migrated 2026-09-28, tx `0xea7fbc516fcb95016ed6f4b70ed885e04a1f58011235fccee0a3fea8fc63a91c`; still controls the ProxyAdmin as the deployer EOA (not migrated) |
 | ISM | production 4-of-6 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` — owner migration to the Safe proposed 2026-09-28 (`pendingOwner`, tx `0xdae67930b3bbd09b7314737577c1cedbf2392dcd7860be3895a7066f8c6ac3ee`), awaiting the Safe's 4-of-6 `acceptOwnership()` to finalize — see [HYPERLANE_DEPLOYMENT-MAINNET_EN.md](../HYPERLANE_DEPLOYMENT-MAINNET_EN.md) footnote ⁵ |
-| Hook | production AggregationHook `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` [merkleTree + governed IGP] |
-| IGP | production `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` (fees → relayer-reward-vault) — owner `0x8f085bAD…` is **permanent**: the deployed bytecode has no ownership-transfer function, confirmed by inspecting its live function-selector dispatcher (not the reference source) |
+| Hook | production AggregationHook ~~`0xD2c82583C261fce94cD3F97f1dFF9B20a9338164`~~ ❌ → `0x4AE5fd735Fe1a987756366F7FFeE754C061839d4` [merkleTree + governed IGP] |
+| IGP | production ~~`0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923`~~ ❌ → `0xc3593dD54274A4CDa8fEBDa343A63A7331154138` (fees → relayer-reward-vault) — owner `0x8f085bAD…` is **permanent**: the deployed bytecode has no ownership-transfer function, confirmed by inspecting its live function-selector dispatcher (not the reference source) |
 | Router → TC | `132556 → 0x07226d32f6…21ebcfcc` |
 | Proxy bytecode sha256 | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical across all our HypERC20 proxies) |
 
@@ -100,8 +102,8 @@ Explorer: https://bscscan.com/token/0xfC067fd98FD123fC2cAd72d040AF60a523274339
 | Token contract | `0xf49408beb319aeCe3E8B3550a5C750C19b3F1e51` — "Terra Classic USD" / USTC / 6 decimals |
 | Owner | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` (deployer — multisig migration planned; also controls the ProxyAdmin) |
 | ISM | production 4-of-6 `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` |
-| Hook | production AggregationHook `0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8` [merkleTree + governed IGP] |
-| IGP | production `0x9650F1f8DB492750323172145e67Df4e89E964Aa` (fees → relayer-reward-vault) |
+| Hook | production AggregationHook ~~`0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8`~~ ❌ → `0xDC9FF1B50d04792bf7730032F1763501D5669420` [merkleTree + governed IGP] |
+| IGP | production ~~`0x9650F1f8DB492750323172145e67Df4e89E964Aa`~~ ❌ → `0x69b3A7C507014fd6E87E7b58a6b037e0EEe0e096` (fees → relayer-reward-vault) |
 | Router → TC | `132556 → 0x07226d32f6…21ebcfcc` |
 | Proxy bytecode sha256 | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B) |
 

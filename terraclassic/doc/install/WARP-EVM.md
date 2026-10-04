@@ -1,5 +1,7 @@
 # Create a Warp Route — BSC / Ethereum ↔ Terra Classic
 
+> ⚠️ **DEPRECATED CONTRACTS — DO NOT USE.** The old BSC/Ethereum IGP and AggregationHook addresses are ~~struck through~~ below and must **not** be used. Current contracts: BSC IGP `0xc3593dD54274A4CDa8fEBDa343A63A7331154138` · BSC hook `0x4AE5fd735Fe1a987756366F7FFeE754C061839d4` · ETH IGP `0x69b3A7C507014fd6E87E7b58a6b037e0EEe0e096` · ETH hook `0xDC9FF1B50d04792bf7730032F1763501D5669420`.
+
 > One script does everything: `terraclassic/create-warp-evm.sh`. It deploys **only
 > the token's own contracts** and wires them to the production ISM/IGP/hook
 > (see [README.md](README.md)). Full field-by-field reference:
@@ -16,8 +18,8 @@
 | Synthetic token (HypERC20 proxy) | 🆕 deployed | 🆕 deployed |
 | Collateral warp on Terra Classic | 🆕 deployed (code 11389 `hpl_warp_cw20` / native) | same |
 | ISM | ♻️ reused: `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` (mutable 4-of-6) | ♻️ `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` |
-| IGP | ♻️ reused: `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` (fees → vault pool) | ♻️ `0x9650F1f8DB492750323172145e67Df4e89E964Aa` |
-| Hook | ♻️ reused: AggregationHook `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` | ♻️ `0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8` |
+| IGP | ♻️ reused: ~~`0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923`~~ ❌ → `0xc3593dD54274A4CDa8fEBDa343A63A7331154138` (fees → vault pool) | ♻️ ~~`0x9650F1f8DB492750323172145e67Df4e89E964Aa`~~ ❌ → `0x69b3A7C507014fd6E87E7b58a6b037e0EEe0e096` |
+| Hook | ♻️ reused: AggregationHook ~~`0xD2c82583C261fce94cD3F97f1dFF9B20a9338164`~~ ❌ → `0x4AE5fd735Fe1a987756366F7FFeE754C061839d4` | ♻️ ~~`0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8`~~ ❌ → `0xDC9FF1B50d04792bf7730032F1763501D5669420` |
 | Gas prices | ♻️ governed (oracle-agent → governor → oracle) — never set manually | same |
 
 All reuse defaults come from `warp-evm-config.json` (`ism.deployed_address`,
@@ -128,8 +130,8 @@ As the run progresses, the script **adds** its state to the same JSON via `jq`
 |---|---|---|
 | `deployed` | whether the synthetic already exists on this chain | script, after STEP 2 succeeds (`false` → `true`) |
 | `address` | the synthetic token (HypERC20) address on this chain — e.g. LUNC/BSC = `0x481095ec…` | script, after `hyperlane warp deploy` |
-| `igp_custom` | the IGP associated with this token's route — with production defaults, the shared IGP (BSC `0xEdEd7a4f…`) | script, STEP 3 |
-| `hook_aggregation` | the AggregationHook set on the warp via `setHook` — with defaults, the production one (BSC `0xD2c82583…`) | script, STEP 5 |
+| `igp_custom` | the IGP associated with this token's route — with production defaults, the shared IGP (BSC ~~`0xEdEd7a4f…`~~ ❌ → `0xc3593dD5…`) | script, STEP 3 |
+| `hook_aggregation` | the AggregationHook set on the warp via `setHook` — with defaults, the production one (BSC ~~`0xD2c82583…`~~ ❌ → `0x4AE5fd73…`) | script, STEP 5 |
 | `owner` | the warp's owner on this chain (derived from `ETH_PRIVATE_KEY`) | script, after deploy |
 
 Why it matters:
@@ -158,9 +160,9 @@ export TERRA_PRIVATE_KEY="hex_no_0x"    # optional: automatic TC collateral depl
 Pick `bsc` in the menu. Expected flow:
 `STEP 1` yaml with `interchainSecurityModule: "0xF6b0cDD3…"` (no ISM created) →
 `STEP 2` `hyperlane warp deploy` (the only EVM contract created) →
-`STEP 3` "Reusing production IGP 0xEdEd7a4f… (fees → vault pool)" →
+`STEP 3` "Reusing production IGP ~~0xEdEd7a4f…~~ ❌ → 0xc3593dD5… (fees → vault pool)" →
 `STEP 4` "oracle already has data for domain 132556" (skipped) →
-`STEP 5` "Reusing production AggregationHook 0xD2c82583…" → `setHook` →
+`STEP 5` "Reusing production AggregationHook ~~0xD2c82583…~~ ❌ → 0x4AE5fd73…" → `setHook` →
 `STEP 6` ISM verification (already set) →
 `STEP 7` `enrollRemoteRouter` ↔ TC `set_route` (bidirectional link).
 
@@ -222,7 +224,7 @@ cast send <WARP> "setInterchainSecurityModule(address)" 0xF6b0cDD33A7d2895a3F18b
 ### 5.4 Set the production hook (merkle + governed IGP)
 
 ```bash
-cast send <WARP> "setHook(address)" 0xD2c82583C261fce94cD3F97f1dFF9B20a9338164 \
+cast send <WARP> "setHook(address)" 0x4AE5fd735Fe1a987756366F7FFeE754C061839d4 \
   --rpc-url <RPC> --private-key "$ETH_PRIVATE_KEY" --legacy
 ```
 

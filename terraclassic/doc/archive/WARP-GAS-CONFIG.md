@@ -1,5 +1,7 @@
 # Warp Routes — Configuração de GAS (IGP/Oracle) que FUNCIONA
 
+> ⚠️ **DEPRECATED CONTRACTS — DO NOT USE.** This is a historical record. The old BSC/Ethereum IGP and AggregationHook listed here are ~~struck through~~ and must **not** be used. Current contracts: BSC IGP `0xc3593dD54274A4CDa8fEBDa343A63A7331154138` · BSC hook `0x4AE5fd735Fe1a987756366F7FFeE754C061839d4` · ETH IGP `0x69b3A7C507014fd6E87E7b58a6b037e0EEe0e096` · ETH hook `0xDC9FF1B50d04792bf7730032F1763501D5669420`.
+
 > Guia definitivo pós-incidente de 2026-07-09, quando a **VOLTA** (synthetic → Terra Classic) estava
 > quebrada nas 3 chains por 3 defeitos de configuração distintos. Os scripts foram corrigidos para
 > **falhar alto** em vez de imprimir "SUCCESS" com a volta quebrada.
@@ -63,9 +65,9 @@ Ver `update-igp-oracle.sh` (oracle terra1j8xz…).
 |---|---|---|---|
 | Warp/router LUNC | `0x481095ec…e6e2` | `0xA4bc47a4…4Ac6` | `Dd3ajD8W…Gnbr` |
 | Warp/router USTC | `0xfC067fd9…4339` | `0xf49408be…1e51` | `7CUdBt1Q…Eoyf` |
-| IGP (novo, domain 132556) | `0xEdEd7a4f…4923` | `0x9650F1f8…64Aa` | `FLZuKR…dJoR` |
+| IGP (novo, domain 132556) | ~~`0xEdEd7a4f…4923`~~ ❌ deprecated | ~~`0x9650F1f8…64Aa`~~ ❌ deprecated | `FLZuKR…dJoR` |
 | Oracle | `0x7dE950f8…2306` | `0x3987cCE8…96cE` | (interno, via client) |
-| AggregationHook | `0xD2c82583…8164` | `0x912c4d91…0aA8` | — |
+| AggregationHook | ~~`0xD2c82583…8164`~~ ❌ deprecated | ~~`0x912c4d91…0aA8`~~ ❌ deprecated | — |
 | IGP account (sealevel) | — | — | igp `FPTvDso…YKFk` / overhead `FXacR73…3RCJ` |
 | Owner | `0x8f085bAD…5291` (⚠️ rotação pendente) | `0xEF818120…00ae` | `BirXd4…Ef1j` |
 

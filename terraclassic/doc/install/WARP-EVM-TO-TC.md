@@ -1,5 +1,7 @@
 # Create a Warp Route — BSC / Ethereum token → Terra Classic synthetic (reverse direction)
 
+> ⚠️ **DEPRECATED CONTRACTS — DO NOT USE.** The old BSC/Ethereum IGP and AggregationHook addresses are ~~struck through~~ below and must **not** be used. Current contracts: BSC IGP `0xc3593dD54274A4CDa8fEBDa343A63A7331154138` · BSC hook `0x4AE5fd735Fe1a987756366F7FFeE754C061839d4` · ETH IGP `0x69b3A7C507014fd6E87E7b58a6b037e0EEe0e096` · ETH hook `0xDC9FF1B50d04792bf7730032F1763501D5669420`.
+
 > The **reverse** of [WARP-EVM.md](WARP-EVM.md): here the token's real home is
 > **BSC or Ethereum** (its own native gas coin, or an existing ERC20) and
 > **Terra Classic gets the synthetic mint**. No script automates this direction
@@ -122,10 +124,10 @@ case exposes the same `enrollRemoteRouter`/`routers()` interface.
 ### 3.2 Set the production hook
 
 ```bash
-cast send <ROUTER> "setHook(address)" 0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8 \
+cast send <ROUTER> "setHook(address)" 0xDC9FF1B50d04792bf7730032F1763501D5669420 \
   --rpc-url <RPC> --private-key "$ETH_PRIVATE_KEY" --legacy
 ```
-(BSC: `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` — see WARP-EVM.md §1.)
+(BSC: ~~`0xD2c82583C261fce94cD3F97f1dFF9B20a9338164`~~ ❌ → `0x4AE5fd735Fe1a987756366F7FFeE754C061839d4` — see WARP-EVM.md §1.)
 
 ### 3.3 Create the bridged (synthetic) warp on Terra Classic
 

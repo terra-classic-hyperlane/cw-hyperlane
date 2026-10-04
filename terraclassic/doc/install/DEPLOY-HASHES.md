@@ -1,5 +1,7 @@
 # Deployed Contracts & Hashes — Terra Classic Hyperlane + Synthetics
 
+> ⚠️ **DEPRECATED CONTRACTS — DO NOT USE.** This is a historical record. The old BSC/Ethereum IGP and AggregationHook listed here are ~~struck through~~ and must **not** be used. Current contracts: BSC IGP `0xc3593dD54274A4CDa8fEBDa343A63A7331154138` · BSC hook `0x4AE5fd735Fe1a987756366F7FFeE754C061839d4` · ETH IGP `0x69b3A7C507014fd6E87E7b58a6b037e0EEe0e096` · ETH hook `0xDC9FF1B50d04792bf7730032F1763501D5669420`.
+
 > Auditable inventory of everything deployed, with the hash of each contract and
 > the command to verify it. All values collected on-chain **2026-08-28**.
 > Domains: Terra Classic **132556** · BSC **56** · Ethereum **1** · Solana **1399811149**.
@@ -62,9 +64,9 @@ Hash = sha256 of the **live deployed bytecode** (`eth_getCode`).
 | Warp IGORFAKE (HypERC20 proxy) | `0x3605D8946FC6F5A75d89d92173100F59743B5318` | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B) |
 | Warp FAKEFAKE (HypERC20 proxy, 2026-08-28) | `0x07289a10E1c4E8218AE2ACC599FfC29C68f32C47` | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to IGORFAKE) |
 | **ISM 4-of-6** (mutable, minimal proxy) | `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` | `ebabd1533007ed187cdd35cbea521be162e818a8a859f251d6f0cc6a9d69efaf` (45 B) |
-| **IGP** (beneficiary = vault `0x34E06a77…`) | `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` | `ae76a7148c0989c4d7cd30b2b5faaf7935482e9e751013cb5303de666c18a80b` (6043 B) |
+| **IGP** (beneficiary = vault `0x34E06a77…`) | ~~`0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923`~~ ❌ deprecated | `ae76a7148c0989c4d7cd30b2b5faaf7935482e9e751013cb5303de666c18a80b` (6043 B) |
 | Gas oracle (owner = governor) | `0x7dE950f8F0a037783989a6BE84B3620916552306` | `d93c86aa1b584fc0147de6aadc09b78de90f08b0378ef43a2d5118d9b62440d8` (2118 B) |
-| AggregationHook [merkle + IGP] | `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` | `f63af7636991137e6b3766a54f893a3a546d8513302ae45fc8d41a393f5d4e38` (246 B) |
+| AggregationHook [merkle + IGP] | ~~`0xD2c82583C261fce94cD3F97f1dFF9B20a9338164`~~ ❌ deprecated | `f63af7636991137e6b3766a54f893a3a546d8513302ae45fc8d41a393f5d4e38` (246 B) |
 | MerkleTree hook | `0xFDb9Cd5f9daAA2E4474019405A328a88E7484f26` | `67faae609e0c2b54b5508c926c3cb49221c6c529da5cf5ba8708a149b9b71189` (6278 B) |
 | Mailbox (proxy) | `0x2971b9Aec44bE4eb673DF1B88cDB57b96eefe8a4` | `295eafd39c3e3f7a6beed270a4b13f626ef7b2613c65a2df0f0ac43f4334f189` (2555 B) |
 
@@ -75,9 +77,9 @@ Hash = sha256 of the **live deployed bytecode** (`eth_getCode`).
 | Warp IGORFAKE (HypERC20 proxy) | `0xA687a4C4CA49795999b36fDC8A18d1DDd63eDFB5` | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B) |
 | Warp FAKEFAKE (HypERC20 proxy, 2026-08-28) | `0x959DBb6784182ba5995cCEf6Abe4e378620ADA17` | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to IGORFAKE) |
 | **ISM 4-of-6** (mutable, minimal proxy) | `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` | `b7cdff85f92c8394e47555637814cd106c6d807bb5cba8c3e51e3015b3a03b41` (45 B) |
-| **IGP** (beneficiary = vault `0x04096dCB…`) | `0x9650F1f8DB492750323172145e67Df4e89E964Aa` | `ae76a7148c0989c4d7cd30b2b5faaf7935482e9e751013cb5303de666c18a80b` (6043 B) |
+| **IGP** (beneficiary = vault `0x04096dCB…`) | ~~`0x9650F1f8DB492750323172145e67Df4e89E964Aa`~~ ❌ deprecated | `ae76a7148c0989c4d7cd30b2b5faaf7935482e9e751013cb5303de666c18a80b` (6043 B) |
 | Gas oracle (owner = governor) | `0x3987cCE8f08037EBF93Ef3a934753540A94196cE` | `d93c86aa1b584fc0147de6aadc09b78de90f08b0378ef43a2d5118d9b62440d8` (2118 B) |
-| AggregationHook [merkle + IGP] | `0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8` | `487b329dd722a0b9e1657453d941dd6c211f5a905aa0ccd915c9dbb198e00e3c` (246 B) |
+| AggregationHook [merkle + IGP] | ~~`0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8`~~ ❌ deprecated | `487b329dd722a0b9e1657453d941dd6c211f5a905aa0ccd915c9dbb198e00e3c` (246 B) |
 | MerkleTree hook | `0x48e6c30B97748d1e2e03bf3e9FbE3890ca5f8CCA` | `f26ae2c918dd1b41e62a8c9f23257901b701ae82513cbfa7a1eee267c64f5623` (6278 B) |
 | Mailbox (proxy) | `0xc005dc82818d67AF737725bD4bf75435d065D239` | `295eafd39c3e3f7a6beed270a4b13f626ef7b2613c65a2df0f0ac43f4334f189` (2555 B) |
 
@@ -167,8 +169,8 @@ record: unlike the test cw20s, this collateralizes real LUNC.
 | Warp contract | `0x481095ecEd7A907e7f390b6226F53a66D379e6e2` — "Luna Classic" / LUNC / 6 decimals |
 | **Owner** | Safe `0x4d78A2182a7Cd3a370D73E6651EF4B32C2dd8BDb` (4-of-6) — migrated 2026-09-28, tx `0xe59f998d3760d8de5d0d088bb57687e39022474a9c7bac4e4a3a7b8aebaee1d8`; owner controls `setHook`/`setInterchainSecurityModule`/`enrollRemoteRouter`. Proxy upgrades still gated by the ProxyAdmin, whose owner is still the deployer EOA (**not** migrated) |
 | ISM | production 4-of-6 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` — owner migration to the Safe proposed 2026-09-28 (tx `0xdae67930b3bbd09b7314737577c1cedbf2392dcd7860be3895a7066f8c6ac3ee`), awaiting 4-of-6 `acceptOwnership()` |
-| Hook | production AggregationHook `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` [merkle + governed IGP] — setHook tx `0x84da30aa…ece36b2` |
-| IGP | production `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` (fees → relayer-reward-vault) — owner `0x8f085bAD…` permanent, no ownership-transfer function in the deployed bytecode |
+| Hook | production AggregationHook ~~`0xD2c82583C261fce94cD3F97f1dFF9B20a9338164`~~ ❌ deprecated [merkle + governed IGP] — setHook tx `0x84da30aa…ece36b2` |
+| IGP | production ~~`0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923`~~ ❌ deprecated (fees → relayer-reward-vault) — owner `0x8f085bAD…` permanent, no ownership-transfer function in the deployed bytecode |
 | Router → TC | `132556 → 0xdfa5801933…afe12b71` — enroll tx `0xdcfc2dac…c468f7f` |
 | Bytecode sha256 | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to IGORFAKE/FAKEFAKE proxies) |
 
@@ -179,8 +181,8 @@ record: unlike the test cw20s, this collateralizes real LUNC.
 | Warp contract | `0xA4bc47a4C5461eB0E59A585a21A1222EF7544Ac6` — "Luna Classic" / LUNC / 6 decimals |
 | **Owner** | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` (deployer) — **⚠️ PLANNED: migrate to a multisig**; owner controls `setHook`/`setInterchainSecurityModule`/`enrollRemoteRouter` and proxy upgrades via its ProxyAdmin |
 | ISM | production 4-of-6 `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` |
-| Hook | production AggregationHook `0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8` [merkle + governed IGP] — setHook tx `0x8e8ca9bf…801b1307` |
-| IGP | production `0x9650F1f8DB492750323172145e67Df4e89E964Aa` (fees → relayer-reward-vault) |
+| Hook | production AggregationHook ~~`0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8`~~ ❌ deprecated [merkle + governed IGP] — setHook tx `0x8e8ca9bf…801b1307` |
+| IGP | production ~~`0x9650F1f8DB492750323172145e67Df4e89E964Aa`~~ ❌ deprecated (fees → relayer-reward-vault) |
 | Router → TC | `132556 → 0xdfa5801933…afe12b71` — enroll tx `0xe8e1bd4d…02c6001f` |
 | Bytecode sha256 | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to the BSC LUNC / IGORFAKE / FAKEFAKE proxies) |
 
@@ -237,8 +239,8 @@ production infrastructure as the LUNC route (§5).
 | Warp contract | `0xfC067fd98FD123fC2cAd72d040AF60a523274339` — "Terra Classic USD" / USTC / 6 decimals |
 | **Owner** | Safe `0x4d78A2182a7Cd3a370D73E6651EF4B32C2dd8BDb` (4-of-6) — migrated 2026-09-28, tx `0xea7fbc516fcb95016ed6f4b70ed885e04a1f58011235fccee0a3fea8fc63a91c`; owner controls `setHook`/`setInterchainSecurityModule`/`enrollRemoteRouter`. Proxy upgrades still gated by the ProxyAdmin, whose owner is still the deployer EOA (**not** migrated) |
 | ISM | production 4-of-6 `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` — owner migration to the Safe proposed 2026-09-28 (tx `0xdae67930b3bbd09b7314737577c1cedbf2392dcd7860be3895a7066f8c6ac3ee`), awaiting 4-of-6 `acceptOwnership()` |
-| Hook | production AggregationHook `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` [merkle + governed IGP] |
-| IGP | production `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` (fees → relayer-reward-vault) — owner `0x8f085bAD…` permanent, no ownership-transfer function in the deployed bytecode |
+| Hook | production AggregationHook ~~`0xD2c82583C261fce94cD3F97f1dFF9B20a9338164`~~ ❌ deprecated [merkle + governed IGP] |
+| IGP | production ~~`0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923`~~ ❌ deprecated (fees → relayer-reward-vault) — owner `0x8f085bAD…` permanent, no ownership-transfer function in the deployed bytecode |
 | Router → TC | `132556 → 0x07226d32f6…21ebcfcc` — enroll tx `0xbfdfc072…730417b9` |
 | Bytecode sha256 | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to the LUNC / IGORFAKE / FAKEFAKE proxies) |
 
@@ -249,8 +251,8 @@ production infrastructure as the LUNC route (§5).
 | Warp contract | `0xf49408beb319aeCe3E8B3550a5C750C19b3F1e51` — "Terra Classic USD" / USTC / 6 decimals |
 | **Owner** | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` (deployer) — **⚠️ PLANNED: migrate to a multisig**; owner controls `setHook`/`setInterchainSecurityModule`/`enrollRemoteRouter` and proxy upgrades via its ProxyAdmin |
 | ISM | production 4-of-6 `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` |
-| Hook | production AggregationHook `0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8` [merkle + governed IGP] — setHook tx `0x0c3641cf…1e0930e7` |
-| IGP | production `0x9650F1f8DB492750323172145e67Df4e89E964Aa` (fees → relayer-reward-vault) |
+| Hook | production AggregationHook ~~`0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8`~~ ❌ deprecated [merkle + governed IGP] — setHook tx `0x0c3641cf…1e0930e7` |
+| IGP | production ~~`0x9650F1f8DB492750323172145e67Df4e89E964Aa`~~ ❌ deprecated (fees → relayer-reward-vault) |
 | Router → TC | `132556 → 0x07226d32f6…21ebcfcc` — enroll tx `0x15c5eb8c…f3e36fb9` |
 | Bytecode sha256 | `083b2cd9232be4b42ff640ef331a9c00a994527cce44917374c8021cc6c3e02b` (2882 B — byte-identical to the other HypERC20 proxies) |
 

@@ -970,8 +970,8 @@ Enrolled remote routers (LUNC): Ethereum → `0xA4bc47a4…`, BSC → `0x481095e
 | Warp **LUNC** (HypERC20 proxy, 6 dec) | `0x481095ecEd7A907e7f390b6226F53a66D379e6e2` | Safe `0x4d78A2…8BDb` ⁵ | ProxyAdmin `0x002a1821aff44c12084bc13f3c5cf442720c127c` |
 | Warp **USTC** (HypERC20 proxy, 6 dec) | `0xfC067fd98FD123fC2cAd72d040AF60a523274339` | Safe `0x4d78A2…8BDb` ⁵ | ProxyAdmin `0x60c92c612d0e7befd188043d557756fef07f725f` |
 | Warp ISM (StorageMessageIdMultisigIsm, TC origin, **4-of-6**) | `0xF6b0cDD33A7d2895a3F18b85569Ed9A8278cD151` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` (pendingOwner = Safe ⁵, proposed, awaiting acceptOwnership) | — |
-| Warp hook (StaticAggregationHook: Merkle + IGP) | `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` | — (static) | — |
-| Warp IGP | `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` | `0x8f085bAD1a15ee9ceeE58C83EFFFa72518975291` (permanent — deployed bytecode has no ownership-transfer function, see ⁵) | — |
+| Warp hook (StaticAggregationHook: Merkle + **new official** IGP) | `0x4AE5fd735Fe1a987756366F7FFeE754C061839d4` ✅ (old ~~`0xD2c82583C261fce94cD3F97f1dFF9B20a9338164`~~ ❌ **DEPRECATED — do not use**) | — (static) | — |
+| Warp IGP (**official, unmodified** `InterchainGasPaymaster.sol`) | `0xc3593dD54274A4CDa8fEBDa343A63A7331154138` ✅ (old custom ~~`0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923`~~ ❌ **DEPRECATED — do not use**, owner permanently an EOA, no ownership-transfer function, see ⁵) | Safe `0x4d78A2…8BDb` ⁵ | — |
 | IGP beneficiary | `0x34E06a7793877EC5251b1dC230aD7cD577d231f4` | | |
 | Mailbox (Hyperlane canonical) | `0x2971b9Aec44bE4eb673DF1B88cDB57b96eefe8a4` | `0x7379D7bB2ccA68982E467632B6554fD4e72e9431` (Hyperlane) | ProxyAdmin `0x65993af9d0d3a64ec77590db7ba362d6eb78ef70` |
 | Validator announce / Merkle tree hook (canonical) | `0x7024078130D9c2100fEA474DAD009C2d1703aCcd` / `0xFDb9Cd5f9daAA2E4474019405A328a88E7484f26` | `0xa7ECcdb9Be08178f896c26b7BbD8C3D4E844d9Ba` (Hyperlane) | — |
@@ -987,24 +987,59 @@ ISM `owner` is Ownable2StepUpgradeable: `transferOwnership` was called 2026-09-2
 (tx `0xdae67930b3bbd09b7314737577c1cedbf2392dcd7860be3895a7066f8c6ac3ee`), which
 only sets the Safe as `pendingOwner` — the migration finalizes once the Safe
 itself executes `acceptOwnership()` (4-of-6), which had not yet happened as of
-this writing. The IGP's deployed bytecode (verified by inspecting its actual
-function-selector dispatcher, not just the reference source) has no
-`transferOwnership`/`renounceOwnership` or equivalent — its `owner` cannot be
-migrated by any direct call and stays the original EOA permanently. Since the
-bridge is live in production, no IGP redeploy is planned to work around this.
+this writing. The old IGP's deployed bytecode (verified by inspecting its
+actual function-selector dispatcher, not just the reference source) has no
+`transferOwnership`/`renounceOwnership` or equivalent — its `owner` can never
+be migrated by any direct call. Since the bridge is live in production, that
+contract itself was left in place (owner permanently the original EOA) and
+instead **replaced at the hook level**: the official, unmodified
+`InterchainGasPaymaster.sol` (`@hyperlane-xyz/core@11.3.1`) was deployed as
+`0xc3593dD54274A4CDa8fEBDa343A63A7331154138` 2026-09-28, initialized with the
+same beneficiary/oracle/overhead as the old one, owner transferred to the
+Safe immediately (one-step Ownable, unlike the ISM — tx not recorded
+separately, done in the same deploy session). A new
+`StaticAggregationHook` [Merkle + new IGP] was deployed via the existing
+factory (`0xe70E86a7D1e001D419D71F960Cb6CaD59b6A3dB6`) at
+`0x4AE5fd735Fe1a987756366F7FFeE754C061839d4`. Pointing the LUNC/USTC warps at
+this new hook (`setHook`) required a Safe transaction (4-of-6) — **executed**;
+verified on-chain 2026-10-03: `hook()` of both the LUNC and USTC warps returns
+`0x4AE5fd73…39d4`. The old hook/IGP (~~`0xD2c82583…`~~/~~`0xEdEd7a4f…`~~) are
+**deprecated — do not use**.
 
 ### Ethereum (domain 1) — synthetic side
 
 | Contract | Address | Owner | Admin |
 |---|---|---|---|
-| Warp **LUNC** (HypERC20 proxy, 6 dec) | `0xA4bc47a4C5461eB0E59A585a21A1222EF7544Ac6` | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` | ProxyAdmin `0x8c7a816d2c5d4dd480d7267caa46769a3c9fa2b5` |
-| Warp **USTC** (HypERC20 proxy, 6 dec) | `0xf49408beb319aeCe3E8B3550a5C750C19b3F1e51` | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` | ProxyAdmin `0xfbb065fcb26a7a74e5c1f187ae9a45a7d80a51c1` |
-| Warp ISM (StorageMessageIdMultisigIsm, TC origin, **4-of-6**) | `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` | — |
-| Warp hook (StaticAggregationHook: Merkle + IGP) | `0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8` | — (static) | — |
-| Warp IGP | `0x9650F1f8DB492750323172145e67Df4e89E964Aa` | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` | — |
+| Warp **LUNC** (HypERC20 proxy, 6 dec) | `0xA4bc47a4C5461eB0E59A585a21A1222EF7544Ac6` | Safe `0x4d78A2…8BDb` ⁶ | ProxyAdmin `0x8c7a816d2c5d4dd480d7267caa46769a3c9fa2b5` (owner: Safe ⁶) |
+| Warp **USTC** (HypERC20 proxy, 6 dec) | `0xf49408beb319aeCe3E8B3550a5C750C19b3F1e51` | Safe `0x4d78A2…8BDb` ⁶ | ProxyAdmin `0xfbb065fcb26a7a74e5c1f187ae9a45a7d80a51c1` (owner: Safe ⁶) |
+| Warp ISM (StorageMessageIdMultisigIsm, TC origin, **4-of-6**) | `0x3ba17675f0D319C89D70722f6eb07790DF0B254B` | `0xEF8181201Ce6C83120035Ffbcc11945E67Ba00ae` (pendingOwner = Safe ⁶, proposed, awaiting acceptOwnership) | — |
+| Warp hook (StaticAggregationHook: Merkle + **new official** IGP) | `0xDC9FF1B50d04792bf7730032F1763501D5669420` | — (static) | — |
+| Warp IGP (**official, unmodified** `InterchainGasPaymaster.sol`) | `0x69b3A7C507014fd6E87E7b58a6b037e0EEe0e096` | Safe `0x4d78A2…8BDb` ⁶ | — |
 | IGP beneficiary | `0x04096dCBbBB0FA58a312761c38E1d3B9F64631F1` | | |
 | Mailbox (Hyperlane canonical) | `0xc005dc82818d67AF737725bD4bf75435d065D239` | `0x562Dfaac27A84be6C96273F5c9594DA1681C0DA7` (Hyperlane) | ProxyAdmin `0x75ee15ee1b4a75fa3e2fdf5df3253c25599cc659` |
 | Validator announce / Merkle tree hook (canonical) | `0xCe74905e51497b4adD3639366708b821dcBcff96` / `0x48e6c30B97748d1e2e03bf3e9FbE3890ca5f8CCA` | `0xa7ECcdb9Be08178f896c26b7BbD8C3D4E844d9Ba` (Hyperlane) | — |
+
+⁶ **IGP fully replaced on Ethereum (unlike BSC).** The old custom
+`TerraClassicIGPStandalone` IGP (~~`0x9650F1f8DB492750323172145e67Df4e89E964Aa`~~ ❌ deprecated,
+byte-identical to the BSC one — confirmed same problem, no
+ownership-transfer function at all) was retired in favor of the official,
+unmodified `InterchainGasPaymaster.sol` (`@hyperlane-xyz/core@11.3.1`),
+deployed and wired 2026-09-29:
+1. Deployed at `0x69b3A7C507014fd6E87E7b58a6b037e0EEe0e096`, `initialize()`d
+   with the same beneficiary/oracle/overhead as the old IGP.
+2. New `StaticAggregationHook` [Merkle `0x48e6c30B…` + new IGP] deployed via
+   the existing factory (`0x6D2555A8ba483CcF4409C39013F5e9a3285D3C9E`) at
+   `0xDC9FF1B50d04792bf7730032F1763501D5669420`.
+3. `setHook()` called directly on both LUNC and USTC warps (still sole EOA
+   owner at the time) — old hook/IGP (~~`0x912c4d91…`~~/~~`0x9650F1f8…`~~) now
+   unused/orphaned — **deprecated, do not use**.
+4. Ownership handoff to Safe `0x4d78A2182a7Cd3a370D73E6651EF4B32C2dd8BDb`
+   (same 6 validators, verified deployed identically on Ethereum: v1.5.0,
+   4-of-6) — new IGP, both warps, and both ProxyAdmins transferred in one
+   step each (plain Ownable). ISM `transferOwnership` proposed the same way
+   as BSC's (Ownable2StepUpgradeable) — needs a separate Safe
+   `acceptOwnership()` (4-of-6) to finalize, not yet executed as of this
+   writing.
 
 ### Solana (domain 1399811149) — synthetic side
 

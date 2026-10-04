@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# DEPRECATED CONTRACTS — DO NOT USE: OLD_IGP / OLD_HOOK below are the retired custom IGP and
+# hook. This is a one-shot migration, already executed (2026-09-28/29). Current contracts:
+# BSC IGP 0xc3593dD54274A4CDa8fEBDa343A63A7331154138, hook 0x4AE5fd735Fe1a987756366F7FFeE754C061839d4;
+# ETH IGP 0x69b3A7C507014fd6E87E7b58a6b037e0EEe0e096, hook 0xDC9FF1B50d04792bf7730032F1763501D5669420.
 # ============================================================================
 # Deploys the OFFICIAL, unmodified Hyperlane InterchainGasPaymaster.sol on
 # BSC, to replace the custom TerraClassicIGPStandalone contract currently at

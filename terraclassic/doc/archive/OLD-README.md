@@ -1,5 +1,7 @@
 # Documentation Guide — Hyperlane Warp Routes Terra Classic
 
+> ⚠️ **DEPRECATED CONTRACTS — DO NOT USE.** This is a historical record. The old BSC/Ethereum IGP and AggregationHook listed here are ~~struck through~~ and must **not** be used. Current contracts: BSC IGP `0xc3593dD54274A4CDa8fEBDa343A63A7331154138` · BSC hook `0x4AE5fd735Fe1a987756366F7FFeE754C061839d4` · ETH IGP `0x69b3A7C507014fd6E87E7b58a6b037e0EEe0e096` · ETH hook `0xDC9FF1B50d04792bf7730032F1763501D5669420`.
+
 > Index document for all Warp Route scripts and guides for Terra Classic ↔ EVM and Terra Classic ↔ Sealevel (Solana).
 
 **Last updated:** 2026-06-05 — Solana Devnet full Hyperlane infrastructure deployed; `close-warp-program.sh` script added; `create-warp-sealevel.sh` upgraded (pre-built binary reuse, spl-token image validation, metadata URL fixes).
@@ -312,12 +314,12 @@ Deployed 2026-06-09 via `CustomInstantiateWasm-mainnet-v2.ts` (v2 — domain 132
 
 | Token | Warp Route (BSC) | IGP (prod) | AggHook (prod) |
 |---|---|---|---|
-| **LUNC** | [`0x481095ecEd7A907e7f390b6226F53a66D379e6e2`](https://bscscan.com/address/0x481095ecEd7A907e7f390b6226F53a66D379e6e2) | `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` | `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` |
-| **USTC** | [`0xfC067fd98FD123fC2cAd72d040AF60a523274339`](https://bscscan.com/address/0xfC067fd98FD123fC2cAd72d040AF60a523274339) | `0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923` | `0xD2c82583C261fce94cD3F97f1dFF9B20a9338164` |
+| **LUNC** | [`0x481095ecEd7A907e7f390b6226F53a66D379e6e2`](https://bscscan.com/address/0x481095ecEd7A907e7f390b6226F53a66D379e6e2) | ~~`0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923`~~ ❌ deprecated | ~~`0xD2c82583C261fce94cD3F97f1dFF9B20a9338164`~~ ❌ deprecated |
+| **USTC** | [`0xfC067fd98FD123fC2cAd72d040AF60a523274339`](https://bscscan.com/address/0xfC067fd98FD123fC2cAd72d040AF60a523274339) | ~~`0xEdEd7a4f6FEe4B474B9d7730Bf3465E35E2a4923`~~ ❌ deprecated | ~~`0xD2c82583C261fce94cD3F97f1dFF9B20a9338164`~~ ❌ deprecated |
 
 Ethereum synthetics: LUNC `0xA4bc47a4C5461eB0E59A585a21A1222EF7544Ac6`, USTC
-`0xf49408beb319aeCe3E8B3550a5C750C19b3F1e51` (IGP `0x9650F1f8DB492750323172145e67Df4e89E964Aa`,
-hook `0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8`). Full record: `install/DEPLOY-HASHES.md` §5/§6.
+`0xf49408beb319aeCe3E8B3550a5C750C19b3F1e51` (IGP ~~`0x9650F1f8DB492750323172145e67Df4e89E964Aa`~~ ❌ deprecated,
+hook ~~`0x912c4d91D9eD04B16B83dA79dbe7a209c8Fd0aA8`~~ ❌ deprecated). Full record: `install/DEPLOY-HASHES.md` §5/§6.
 
 > **RPC note:** `rpc.ankr.com/eth` and `1rpc.io/eth` can rate-limit during deploys. Use `ethereum-rpc.publicnode.com` for Step 8 verification.
 

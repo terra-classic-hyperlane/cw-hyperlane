@@ -1,5 +1,7 @@
 # Complete Guide: `create-warp-evm.sh`
 
+> ⚠️ **DEPRECATED CONTRACTS — DO NOT USE.** The old BSC/Ethereum IGP and AggregationHook addresses are ~~struck through~~ below and must **not** be used. Current contracts: BSC IGP `0xc3593dD54274A4CDa8fEBDa343A63A7331154138` · BSC hook `0x4AE5fd735Fe1a987756366F7FFeE754C061839d4` · ETH IGP `0x69b3A7C507014fd6E87E7b58a6b037e0EEe0e096` · ETH hook `0xDC9FF1B50d04792bf7730032F1763501D5669420`.
+
 > Interactive script to create and configure Hyperlane Warp Routes on EVM networks connected to Terra Classic.  
 > Fully portable — just copy the `terraclassic/` folder to any `cw-hyperlane` project.
 >
@@ -47,8 +49,8 @@
 > | Piece | Default behavior | Where it comes from |
 > |---|---|---|
 > | **ISM** | The generated deploy yaml sets the **shared mutable 3-of-4 ISM address directly** (BSC `0xF6b0cDD3…cD151` · ETH `0x3ba17675…B254B`) — the CLI creates **no** new ISM; the warp is born pointing to it (step 6 just verifies). Validator rotation is 1 owner tx for ALL warps (`tc-proof-of-delivery/deploy/storage-ism.mjs`). | `ism.deployed_address` |
-> | **IGP** | Step 3 **reuses the production IGP** (BSC `0xEdEd7a4f…4923` · ETH `0x9650F1f8…64Aa`, beneficiary = the active vault): fees fund the relayer-reward-vault pool and gas prices are already governed by the oracle-agent/governor — no new IGP/oracle. Export `IGP_ADDRESS` to override, or clear `igp.deployed_address` to force a fresh deploy. | `igp.deployed_address` |
-> | **Hook** | Step 5 **reuses the production AggregationHook** [merkleTree + governed IGP] (BSC `0xD2c82583…8164` · ETH `0x912c4d91…0aA8`) — no new hook. Only applies while the production IGP is reused (hook and IGP stay consistent). | `hook.deployed_aggregation` |
+> | **IGP** | Step 3 **reuses the production IGP** (BSC ~~`0xEdEd7a4f…4923`~~ ❌ → `0xc3593dD5…4138` · ETH ~~`0x9650F1f8…64Aa`~~ ❌ → `0x69b3A7C5…e096`, beneficiary = the active vault): fees fund the relayer-reward-vault pool and gas prices are already governed by the oracle-agent/governor — no new IGP/oracle. Export `IGP_ADDRESS` to override, or clear `igp.deployed_address` to force a fresh deploy. | `igp.deployed_address` |
+> | **Hook** | Step 5 **reuses the production AggregationHook** [merkleTree + governed IGP] (BSC ~~`0xD2c82583…8164`~~ ❌ → `0x4AE5fd73…39d4` · ETH ~~`0x912c4d91…0aA8`~~ ❌ → `0xDC9FF1B5…9420`) — no new hook. Only applies while the production IGP is reused (hook and IGP stay consistent). | `hook.deployed_aggregation` |
 > | **Validators (fallback)** | The inline static ISM (4 validators, threshold 3: igorveras · tcv · darksun · burnitall) is only generated when `ism.deployed_address` is empty — e.g. a brand-new network. | `ism.validators` / `ism.threshold` |
 >
 > Post-deploy checklist for a production token: register in the hyperlane-registry
@@ -1398,8 +1400,8 @@ Addresses of all active contracts in this project, for quick reference and manua
 | **USTC** | `0xfC067fd98FD123fC2cAd72d040AF60a523274339` | `0xf49408beb319aeCe3E8B3550a5C750C19b3F1e51` | `terra1qu3x6vhk4y6w6erhmedzfp2ug53qm5nwpyarxveqa7tvwg0telxqvd3ccf` |
 
 Infra compartilhada de produção — ISM 3-de-4 (BSC `0xF6b0cDD3…cD151` · ETH
-`0x3ba17675…B254B`), IGP (BSC `0xEdEd7a4f…4923` · ETH `0x9650F1f8…64Aa`),
-AggregationHook (BSC `0xD2c82583…8164` · ETH `0x912c4d91…0aA8`).
+`0x3ba17675…B254B`), IGP (BSC ~~`0xEdEd7a4f…4923`~~ ❌ → `0xc3593dD5…4138` · ETH ~~`0x9650F1f8…64Aa`~~ ❌ → `0x69b3A7C5…e096`),
+AggregationHook (BSC ~~`0xD2c82583…8164`~~ ❌ → `0x4AE5fd73…39d4` · ETH ~~`0x912c4d91…0aA8`~~ ❌ → `0xDC9FF1B5…9420`).
 Registro completo com hashes e txs: [`../install/WARP-LUNC.md`](../install/WARP-LUNC.md) ·
 [`../install/WARP-USTC.md`](../install/WARP-USTC.md) ·
 [`../install/DEPLOY-HASHES.md`](../install/DEPLOY-HASHES.md).
